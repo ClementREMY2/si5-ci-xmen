@@ -1,6 +1,6 @@
 ## SI5-CI-XMEN : Sujet n° 1 - Prise de commande par un serveur novice pour un évènement
 
-# Membres : Fabien AIRAUD, Clément REMY, Arnaud AVOCAT GROS, Samuel BOIS
+### Membres : Fabien AIRAUD, Clément REMY, Arnaud AVOCAT GROS, Samuel BOIS
 
 Faire les front ends et une architecture qui permet au serveur de :
   - Prendre les commandes via une tablette
