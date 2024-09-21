@@ -4,7 +4,16 @@ import PageTemplate from "../pages/PageTemplate.tsx";
 
 const theme = createTheme({
     palette: {
-        mode: "dark"
+        mode: "dark",
+        primary: {
+            main: "#3f51b5"
+        },
+        secondary: {
+            main: "#f50057"
+        },
+        background: {
+            default: "#1a1a1a"
+        }
     }
 });
 

@@ -1,26 +1,32 @@
-import React from "react";
 import {createBrowserRouter, Navigate} from "react-router-dom";
+import EventsPage from "../pages/EventsPage.tsx";
 import HomePage from "../pages/HomePage.tsx";
 import LoginPage from "../pages/LoginPage.tsx";
+import MainPage from "../pages/MainPage.tsx";
 import NotFound from "../pages/NotFoundPage.tsx";
-import PageTemplate from "../pages/PageTemplate.tsx";
+import ProfilePage from "../pages/ProfilePage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
-
-const renderPage = (page: React.ReactNode) => <PageTemplate>{page}</PageTemplate>;
 
 const getDefaultRedirection = () => privateRoutes.home;
 
 const getRedirection = (route?: string) => <Navigate replace to={route ?? getDefaultRedirection()}/>;
 
 export const router = createBrowserRouter([
-    {path: publicRoutes.base, element: getRedirection()},
     {
         element: <RouterContent/>,
         children: [
-            {path: publicRoutes.login, element: renderPage(<LoginPage/>)},
-            {path: privateRoutes.home, element: renderPage(<HomePage/>)},
-            {path: publicRoutes.notFound, element: renderPage(<NotFound/>)}
+            {path: publicRoutes.login, element: <LoginPage/>},
+            {
+                path: privateRoutes.main,
+                element: <MainPage/>,
+                children: [
+                    {path: privateRoutes.home, element: <HomePage/>},
+                    {path: privateRoutes.events, element: <EventsPage/>},
+                    {path: privateRoutes.profile, element: <ProfilePage/>}
+                ]
+            },
+            {path: publicRoutes.notFound, element: <NotFound/>}
         ]
     },
     {path: publicRoutes.all, element: getRedirection(publicRoutes.notFound)} // Go to 404 page if no route matches, this should always be the last route
