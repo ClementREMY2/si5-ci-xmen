@@ -1,4 +1,5 @@
-import {BottomNavigation, BottomNavigationAction, Box, Paper} from "@mui/material";
+import {AccountCircle, Home, Today} from "@mui/icons-material";
+import {AppBar, BottomNavigation, BottomNavigationAction, Box} from "@mui/material";
 import React, {useMemo} from "react";
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import {privateRoutes} from "../utils/Routes.ts";
@@ -16,13 +17,13 @@ export default function MainPage() {
             <Box height={"100%"} overflow={"auto"}>
                 <Outlet/> {/* This is where the child routes will be rendered */}
             </Box>
-            <Paper elevation={3}>
-                <BottomNavigation showLabels value={location.pathname} onChange={changeRoute}>
-                    <BottomNavigationAction label={"Home"} value={privateRoutes.home}/>
-                    <BottomNavigationAction label={"Events"} value={privateRoutes.events}/>
-                    <BottomNavigationAction label={"Profile"} value={privateRoutes.profile}/>
+            <AppBar position={"sticky"} elevation={3}>
+                <BottomNavigation value={location.pathname} onChange={changeRoute} showLabels>
+                    <BottomNavigationAction label={"Home"} value={privateRoutes.home} icon={<Home/>}/>
+                    <BottomNavigationAction label={"Events"} value={privateRoutes.events} icon={<Today/>}/>
+                    <BottomNavigationAction label={"Profile"} value={privateRoutes.profile} icon={<AccountCircle/>}/>
                 </BottomNavigation>
-            </Paper>
+            </AppBar>
         </Box>
     );
 }
