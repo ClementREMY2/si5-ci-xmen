@@ -1,44 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Grid, Button, IconButton, Checkbox, FormControlLabel } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { useNavigate } from 'react-router-dom'; // Import du hook useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const PaymentPage: React.FC = () => {
-    const [tip, setTip] = useState<number>(3);
-    const navigate = useNavigate(); // Initialisation du hook useNavigate
+    const [tip, setTip] = useState<number>(0);
+    const [totalItemsPrice, setTotalItemsPrice] = useState<number>(0);
+    const [maxTotalPrice, setMaxTotalPrice] = useState<number>(0);
+    const [isTotalChecked, setIsTotalChecked] = useState<boolean>(false);
+    const [totalToDisplay, setTotalToDisplay] = useState<number>(0);
+    const navigate = useNavigate();
 
-    const items = [
-        { name: 'Coca-cola', remaining: 0, ordered: 2 },
-        { name: 'Ice Tea', remaining: 0, ordered: 1 },
-        { name: 'Orangina', remaining: 0, ordered: 1 },
-        { name: 'Salade César', remaining: 0, ordered: 2 },
-        { name: 'Charcuterie', remaining: 0, ordered: 1 },
-        { name: 'Pâtes bolognaise', remaining: 0, ordered: 1 },
-        { name: 'Pâtes carbonara', remaining: 0, ordered: 1 },
-        { name: 'Escalope veau', remaining: 0, ordered: 1 },
-        { name: 'Loup + frites', remaining: 0, ordered: 1 },
-        { name: 'Fondant chocolat', remaining: 0, ordered: 2 },
-    ];
+    const [items, setItems] = useState([
+        { name: 'Coca-cola', price: 3, remaining: 2, ordered: 2 },
+        { name: 'Ice Tea', price: 3, remaining: 1, ordered: 1 },
+        { name: 'Orangina', price: 3, remaining: 1, ordered: 1 },
+        { name: 'Salade César', price: 7, remaining: 2, ordered: 2 },
+        { name: 'Charcuterie', price: 8, remaining: 1, ordered: 1 },
+        { name: 'Pâtes bolognaise', price: 12, remaining: 1, ordered: 1 },
+        { name: 'Pâtes carbonara', price: 12, remaining: 1, ordered: 1 },
+        { name: 'Escalope veau', price: 14, remaining: 1, ordered: 1 },
+        { name: 'Loup + frites', price: 15, remaining: 1, ordered: 1 },
+        { name: 'Fondant chocolat', price: 7, remaining: 2, ordered: 2 },
+    ]);
 
+
+    // Fonction pour mettre à jour le pourboire
     const handleTipChange = (value: number) => {
         setTip(prevTip => Math.max(0, prevTip + value));
+    };
+    // Fonction pour calculer le total maximal possible
+    const calculateMaxTotal = () => {
+        const maxTotal = items.reduce((sum, item) => sum + (item.price * item.ordered), 0);
+        setMaxTotalPrice(maxTotal);
+    };
+
+    // Calculer le maxTotal une seule fois lors du chargement
+    useEffect(() => {
+        calculateMaxTotal();
+    }, []); // Appelé uniquement lors du premier rendu
+
+    // Fonction pour calculer le total des articles commandés
+    useEffect(() => {
+        const total = items.reduce((sum, item) => sum + (item.price * item.remaining), 0);
+        setTotalItemsPrice(total);
+
+        // Si la checkbox est cochée, mettre à jour le total affiché
+        if (isTotalChecked) {
+            setTotalToDisplay(maxTotalPrice);
+        }
+    }, [items, isTotalChecked, maxTotalPrice]); // Inclure maxTotalPrice ici
+
+
+    // Gestionnaire de la checkbox "Payer le total"
+    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = event.target.checked;
+        setIsTotalChecked(isChecked);
+
+        // Si cochée, le total devient le maxTotalPrice
+        if (isChecked) {
+            setTotalToDisplay(maxTotalPrice);
+        } else {
+            // Ne pas réinitialiser les quantités ici
+            setTotalToDisplay(0);
+            //pour chaque item.remaining, = item.ordered correspondant
+            setItems(prevItems => {
+                return prevItems.map(item => {
+                    return { ...item, remaining: item.ordered };
+                });
+            });
+        }
+    };
+
+    const handleItemQuantityChange = (index: number, change: number) => {
+        if (isTotalChecked) return; // Ne rien faire si la checkbox est cochée
+
+        setItems(prevItems => {
+            return prevItems.map((item, idx) => {
+                if (idx === index) {
+                    const newRemaining = Math.max(0, Math.min(item.remaining + change, item.ordered));
+                    // Si on augmente la quantité, on diminue le total à afficher
+                    if (change > 0) {
+                        const priceAdjustment = item.price; // Prix à soustraire
+                        setTotalToDisplay(prevTotal => prevTotal - priceAdjustment);
+                    } else if (change < 0) {
+                        // Si on diminue la quantité, on ajoute le prix au total à afficher
+                        const priceAdjustment = item.price; // Prix à ajouter
+                        setTotalToDisplay(prevTotal => prevTotal + priceAdjustment);
+                    }
+                    return { ...item, remaining: newRemaining };
+                }
+                return item;
+            });
+        });
     };
 
     // Gestionnaire de paiement
     const handlePayment = () => {
-        // Logique de traitement du paiement (simulation ou réel)
-
-        // Après le traitement du paiement, redirige l'utilisateur vers la page d'accueil
+        // Logique de traitement du paiement
         navigate('/home');
     };
 
+    // Calcul du total à payer (prix des articles + pourboire)
+    const totalToPay = totalToDisplay + tip;
+
+    //TODO : Changer le nombre de notifs
     return (
-        <Box sx={{ backgroundColor: '#FFB74D', height: '100vh', padding: '16px' }}>
+        <Box sx={{ backgroundColor: '#FFB74D', height: '100vh', padding: '16px', color: 'black' }}>
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <Button variant="text" sx={{ fontSize: '18px', color: 'black' }}>Paiement</Button>
-                <Typography variant="h6">09/09/2024 - 21h05</Typography>
+                <Typography variant="h6" sx={{ color: 'black' }}>09/09/2024 - 21h05</Typography>
                 <Box
                     sx={{
                         width: 36,
@@ -58,15 +131,16 @@ const PaymentPage: React.FC = () => {
 
             {/* Table and Payment Info */}
             <Box sx={{ textAlign: 'center', marginBottom: '16px' }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Table 108</Typography>
-                <Typography variant="h6">0 € / 97 €</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'black' }}>Table 108</Typography>
+                <Typography variant="h6" sx={{ color: 'black' }}>{totalToDisplay} € / {maxTotalPrice} €</Typography>
             </Box>
 
             {/* Payment checkbox */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
                 <FormControlLabel
-                    control={<Checkbox defaultChecked />}
+                    control={<Checkbox checked={isTotalChecked} onChange={handleCheckboxChange} />}
                     label="Payer le total"
+                    sx={{ color: 'black' }}
                 />
             </Box>
 
@@ -76,15 +150,26 @@ const PaymentPage: React.FC = () => {
                     <Grid item xs={12} key={index}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFE0B2', padding: '8px', borderRadius: '4px' }}>
                             <Box>
-                                <Typography>{item.name}</Typography>
-                                <Typography variant="body2" color="text.secondary">Restant : {item.remaining}</Typography>
+                                <Typography sx={{ color: 'black' }}>{item.name}</Typography>
+                                {/* Rendu dynamique du nombre restant */}
+                                <Typography variant="body2" sx={{ color: 'black' }}>
+                                    Restant : {isTotalChecked ? 0 : item.remaining}
+                                </Typography>
                             </Box>
-                            <Typography>{item.ordered}</Typography>
+                            <Typography sx={{ color: 'black' }}>{item.ordered}</Typography>
                             <Box>
-                                <IconButton size="small">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => handleItemQuantityChange(index, 1)}
+                                    disabled={isTotalChecked || item.remaining >= item.ordered}
+                                >
                                     <AddCircleOutlineIcon />
                                 </IconButton>
-                                <IconButton size="small">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => handleItemQuantityChange(index, -1)}
+                                    disabled={isTotalChecked || item.remaining <= 0}
+                                >
                                     <RemoveCircleOutlineIcon />
                                 </IconButton>
                             </Box>
@@ -96,7 +181,7 @@ const PaymentPage: React.FC = () => {
             {/* Tip and payment */}
             <Box sx={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography sx={{ marginRight: '8px' }}>Pourboire : {tip} €</Typography>
+                    <Typography sx={{ marginRight: '8px', color: 'black' }}>Pourboire : {tip} €</Typography>
                     <IconButton onClick={() => handleTipChange(-1)} size="small">
                         <RemoveCircleOutlineIcon />
                     </IconButton>
@@ -105,7 +190,7 @@ const PaymentPage: React.FC = () => {
                     </IconButton>
                 </Box>
                 <Button variant="contained" color="error" sx={{ width: '48%' }} onClick={handlePayment}>
-                    PAYER 100 €
+                    PAYER {totalToPay} €
                 </Button>
             </Box>
         </Box>
