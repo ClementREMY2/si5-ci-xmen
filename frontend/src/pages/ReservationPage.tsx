@@ -21,7 +21,6 @@ export default function ReservationPage() {
     const [reservation, setReservation] = useState<Reservation>({
         table: parseFloat(table!),
         nbPeople: 1,
-        date: new Date(),
         status: TableStatus.OCCUPIED
     });
 

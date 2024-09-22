@@ -11,6 +11,5 @@ export interface Reservation {
     table: number;
     nbPeople: number;
     event?: string;
-    date: Date;
     status: TableStatus;
 }
