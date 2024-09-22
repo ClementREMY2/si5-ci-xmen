@@ -1,12 +1,16 @@
 import {Box, Button} from "@mui/material";
 import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
 import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuList from "../components/order/MenuList.tsx";
 import {Order, OrderStatus} from "../interfaces/Order.ts";
 import {menuNormal} from "../mocks/Menu.ts";
+import {privateRoutes} from "../utils/Routes.ts";
 
 export default function OrderPage() {
+    const navigate = useNavigate();
+
     const [order, setOrder] = useState<Order>({
         table: 108,
         status: OrderStatus.OPEN,
@@ -22,15 +26,10 @@ export default function OrderPage() {
             return;
         }
 
-
         // Update the quantity
         let newQuantity: number;
-        if (!order.items[id]) {
-            newQuantity = delta;
-        } else {
-            newQuantity = order.items[id] + delta;
-        }
-
+        if (!order.items[id]) newQuantity = delta;
+        else newQuantity = order.items[id] + delta;
         if (newQuantity < 0) {
             console.warn(`Cannot have negative quantity: ${item.fullName} = ${newQuantity}`);
             return;
@@ -45,6 +44,22 @@ export default function OrderPage() {
                 [id]: newQuantity
             }
         }));
+    };
+
+    const cancelOrder = () => {
+        navigate(privateRoutes.home);
+    };
+
+    const confirmOrder = () => {
+        const newOrder = {
+            ...order,
+            date: new Date(),
+            status: OrderStatus.IN_PROGRESS
+        };
+        // Send the order to the server
+        setOrder(newOrder);
+        console.log(newOrder);
+        navigate(privateRoutes.home);
     };
 
     const card: React.ReactNode = (
