@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import MenuCard from '../components/MenuCard/MenuCard';
-import { Button } from '@mui/material';
+import { Button, Box } from '@mui/material';
 
 const EventsPage: React.FC = () => {
   const [isEdited, setIsEdited] = useState(false);
@@ -37,6 +37,16 @@ const EventsPage: React.FC = () => {
     setIsEdited(true);
   }
 
+  const handleSaveModifications = () => {
+    console.log('Sauvegarde des modifications');
+    setIsEdited(false);
+  }
+
+  const handleCancelModifications = () => {
+    console.log('Annulation des modifications');
+    setIsEdited(false);
+  }
+
   return (
     <div>
       <h1>Events Page</h1>
@@ -52,8 +62,15 @@ const EventsPage: React.FC = () => {
           onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
         />
       ))}
-      <Button disabled={!isEdited} >Modifier les menus</Button>
-    </div>
+      <Box display="flex" justifyContent="center" gap={2} mt={2}>
+        <Button disabled={!isEdited} onClick={handleCancelModifications} variant='contained' color='error'>
+          Annuler les modifications
+        </Button>
+        <Button disabled={!isEdited} onClick={handleSaveModifications} variant='contained' color='success'>
+          Sauvegarder les modifications
+        </Button>
+      </Box>
+   </div>
   );
 }
 
