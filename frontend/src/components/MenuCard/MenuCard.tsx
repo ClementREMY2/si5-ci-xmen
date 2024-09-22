@@ -11,10 +11,10 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
   const [isEditing, setIsEditing] = useState(editing);
   const [editedMenu, setEditedMenu] = useState({ title, entree, mainCourse, dessert, drink1, drink2, price });
   const calculateTotalPrice = (): number => {
-    return entree.price + mainCourse.price + dessert.price + drink1.price + drink2.price;
+    return editedMenu.entree.price + editedMenu.mainCourse.price + editedMenu.dessert.price + editedMenu.drink1.price + editedMenu.drink2.price;
   };
+  const [totalPrice, setTotalPrice] = useState(calculateTotalPrice());
 
-  const totalPrice = calculateTotalPrice();
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
@@ -29,6 +29,8 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
     setIsEditing(false);
     const updatedMenu = { ...editedMenu
     };
+    setTotalPrice(calculateTotalPrice());
+    console.log(totalPrice)
     onMenuUpdate(updatedMenu);
   };
 
@@ -37,10 +39,27 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
     setEditedMenu({ ...editedMenu, title: e });
   }
 
-  const removeAccents = (str: string): string => {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPrice = Number(e.target.value);
+    console.log('Input value:', e.target.value);
+    console.log('New price:', newPrice);
+    setEditedMenu((prevMenu) => ({
+      ...prevMenu,
+      price: newPrice,
+    }));
   };
 
+  const handleChangesInItem = (menuItem: any) => {
+    const mapping: { [key: string]: string } = {
+      'Entrée': 'entree',
+      'Plat': 'mainCourse',
+      'Dessert': 'dessert',
+      'Boisson 1': 'drink1',
+      'Boisson 2': 'drink2',
+    };
+    const updatedMenu = { ...editedMenu, [mapping[menuItem.type]]: menuItem };
+    setEditedMenu(updatedMenu);
+  }
   return (
     <Card sx={{ margin: 2 }}>
       <CardContent>
@@ -75,14 +94,27 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
         <Grid container spacing={2}>
           {[entree, mainCourse, dessert, drink1, drink2].map((item, index) => (
             <Grid item xs={6} key={index}>
-              <MenuItemBox menuItem={item} isEditing={isEditing} onChanges={(menuItem) => setEditedMenu({ ...editedMenu, [removeAccents(item.type.toLowerCase())]: menuItem })} />
+              <MenuItemBox menuItem={item} isEditing={isEditing} onChanges={(menuItem) => handleChangesInItem(menuItem)} />
             </Grid>
           ))}
           <Grid item xs={12}>
             <Typography variant="h6" sx={{ marginRight: 1 }}>Prix Total Réel: {totalPrice}€</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6" sx={{ marginRight: 1 }}>Prix Affiché: {price}€</Typography>
+            <Typography variant="h6" sx={{ marginRight: 1 }}>Prix Affiché:</Typography>
+            {isEditing ? (
+              <TextField
+                value={editedMenu.price}
+                onChange={
+                  handlePriceChange
+                }
+                variant="outlined"
+                size="small"
+                type="number"
+              />
+            ) : (
+              <Typography variant="h5">{editedMenu.price}€</Typography>
+            )}
           </Grid>
         </Grid>
       </CardContent>

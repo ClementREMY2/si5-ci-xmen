@@ -1,12 +1,17 @@
 import React, {useState} from 'react';
 import MenuCard from '../components/MenuCard/MenuCard';
-import { Button, Box } from '@mui/material';
+import { Button, Box, Typography, Checkbox } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 
 const EventsPage: React.FC = () => {
   const [isEdited, setIsEdited] = useState(false);
   const [isANewMenu, setIsANewMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+
+
+
   const menus = [
     {
       title: 'Menu classique',
@@ -36,6 +41,17 @@ const EventsPage: React.FC = () => {
       price: 28,
     },
   ];
+  
+  const ev = {
+    name: "Soirée d'entreprise - Avisto",
+    date: '2022-12-31',
+    groupOrders: false,
+    menus: menus
+  };
+
+  const [event, setEvent] = useState(ev);
+
+  
 
 
   const handleMenuUpdate = (e: any) => {
@@ -71,7 +87,15 @@ const EventsPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Events Page</h1>
+      <h1>{event.name}</h1>
+      <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginLeft: 2 }} gap={2} mt={2}>
+        <Typography>Date de l'événement</Typography>
+        <input type="date" />
+      </Box>
+      <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginLeft: 2 }} gap={2} mt={2}>
+        <Typography>Grouper commandes</Typography>
+        <Checkbox></Checkbox>
+      </Box>
       <Box display="flex" justifyContent="flex-start" sx={{ margin: 2 }} gap={2} mt={2}>
         <Button variant='contained' color='primary' disabled={isEditing} endIcon={<AddCircleOutlineIcon />} onClick={handleAddMenu}>
           Ajouter un menu
