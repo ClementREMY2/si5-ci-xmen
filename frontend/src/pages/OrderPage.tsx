@@ -54,7 +54,14 @@ export default function OrderPage() {
                 leftTitle={"Avisto"}
                 rightTitle={`${order.total} €`}
                 mainContent={<MenuList menu={menuNormal} order={order} changeItemQuantity={changeItemQuantity}/>}
-                buttons={[<Button variant={"contained"} sx={{width: "200px"}}>Order</Button>]}
+                buttons={<>
+                    <Button onClick={cancelOrder} variant={"contained"} color={"error"} sx={{width: "200px"}}>
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmOrder} variant={"contained"} sx={{width: "200px"}}>
+                        Confirm
+                    </Button>
+                </>}
                 minWidth={"95%"}
                 minHeight={"95%"}
             />

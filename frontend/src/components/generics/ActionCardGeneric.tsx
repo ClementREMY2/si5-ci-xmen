@@ -6,7 +6,7 @@ interface ActionCardGenericProps {
     leftTitle?: string;
     rightTitle?: string;
     mainContent?: React.ReactNode;
-    buttons?: React.ReactElement[];
+    buttons?: React.ReactNode;
     minWidth?: string | number;
     minHeight?: string | number;
 }
@@ -41,7 +41,7 @@ export default function ActionCardGeneric({
                 <Box flexGrow={1} overflow={"auto"}>
                     {mainContent}
                 </Box>
-                <Stack direction={"row"} justifyContent={"space-around"} alignItems={"center"} paddingTop={2}>
+                <Stack direction={"row"} justifyContent={"space-evenly"} alignItems={"center"} paddingTop={2}>
                     {buttons}
                 </Stack>
             </CardContent>

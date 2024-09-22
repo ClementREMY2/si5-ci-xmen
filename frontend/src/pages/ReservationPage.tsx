@@ -10,7 +10,7 @@ export default function ReservationPage() {
             <ActionCardGeneric
                 title={"Table 108"}
                 mainContent={<ReservationMainContent/>}
-                buttons={[<Button variant={"contained"} sx={{width: "200px"}}>Reserve</Button>]}
+                buttons={<Button variant={"contained"} sx={{width: "200px"}}>Reserve</Button>}
             />
         </Box>
     );
