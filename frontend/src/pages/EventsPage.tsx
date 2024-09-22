@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
 import MenuCard from '../components/MenuCard/MenuCard';
 import { Button, Box } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const EventsPage: React.FC = () => {
   const [isEdited, setIsEdited] = useState(false);
+  const [isANewMenu, setIsANewMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const menus = [
     {
       title: 'Menu classique',
@@ -38,21 +41,42 @@ const EventsPage: React.FC = () => {
   const handleMenuUpdate = (e: any) => {
     console.log(e);
     setIsEdited(true);
+    setIsANewMenu(false);
+    setIsEditing(false);
   }
 
   const handleSaveModifications = () => {
     console.log('Sauvegarde des modifications');
     setIsEdited(false);
+    setIsEditing(false);
   }
 
   const handleCancelModifications = () => {
     console.log('Annulation des modifications');
     setIsEdited(false);
+    setIsEditing(false);
+  }
+
+  const handleAddMenu = () => {
+    console.log('Ajout d\'un menu');
+    setIsANewMenu(true);
+    setIsEditing(true);
+  }
+
+
+  const handleIsOnEdition = (e: boolean) => {
+    setIsEditing(e);
+    console.log(e);
   }
 
   return (
     <div>
       <h1>Events Page</h1>
+      <Box display="flex" justifyContent="flex-start" sx={{ margin: 2 }} gap={2} mt={2}>
+        <Button variant='contained' color='primary' disabled={isEditing} endIcon={<AddCircleOutlineIcon />} onClick={handleAddMenu}>
+          Ajouter un menu
+        </Button>
+      </Box>
       {menus.map((menu, index) => (
         <MenuCard
           key={index}
@@ -64,8 +88,26 @@ const EventsPage: React.FC = () => {
           drink2={menu.drink2}
           price={menu.price}
           onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
+          editing={false}
+          allowEdit={!isEditing}
+          isOnEdition={(e) => handleIsOnEdition(e)}
         />
       ))}
+      {isANewMenu && (
+          <MenuCard
+          title={""}
+          entree={{ type: 'Entrée', name: '', price: 0 }}
+          mainCourse={{ type: 'Plat', name: '', price: 0 }}
+          dessert={{ type: 'Dessert', name: '', price: 0 }}
+          drink1={{ type: 'Boisson 1', name: '', price: 0 }}
+          drink2={{ type: 'Boisson 2', name: '', price: 0 }}
+          price={0}
+          onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
+          editing={true}
+          allowEdit={!isEditing}
+          isOnEdition={(e) => setIsEditing(e)}
+        />
+      )}
       <Box display="flex" justifyContent="center" gap={2} mt={2}>
         <Button disabled={!isEdited} onClick={handleCancelModifications} variant='contained' color='error'>
           Annuler les modifications

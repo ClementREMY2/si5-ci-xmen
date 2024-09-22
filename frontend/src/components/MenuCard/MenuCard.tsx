@@ -7,8 +7,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import { MenuCardProps } from '../../interfaces/MenuCardProps';
 import MenuItemBox from '../MenuItemBox/MenuItemBox';
 
-const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert, drink1, drink2, price, onMenuUpdate }) => {
-  const [isEditing, setIsEditing] = useState(false);
+const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert, drink1, drink2, price, onMenuUpdate, editing, allowEdit, isOnEdition }) => {
+  const [isEditing, setIsEditing] = useState(editing);
   const [editedMenu, setEditedMenu] = useState({ title, entree, mainCourse, dessert, drink1, drink2, price });
   const calculateTotalPrice = (): number => {
     return entree.price + mainCourse.price + dessert.price + drink1.price + drink2.price;
@@ -18,6 +18,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
+    isOnEdition(true);
   };
 
   const handleDelete = () => {
@@ -61,7 +62,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
               </IconButton>
             ) : (
               <>
-                <IconButton onClick={handleEdit} sx={{ marginRight: 1 }}>
+                <IconButton onClick={handleEdit} sx={{ marginRight: 1 }} disabled={!allowEdit}>
                   <EditIcon />
                 </IconButton>
                 <IconButton onClick={handleDelete}>
