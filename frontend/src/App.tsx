@@ -4,4 +4,5 @@ import {router} from "./routers/Router.tsx";
 
 export default function App() {
     return <RouterProvider router={router}/>;
+    
 }
