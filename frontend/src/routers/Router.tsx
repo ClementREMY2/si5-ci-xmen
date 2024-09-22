@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage.tsx";
 import MainPage from "../pages/MainPage.tsx";
 import NotFound from "../pages/NotFoundPage.tsx";
 import ProfilePage from "../pages/ProfilePage.tsx";
+import PaymentPage from "../pages/PaymentPage";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
 
@@ -23,7 +24,8 @@ export const router = createBrowserRouter([
                 children: [
                     {path: privateRoutes.home, element: <HomePage/>},
                     {path: privateRoutes.events, element: <EventsPage/>},
-                    {path: privateRoutes.profile, element: <ProfilePage/>}
+                    {path: privateRoutes.profile, element: <ProfilePage/>},
+                    {path: privateRoutes.payment, element: <PaymentPage/>}
                 ]
             },
             {path: publicRoutes.notFound, element: <NotFound/>}
