@@ -3,6 +3,7 @@ import {AppBar, Avatar, Box, IconButton, Stack, Toolbar, Typography} from "@mui/
 import {green} from "@mui/material/colors";
 import moment from "moment";
 import React, {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 interface BackNavPageGenericProps {
     title: string;
@@ -11,6 +12,8 @@ interface BackNavPageGenericProps {
 }
 
 export default function BackNavPageGeneric({title, readyTables, children}: Readonly<BackNavPageGenericProps>) {
+    const navigate = useNavigate();
+
     const [date, setDate] = React.useState(moment(new Date()));
 
     // Update the date every second
@@ -26,7 +29,7 @@ export default function BackNavPageGeneric({title, readyTables, children}: Reado
         <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"}>
             <AppBar position={"sticky"} elevation={3}>
                 <Toolbar>
-                    <IconButton edge={"start"} aria-label={"Back arrow"} sx={{mr: 2}}>
+                    <IconButton onClick={() => navigate(1)} edge={"start"} aria-label={"Back arrow"} sx={{mr: 2}}>
                         <ArrowBack fontSize={"large"}/>
                     </IconButton>
                     <Typography variant={"h3"} sx={{flexGrow: 1}}>{title}</Typography>
