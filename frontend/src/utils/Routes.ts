@@ -10,5 +10,5 @@ export const privateRoutes = {
     events: "/events",
     profile: "/profile",
     reservation: "/reservation",
-    order: "/order"
+    orderTable: "/order/:table"
 };

@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
                 ]
             },
             {path: privateRoutes.reservation, element: <ReservationPage/>},
-            {path: privateRoutes.order, element: <OrderPage/>},
+            {path: privateRoutes.orderTable, element: <OrderPage/>},
             {path: publicRoutes.notFound, element: <NotFound/>}
         ]
     },

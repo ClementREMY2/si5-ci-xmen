@@ -1,6 +1,6 @@
 import {Box, Button} from "@mui/material";
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuList from "../components/order/MenuList.tsx";
@@ -10,9 +10,17 @@ import {privateRoutes} from "../utils/Routes.ts";
 
 export default function OrderPage() {
     const navigate = useNavigate();
+    const {table} = useParams();
+
+    useEffect(() => {
+        if (table === undefined || isNaN(parseFloat(table))) {
+            console.warn("No table specified, redirecting to home page");
+            navigate(privateRoutes.home);
+        }
+    }, [navigate, table]);
 
     const [order, setOrder] = useState<Order>({
-        table: 108,
+        table: parseFloat(table!),
         status: OrderStatus.OPEN,
         total: 0,
         items: {}
