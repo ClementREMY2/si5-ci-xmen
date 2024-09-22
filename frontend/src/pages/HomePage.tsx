@@ -67,13 +67,6 @@ export default function HomePage() {
 
 
     applyTableColors(tablesData);
-  
-    const changeRoute = useMemo(
-      () => (_event: React.SyntheticEvent, value: string) => {
-        navigate(value);
-      },
-      [navigate]
-    );
 
     const handleTableClick = (table: Table) => {
       setSelectedTable(table);
@@ -156,7 +149,7 @@ export default function HomePage() {
                 <Grid
                   item xs={12} sm={6} md={4} key={table.id}
                   onClick={() => handleTableClick(table)}
-                  //style={{ cursor: table.status === "Libre" ? "pointer" : "not-allowed" }}
+                  style={{ cursor: "grab" }}
                 >
                   <Paper
                     sx={{

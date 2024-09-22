@@ -21,7 +21,7 @@ import {
     }, [navigate])    
   
     return (
-      <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"}>
+      <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"} maxWidth={1024} maxHeight={1366}>
         <Box height={"100%"} overflow={"auto"} padding={2}>
           <Outlet />
         </Box>
