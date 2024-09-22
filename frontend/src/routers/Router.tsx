@@ -17,8 +17,8 @@ export const router = createBrowserRouter([
         element: <RouterContent/>,
         children: [
             {path: publicRoutes.login, element: <LoginPage/>},
+            {path: privateRoutes.main, element: getRedirection()}, // Redirect to home page if no route is specified
             {
-                path: privateRoutes.main,
                 element: <MainPage/>,
                 children: [
                     {path: privateRoutes.home, element: <HomePage/>},
