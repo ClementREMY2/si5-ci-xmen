@@ -10,9 +10,9 @@ export interface OrderItems {
 }
 
 export interface Order {
-    id?: number;
+    id?: string;
     table: number;
-    date?: Date;
+    datetime?: Date;
     status: OrderStatus;
     total: number;
     items: OrderItems;
