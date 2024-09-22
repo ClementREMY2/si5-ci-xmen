@@ -1,5 +1,5 @@
 import {Box, Card, CardContent, Stack, Typography} from "@mui/material";
-import React from "react";
+import React, {useMemo} from "react";
 
 interface ActionCardGenericProps {
     title: string;
@@ -7,6 +7,8 @@ interface ActionCardGenericProps {
     rightTitle?: string;
     mainContent?: React.ReactNode;
     buttons?: React.ReactElement[];
+    minWidth?: string | number;
+    minHeight?: string | number;
 }
 
 export default function ActionCardGeneric({
@@ -14,10 +16,20 @@ export default function ActionCardGeneric({
     leftTitle,
     rightTitle,
     mainContent,
-    buttons
+    buttons,
+    minWidth,
+    minHeight
 }: Readonly<ActionCardGenericProps>) {
+    const cardSx = useMemo(() => ({
+        minWidth: minWidth ?? "50%",
+        minHeight: minHeight ?? "30%",
+        maxWidth: "95%",
+        maxHeight: "95%",
+        borderRadius: 5
+    }), [minWidth, minHeight]);
+
     return (
-        <Card sx={{minWidth: "50%", minHeight: "30%", borderRadius: 5}}>
+        <Card sx={cardSx}>
             <CardContent sx={{display: "flex", flexDirection: "column", height: "100%"}}>
                 <Stack direction={"row"} justifyContent={"center"} alignItems={"center"} position={"relative"}>
                     {leftTitle &&
