@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage.tsx";
 import LoginPage from "../pages/LoginPage.tsx";
 import MainPage from "../pages/MainPage.tsx";
 import NotFound from "../pages/NotFoundPage.tsx";
+import OrderPage from "../pages/OrderPage.tsx";
 import ProfilePage from "../pages/ProfilePage.tsx";
 import ReservationPage from "../pages/ReservationPage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
                 ]
             },
             {path: privateRoutes.reservation, element: <ReservationPage/>},
+            {path: privateRoutes.order, element: <OrderPage/>},
             {path: publicRoutes.notFound, element: <NotFound/>}
         ]
     },
