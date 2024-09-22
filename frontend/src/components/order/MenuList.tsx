@@ -2,10 +2,13 @@ import {Cookie, LocalBar, Restaurant, Star, Tapas} from "@mui/icons-material";
 import {List} from "@mui/material";
 import {useMemo, useState} from "react";
 import {MenuCategoryEnum, MenuItem} from "../../interfaces/Menu.ts";
-import {menuNormal} from "../../mocks/Menu.ts";
 import MenuListItem from "./MenuListItem.tsx";
 
-export default function MenuList() {
+interface MenuListProps {
+    menu: MenuItem[];
+}
+
+export default function MenuList({menu}: Readonly<MenuListProps>) {
     const [open, setOpen] = useState({
         "BEVERAGE": true,
         "STARTER": true,
@@ -20,12 +23,12 @@ export default function MenuList() {
     const [specials, setSpecials] = useState<MenuItem[]>([]);
 
     useMemo(() => {
-        setBeverages(menuNormal.filter(item => item.category === MenuCategoryEnum.BEVERAGE));
-        setStarters(menuNormal.filter(item => item.category === MenuCategoryEnum.STARTER));
-        setCourses(menuNormal.filter(item => item.category === MenuCategoryEnum.MAIN));
-        setDesserts(menuNormal.filter(item => item.category === MenuCategoryEnum.DESSERT));
-        setSpecials(menuNormal.filter(item => item.category === MenuCategoryEnum.SPECIAL));
-    }, []);
+        setBeverages(menu.filter(item => item.category === MenuCategoryEnum.BEVERAGE));
+        setStarters(menu.filter(item => item.category === MenuCategoryEnum.STARTER));
+        setCourses(menu.filter(item => item.category === MenuCategoryEnum.MAIN));
+        setDesserts(menu.filter(item => item.category === MenuCategoryEnum.DESSERT));
+        setSpecials(menu.filter(item => item.category === MenuCategoryEnum.SPECIAL));
+    }, [menu]);
 
     const handleOpen = (category: MenuCategoryEnum) => {
         setOpen(prevState => ({...prevState, [category]: !prevState[category]}));
