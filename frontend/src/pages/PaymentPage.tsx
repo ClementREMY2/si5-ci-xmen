@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Box, Typography, Grid, Button, IconButton, Checkbox, FormControlLabel } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import { useNavigate } from 'react-router-dom'; // Import du hook useNavigate
 
 const PaymentPage: React.FC = () => {
     const [tip, setTip] = useState<number>(3);
+    const navigate = useNavigate(); // Initialisation du hook useNavigate
 
     const items = [
         { name: 'Coca-cola', remaining: 0, ordered: 2 },
@@ -21,6 +23,14 @@ const PaymentPage: React.FC = () => {
 
     const handleTipChange = (value: number) => {
         setTip(prevTip => Math.max(0, prevTip + value));
+    };
+
+    // Gestionnaire de paiement
+    const handlePayment = () => {
+        // Logique de traitement du paiement (simulation ou réel)
+
+        // Après le traitement du paiement, redirige l'utilisateur vers la page d'accueil
+        navigate('/home');
     };
 
     return (
@@ -94,7 +104,7 @@ const PaymentPage: React.FC = () => {
                         <AddCircleOutlineIcon />
                     </IconButton>
                 </Box>
-                <Button variant="contained" color="error" sx={{ width: '48%' }}>
+                <Button variant="contained" color="error" sx={{ width: '48%' }} onClick={handlePayment}>
                     PAYER 100 €
                 </Button>
             </Box>
