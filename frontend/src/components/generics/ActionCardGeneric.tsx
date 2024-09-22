@@ -38,7 +38,7 @@ export default function ActionCardGeneric({
                     {rightTitle &&
                         <Typography variant={"h6"} sx={{position: "absolute", right: 0}}>{rightTitle}</Typography>}
                 </Stack>
-                <Box flexGrow={1}>
+                <Box flexGrow={1} overflow={"auto"}>
                     {mainContent}
                 </Box>
                 <Stack direction={"row"} justifyContent={"space-around"} alignItems={"center"} paddingTop={2}>
