@@ -1,15 +1,15 @@
 // src/components/MenuCard/MenuCard.tsx
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, Grid, Box, IconButton } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Box, IconButton, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check'; 
 import { MenuCardProps } from '../../interfaces/MenuCardProps';
 import MenuItemBox from '../MenuItemBox/MenuItemBox';
 
-const MenuCard: React.FC<MenuCardProps> = ({ entree, mainCourse, dessert, drink1, drink2, price, onMenuUpdate }) => {
+const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert, drink1, drink2, price, onMenuUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedMenu, setEditedMenu] = useState({ entree, mainCourse, dessert, drink1, drink2, price });
+  const [editedMenu, setEditedMenu] = useState({ title, entree, mainCourse, dessert, drink1, drink2, price });
   const calculateTotalPrice = (): number => {
     return entree.price + mainCourse.price + dessert.price + drink1.price + drink2.price;
   };
@@ -31,6 +31,11 @@ const MenuCard: React.FC<MenuCardProps> = ({ entree, mainCourse, dessert, drink1
     onMenuUpdate(updatedMenu);
   };
 
+  const handleChangeTitle = (e: any) => {
+    setIsEditing(true);
+    setEditedMenu({ ...editedMenu, title: e });
+  }
+
   const removeAccents = (str: string): string => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
@@ -39,7 +44,16 @@ const MenuCard: React.FC<MenuCardProps> = ({ entree, mainCourse, dessert, drink1
     <Card sx={{ margin: 2 }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h5">Menu</Typography>
+          {isEditing ? (
+            <TextField
+              value={editedMenu.title}
+              onChange={(e) => handleChangeTitle(e.target.value)}
+              variant="outlined"
+              size="small"
+            />
+          ) : (
+            <Typography variant="h5">{editedMenu.title}</Typography>
+          )}
           <Box>
             {isEditing ? (
               <IconButton onClick={handleSave} sx={{ marginRight: 1 }}>

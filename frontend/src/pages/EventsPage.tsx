@@ -6,6 +6,7 @@ const EventsPage: React.FC = () => {
   const [isEdited, setIsEdited] = useState(false);
   const menus = [
     {
+      title: 'Menu classique',
       entree: { type: 'Entrée', name: 'Salade', price: 5 },
       mainCourse: { type: 'Plat', name: 'Steak frites', price: 15 },
       dessert: { type: 'Dessert', name: 'Tarte aux pommes', price: 7 },
@@ -14,6 +15,7 @@ const EventsPage: React.FC = () => {
       price: 30,
     },
     {
+      title: 'Menu enfant',
       entree: { type: 'Entrée', name: 'Soupe', price: 4 },
       mainCourse: { type: 'Plat', name: 'Poulet rôti', price: 14 },
       dessert: { type: 'Dessert', name: 'Mousse au chocolat', price: 6 },
@@ -22,6 +24,7 @@ const EventsPage: React.FC = () => {
       price: 27,
     },
     {
+      title: 'Menu végétarien',
       entree: { type: 'Entrée', name: 'Bruschetta', price: 6 },
       mainCourse: { type: 'Plat', name: 'Pâtes', price: 12 },
       dessert: { type: 'Dessert', name: 'Tiramisu', price: 8 },
@@ -53,6 +56,7 @@ const EventsPage: React.FC = () => {
       {menus.map((menu, index) => (
         <MenuCard
           key={index}
+          title={menu.title}
           entree={menu.entree}
           mainCourse={menu.mainCourse}
           dessert={menu.dessert}
