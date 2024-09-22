@@ -27,7 +27,6 @@ export const router = createBrowserRouter([
           { path: privateRoutes.profile, element: <ProfilePage /> },
         ],
       },
-      { path: "bookTable/:id", element: <BookTablePage /> },
       { path: publicRoutes.notFound, element: <NotFound /> },
     ],
   },

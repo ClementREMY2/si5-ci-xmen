@@ -126,7 +126,7 @@ export default function HomePage() {
   
             {!isBookTablePage && (
             <>
-            {/* Event Selector */}
+            {/* Box pour choisir l'évènement (trie des tables en fonction) */}
             <Box sx={{ marginY: 2 }}>
               <FormControl fullWidth variant="outlined" size="small">
                 <InputLabel>Événement</InputLabel>
@@ -178,7 +178,7 @@ export default function HomePage() {
           <Outlet />
         </Box>
 
-        {}
+        {/* Modal of the reservation */}
         <Modal open={openModalType === "reservedModal" && !!selectedTable} onClose={handleCloseModal}>
           <Box
             sx={{
@@ -236,7 +236,7 @@ export default function HomePage() {
           </Box>
         </Modal>
 
-        {}
+        {/* Modal of the order / modify / payment */}
         <Modal open={openModalType === "orderModal" && !!selectedTable} onClose={handleCloseModal}>
           <Box
             sx={{
