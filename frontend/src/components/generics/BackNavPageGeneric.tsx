@@ -29,7 +29,7 @@ export default function BackNavPageGeneric({title, readyTables, children}: Reado
         <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"}>
             <AppBar position={"sticky"} elevation={3}>
                 <Toolbar>
-                    <IconButton onClick={() => navigate(1)} edge={"start"} aria-label={"Back arrow"} sx={{mr: 2}}>
+                    <IconButton onClick={() => navigate(-1)} edge={"start"} aria-label={"Back arrow"} sx={{mr: 2}}>
                         <ArrowBack fontSize={"large"}/>
                     </IconButton>
                     <Typography variant={"h3"} sx={{flexGrow: 1}}>{title}</Typography>
