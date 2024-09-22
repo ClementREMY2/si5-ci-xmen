@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
                     {path: privateRoutes.profile, element: <ProfilePage/>}
                 ]
             },
-            {path: privateRoutes.reservation, element: <ReservationPage/>},
+            {path: privateRoutes.reserveTable, element: <ReservationPage/>},
             {path: privateRoutes.orderTable, element: <OrderPage/>},
             {path: publicRoutes.notFound, element: <NotFound/>}
         ]
