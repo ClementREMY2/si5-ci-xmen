@@ -13,6 +13,8 @@ export default function OrderPage() {
                 rightTitle={"0 €"}
                 mainContent={<MenuList/>}
                 buttons={[<Button variant={"contained"} sx={{width: "200px"}}>Order</Button>]}
+                minWidth={"95%"}
+                minHeight={"95%"}
             />
         </Box>
     );
