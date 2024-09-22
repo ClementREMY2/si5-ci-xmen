@@ -2,13 +2,16 @@ import {Cookie, LocalBar, Restaurant, Star, Tapas} from "@mui/icons-material";
 import {List} from "@mui/material";
 import {useMemo, useState} from "react";
 import {MenuCategoryEnum, MenuItem} from "../../interfaces/Menu.ts";
+import {Order} from "../../interfaces/Order.ts";
 import MenuListItem from "./MenuListItem.tsx";
 
 interface MenuListProps {
     menu: MenuItem[];
+    order: Order;
+    changeItemQuantity: (id: string, delta: number) => void;
 }
 
-export default function MenuList({menu}: Readonly<MenuListProps>) {
+export default function MenuList({menu, order, changeItemQuantity}: Readonly<MenuListProps>) {
     const [open, setOpen] = useState({
         "BEVERAGE": true,
         "STARTER": true,
@@ -39,38 +42,48 @@ export default function MenuList({menu}: Readonly<MenuListProps>) {
             <MenuListItem
                 title={"BEVERAGES"}
                 icon={<LocalBar/>}
+                items={beverages}
+                order={order}
+                changeItemQuantity={changeItemQuantity}
                 open={open[MenuCategoryEnum.BEVERAGE]}
                 handleOpen={() => handleOpen(MenuCategoryEnum.BEVERAGE)}
-                items={beverages}
             />
             <MenuListItem
                 title={"STARTERS"}
                 icon={<Tapas/>}
+                items={starters}
+                order={order}
+                changeItemQuantity={changeItemQuantity}
                 open={open[MenuCategoryEnum.STARTER]}
                 handleOpen={() => handleOpen(MenuCategoryEnum.STARTER)}
-                items={starters}
             />
             <MenuListItem
                 title={"MAIN COURSES"}
                 icon={<Restaurant/>}
+                items={courses}
+                order={order}
+                changeItemQuantity={changeItemQuantity}
                 open={open[MenuCategoryEnum.MAIN]}
                 handleOpen={() => handleOpen(MenuCategoryEnum.MAIN)}
-                items={courses}
             />
             <MenuListItem
                 title={"DESSERTS"}
                 icon={<Cookie/>}
+                items={desserts}
+                order={order}
+                changeItemQuantity={changeItemQuantity}
                 open={open[MenuCategoryEnum.DESSERT]}
                 handleOpen={() => handleOpen(MenuCategoryEnum.DESSERT)}
-                items={desserts}
             />
             {specials.length > 0 &&
                 <MenuListItem
                     title={"SPECIALS"}
                     icon={<Star/>}
+                    items={specials}
+                    order={order}
+                    changeItemQuantity={changeItemQuantity}
                     open={open[MenuCategoryEnum.SPECIAL]}
                     handleOpen={() => handleOpen(MenuCategoryEnum.SPECIAL)}
-                    items={specials}
                 />
             }
         </List>
