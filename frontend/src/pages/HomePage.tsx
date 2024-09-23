@@ -13,7 +13,7 @@ import {
     Select,
     Typography
 } from "@mui/material";
-import React, {useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import {generatePath, Outlet, useLocation, useNavigate} from "react-router-dom";
 import "../index.css";
 import {privateRoutes} from "../utils/Routes.ts";
