@@ -1,4 +1,4 @@
-export enum TableStatus {
+export enum TableStatusEnum {
     AVAILABLE = "AVAILABLE",
     RESERVED = "RESERVED",
     OCCUPIED = "OCCUPIED",
@@ -6,10 +6,10 @@ export enum TableStatus {
     ORDER_READY = "ORDER_READY"
 }
 
-export interface Reservation {
+export interface Table {
     id?: string;
     table: number;
     nbPeople: number;
     event?: string;
-    status: TableStatus;
+    status: TableStatusEnum;
 }

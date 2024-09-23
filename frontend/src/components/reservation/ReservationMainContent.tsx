@@ -1,8 +1,8 @@
 import {Box, MenuItem, TextField} from "@mui/material";
-import {Reservation, TableStatus} from "../../interfaces/Table.ts";
+import {Table, TableStatusEnum} from "../../interfaces/Table.ts";
 
 interface ReservationMainContentProps {
-    reservation: Reservation;
+    reservation: Table;
     handleChange: (key: string, value: string | number | undefined) => void;
     width?: string | number;
 }
@@ -20,8 +20,8 @@ export default function ReservationMainContent({
             <TextField label={"Status"} select value={reservation.status} variant={"outlined"}
                        onChange={e => handleChange("status", e.target.value)}
                        margin={"normal"} required fullWidth>
-                <MenuItem value={TableStatus.OCCUPIED}>Occupied</MenuItem>
-                <MenuItem value={TableStatus.RESERVED}>Reserved</MenuItem>
+                <MenuItem value={TableStatusEnum.OCCUPIED}>Occupied</MenuItem>
+                <MenuItem value={TableStatusEnum.RESERVED}>Reserved</MenuItem>
             </TextField>
             <TextField label={"Event"} select value={reservation.event ?? "None"} variant={"outlined"}
                        onChange={e => handleChange("event", e.target.value === "None" ? undefined : e.target.value)}

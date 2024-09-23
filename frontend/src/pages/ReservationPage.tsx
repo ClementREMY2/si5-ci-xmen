@@ -4,7 +4,7 @@ import {generatePath, useNavigate, useParams} from "react-router-dom";
 import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import ReservationMainContent from "../components/reservation/ReservationMainContent.tsx";
-import {Reservation, TableStatus} from "../interfaces/Table.ts";
+import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 
 export default function ReservationPage() {
@@ -18,10 +18,10 @@ export default function ReservationPage() {
         }
     }, [navigate, table]);
 
-    const [reservation, setReservation] = useState<Reservation>({
+    const [reservation, setReservation] = useState<Table>({
         table: parseFloat(table!),
         nbPeople: 1,
-        status: TableStatus.OCCUPIED
+        status: TableStatusEnum.OCCUPIED
     });
 
     const handleReservationChange = (key: string, value: string | number | undefined) => {

@@ -4,7 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuList from "../components/order/MenuList.tsx";
-import {Order, OrderStatus} from "../interfaces/Order.ts";
+import {Order} from "../interfaces/Order.ts";
 import {menuNormal} from "../mocks/Menu.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 
@@ -21,7 +21,6 @@ export default function OrderPage() {
 
     const [order, setOrder] = useState<Order>({
         table: parseFloat(table!),
-        status: OrderStatus.OPEN,
         total: 0,
         items: {}
     });
@@ -36,8 +35,8 @@ export default function OrderPage() {
 
         // Update the quantity
         let newQuantity: number;
-        if (!order.items[id]) newQuantity = delta;
-        else newQuantity = order.items[id] + delta;
+        if (!order.items![id]) newQuantity = delta;
+        else newQuantity = order.items![id] + delta;
         if (newQuantity < 0) {
             console.warn(`Cannot have negative quantity: ${item.fullName} = ${newQuantity}`);
             return;
@@ -61,8 +60,7 @@ export default function OrderPage() {
     const confirmOrder = () => {
         const newOrder = {
             ...order,
-            date: new Date(),
-            status: OrderStatus.IN_PROGRESS
+            date: new Date()
         };
         // Send the order to the server
         setOrder(newOrder);
