@@ -2,8 +2,7 @@ export enum MenuCategoryEnum {
     BEVERAGE = "BEVERAGE",
     STARTER = "STARTER",
     MAIN = "MAIN",
-    DESSERT = "DESSERT",
-    SPECIAL = "SPECIAL"
+    DESSERT = "DESSERT"
 }
 
 export interface MenuItem {
@@ -12,8 +11,16 @@ export interface MenuItem {
     shortName: string;
     price: number;
     category: MenuCategoryEnum;
-    image?: string;
 }
+
+export interface MenuEvent {
+    id: string;
+    name: string;
+    price: number;
+    menu: {[key: string]: MenuItem};
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface MenuItemShort {
     name: string;

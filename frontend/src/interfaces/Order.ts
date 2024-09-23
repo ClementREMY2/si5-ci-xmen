@@ -15,5 +15,6 @@ export interface Order {
     datetime?: Date;
     status: OrderStatus;
     total: number;
-    items: OrderItems;
+    items?: OrderItems;
+    itemsEvent?: OrderItems;
 }
