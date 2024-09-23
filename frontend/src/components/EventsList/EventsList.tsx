@@ -1,21 +1,22 @@
-import React from 'react';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Box,
-  Button
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    List,
+    ListItem,
+    ListItemText,
+    Typography
+} from "@mui/material";
+import {generatePath, useNavigate} from "react-router-dom";
+import {privateRoutes} from "../../utils/Routes.ts";
 
 interface EventItem {
-  id: number;
-  title: string;
-  details: string[];
+    id: number;
+    title: string;
+    details: string[];
 }
 
 interface EventsListProps {
@@ -23,52 +24,47 @@ interface EventsListProps {
     nextDaysEvents: EventItem[];
 }
 
+export default function EventsList({todayEvents, nextDaysEvents}: Readonly<EventsListProps>) {
+    const navigate = useNavigate();
 
-const handleSeeDetails = (event: EventItem) => {
-    console.log(event);
-    window.location.href = `/event/${event.id}`;
+    const handleSeeDetails = (eventId: number) => {
+        console.log(eventId);
+        navigate(generatePath(privateRoutes.event, {id: eventId}));
+    };
+
+    return (
+        <Box>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                    <Typography>Évenements du jour</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <List>
+                        {todayEvents.map(event => (
+                            <ListItem key={event.id}>
+                                <ListItemText primary={event.title} secondary={event.details.join(", ")}/>
+                                <Button onClick={() => handleSeeDetails(event.id)}>Voir Détails</Button>
+                            </ListItem>
+                        ))}
+                    </List>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                    <Typography>Évenements des prochains jours</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <List>
+                        {nextDaysEvents.map(event => (
+                            <ListItem key={event.id}>
+                                <ListItemText primary={event.title} secondary={event.details.join(", ")}/>
+                                <Button onClick={() => handleSeeDetails(event.id)}>Voir Détails</Button>
+                            </ListItem>
+                        ))}
+
+                    </List>
+                </AccordionDetails>
+            </Accordion>
+        </Box>
+    );
 }
-
-
-
-
-
-const EventsList: React.FC<EventsListProps> = ({ todayEvents, nextDaysEvents }) => {
-  return (
-    <Box>
-        <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>Évenements du jour</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                <List>
-                    {todayEvents.map(event => (
-                        <ListItem key={event.id}>
-                            <ListItemText primary={event.title} secondary={event.details.join(', ')} />
-                            <Button onClick={() =>handleSeeDetails}>Voir Détails</Button>
-                        </ListItem>
-                    ))}
-                </List>
-            </AccordionDetails>
-        </Accordion>
-        <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>Évenements des prochains jours</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-                <List>
-                    {nextDaysEvents.map(event => (
-                        <ListItem key={event.id}>
-                            <ListItemText primary={event.title} secondary={event.details.join(', ')} />
-                            <Button onClick={() => handleSeeDetails}>Voir Détails</Button>
-                        </ListItem>
-                    ))}
-
-                </List>
-            </AccordionDetails>
-        </Accordion>
-    </Box>
-  );
-};
-
-export default EventsList;

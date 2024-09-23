@@ -12,5 +12,5 @@ export const privateRoutes = {
     reserveTable: "/reservation/:table",
     orderTable: "/order/:table",
     payment: "/payment/:table",
-    event: "/event:id"
+    event: "/event/:id"
 };

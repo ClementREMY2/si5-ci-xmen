@@ -14,14 +14,19 @@ export interface MenuItem {
     category: MenuCategoryEnum;
     image?: string;
 }
-import { MenuItem } from './MenuItem';
+
+export interface MenuItemShort {
+    name: string;
+    price: number;
+    category: string;
+}
 
 export interface Menu {
     title: string;
-    entree: MenuItem;
-    mainCourse: MenuItem;
-    dessert: MenuItem;
-    drink1: MenuItem;
-    drink2: MenuItem;
+    entree: MenuItemShort;
+    mainCourse: MenuItemShort;
+    dessert: MenuItemShort;
+    drink1: MenuItemShort;
+    drink2: MenuItemShort;
     price: number;
 }

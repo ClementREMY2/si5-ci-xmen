@@ -1,12 +1,11 @@
-// src/components/MenuCard/MenuItemBox.tsx
-import React, { useState } from 'react';
-import { Box, Typography, TextField } from '@mui/material';
-import { MenuItem } from '../../interfaces/MenuItem';
+import {Box, TextField, Typography} from "@mui/material";
+import React, {useState} from "react";
+import {MenuItemShort} from "../../interfaces/Menu";
 
 interface MenuItemBoxProps {
-  menuItem: MenuItem;
+  menuItem: MenuItemShort;
   isEditing: boolean;
-  onChanges: (menuItem: MenuItem) => void;
+  onChanges: (menuItem: MenuItemShort) => void;
 }
 
 const MenuItemBox: React.FC<MenuItemBoxProps> = ({ menuItem, isEditing, onChanges }) => {
@@ -26,7 +25,7 @@ const MenuItemBox: React.FC<MenuItemBoxProps> = ({ menuItem, isEditing, onChange
 
   return (
     <Box display="flex" alignItems="center">
-      <Typography sx={{ fontWeight: 'bold', flexBasis: '20%' }}>{menuItem.type}</Typography>
+      <Typography sx={{fontWeight: "bold", flexBasis: "20%"}}>{menuItem.category}</Typography>
       {isEditing ? (
         <>
           <TextField
