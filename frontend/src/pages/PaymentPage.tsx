@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Grid, Button, IconButton, Checkbox, FormControlLabel } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { useNavigate } from 'react-router-dom';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import {Box, Button, Checkbox, FormControlLabel, Grid2, IconButton, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
+import {privateRoutes} from "../utils/Routes.ts";
 
-const PaymentPage: React.FC = () => {
+export default function PaymentPage() {
     const [tip, setTip] = useState<number>(0);
     const [totalItemsPrice, setTotalItemsPrice] = useState<number>(0);
     const [maxTotalPrice, setMaxTotalPrice] = useState<number>(0);
     const [isTotalChecked, setIsTotalChecked] = useState<boolean>(false);
     const [totalToDisplay, setTotalToDisplay] = useState<number>(0);
-    const [currentDateTime, setCurrentDateTime] = useState<string>(new Date().toLocaleString());
     const navigate = useNavigate();
 
     const [items, setItems] = useState([
@@ -25,14 +26,6 @@ const PaymentPage: React.FC = () => {
         { name: 'Loup + frites', price: 15, remaining: 1, ordered: 1 },
         { name: 'Fondant chocolat', price: 7, remaining: 2, ordered: 2 },
     ]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentDateTime(new Date().toLocaleString());
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const handleTipChange = (value: number) => {
         setTip(prevTip => Math.max(0, prevTip + value));
@@ -90,34 +83,13 @@ const PaymentPage: React.FC = () => {
     };
 
     const handlePayment = () => {
-        navigate('/home');
+        navigate(privateRoutes.home);
     };
 
     const totalToPay = totalToDisplay + tip;
 
-    return (
+    const card = (
         <Box sx={{ backgroundColor: '#FFB74D', height: '100vh', padding: '16px', color: 'black' }}>
-            {/* Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <Button variant="text" sx={{ fontSize: '18px', color: 'black' }}>Paiement</Button>
-                <Typography variant="h6" sx={{ color: 'black' }}>{currentDateTime}</Typography>
-                <Box
-                    sx={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '50%',
-                        backgroundColor: '#00E676',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        color: 'white',
-                        fontSize: '18px'
-                    }}
-                >
-                    0
-                </Box>
-            </Box>
-
             {/* Table and Payment Info */}
             <Box sx={{ textAlign: 'center', marginBottom: '16px' }}>
                 <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'black' }}>Table 108</Typography>
@@ -134,9 +106,9 @@ const PaymentPage: React.FC = () => {
             </Box>
 
             {/* Items list */}
-            <Grid container spacing={1}>
+            <Grid2 container spacing={1}>
                 {items.map((item, index) => (
-                    <Grid item xs={12} key={index}>
+                    <Grid2 key={index} size={12}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFE0B2', padding: '8px', borderRadius: '4px' }}>
                             <Box>
                                 <Typography sx={{ color: 'black' }}>{item.name}</Typography>
@@ -162,9 +134,9 @@ const PaymentPage: React.FC = () => {
                                 </IconButton>
                             </Box>
                         </Box>
-                    </Grid>
+                    </Grid2>
                 ))}
-            </Grid>
+            </Grid2>
 
             {/* Tip and payment */}
             <Box sx={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -188,7 +160,7 @@ const PaymentPage: React.FC = () => {
                 </Button>
             </Box>
         </Box>
-    );
-};
+    )
 
-export default PaymentPage;
+    return <BackNavPageGeneric title={"Payment"} readyTables={1} children={card}/>;
+}
