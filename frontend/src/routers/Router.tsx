@@ -10,6 +10,7 @@ import ProfilePage from "../pages/ProfilePage.tsx";
 import ReservationPage from "../pages/ReservationPage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
+import EventPage from "../pages/EventPage.tsx";
 
 const getDefaultRedirection = () => privateRoutes.home;
 
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
             {path: privateRoutes.reserveTable, element: <ReservationPage/>},
             {path: privateRoutes.orderTable, element: <OrderPage/>},
             {path: privateRoutes.payment, element: <PaymentPage/>},
+            {path: privateRoutes.event, element: <EventPage/>},
             {path: publicRoutes.notFound, element: <NotFound/>}
         ]
     },
