@@ -10,5 +10,6 @@ export const privateRoutes = {
     events: "/events",
     profile: "/profile",
     reserveTable: "/reservation/:table",
-    orderTable: "/order/:table"
+    orderTable: "/order/:table",
+    payment: "/payment"
 };
