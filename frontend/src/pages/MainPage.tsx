@@ -1,6 +1,6 @@
 import {AccountCircle, Home, Today} from "@mui/icons-material";
 import {AppBar, BottomNavigation, BottomNavigationAction, Box} from "@mui/material";
-import React, {useMemo} from "react";
+import React from "react";
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import {privateRoutes} from "../utils/Routes.ts";
 
@@ -8,9 +8,7 @@ export default function MainPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const changeRoute = useMemo(() => (_event: React.SyntheticEvent, value: string) => {
-        navigate(value);
-    }, [navigate]);
+    const changeRoute = (_event: React.SyntheticEvent, value: string) => navigate(value);
 
     return (
         <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"}>

@@ -3,6 +3,14 @@ body, #root {
   width: 100vw;
 }
 
+:root {
+  --waiting-table: #A0B2FA;
+  --booked-table: #E2C657;
+  --in-use-table: #FAA0A0;
+  --free-table: #F5F5F5;
+  --ready-table: #77DD77;
+}
+
 /*
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
