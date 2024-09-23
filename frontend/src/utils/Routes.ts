@@ -11,5 +11,5 @@ export const privateRoutes = {
     profile: "/profile",
     reserveTable: "/reservation/:table",
     orderTable: "/order/:table",
-    payment: "/payment"
+    payment: "/payment/:table"
 };

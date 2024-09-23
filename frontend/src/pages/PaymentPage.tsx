@@ -2,17 +2,26 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {Box, Button, Checkbox, FormControlLabel, Grid2, IconButton, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import {privateRoutes} from "../utils/Routes.ts";
 
 export default function PaymentPage() {
+    const navigate = useNavigate();
+    const {table} = useParams();
+
+    useEffect(() => {
+        if (table === undefined || isNaN(parseFloat(table))) {
+            console.warn("No table specified, redirecting to home page");
+            navigate(privateRoutes.home);
+        }
+    }, [navigate, table]);
+
     const [tip, setTip] = useState<number>(0);
     const [totalItemsPrice, setTotalItemsPrice] = useState<number>(0);
     const [maxTotalPrice, setMaxTotalPrice] = useState<number>(0);
     const [isTotalChecked, setIsTotalChecked] = useState<boolean>(false);
     const [totalToDisplay, setTotalToDisplay] = useState<number>(0);
-    const navigate = useNavigate();
 
     const [items, setItems] = useState([
         { name: 'Coca-cola', price: 3, remaining: 2, ordered: 2 },
@@ -92,7 +101,7 @@ export default function PaymentPage() {
         <Box sx={{ backgroundColor: '#FFB74D', height: '100vh', padding: '16px', color: 'black' }}>
             {/* Table and Payment Info */}
             <Box sx={{ textAlign: 'center', marginBottom: '16px' }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'black' }}>Table 108</Typography>
+                <Typography variant="h4" sx={{fontWeight: "bold", color: "black"}}>Table {table!}</Typography>
                 <Typography variant="h6" sx={{ color: 'black' }}>{totalToDisplay} € / {maxTotalPrice} €</Typography>
             </Box>
 
