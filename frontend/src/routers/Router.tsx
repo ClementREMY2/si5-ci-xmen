@@ -7,6 +7,7 @@ import NotFound from "../pages/NotFoundPage.tsx";
 import ProfilePage from "../pages/ProfilePage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
+import EventPage from "../pages/EventPage.tsx";
 
 const getDefaultRedirection = () => privateRoutes.home;
 
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
                     {path: privateRoutes.profile, element: <ProfilePage/>}
                 ]
             },
+            {path: privateRoutes.event, element: <EventPage/>},
             {path: publicRoutes.notFound, element: <NotFound/>}
         ]
     },
