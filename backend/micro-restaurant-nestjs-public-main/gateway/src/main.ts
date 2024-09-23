@@ -17,16 +17,11 @@ async function bootstrap() {
   
   // Proxy endpoints
   const dependenciesConfig = configService.get<DependenciesConfig>('dependencies');
-  console.log(`http://${dependenciesConfig.menu_service_url_with_port}`);
-  app.use('/menu', (req, res, next) => {
-    console.log('Accès à /menu');
-    next(); // Passe au middleware suivant (dans ce cas, le proxy)
-  });
-  
   app.use('/menu', createProxyMiddleware({
-    target: `http://0.0.0.0:3000/doc/menus`,
+    target: `http://${dependenciesConfig.menu_service_url_with_port}`,
     changeOrigin: true,
-  }));
+  })
+  )
   app.use('/kitchen', createProxyMiddleware({
     target: `http://${dependenciesConfig.kitchen_service_url_with_port}`,
     changeOrigin: true,
