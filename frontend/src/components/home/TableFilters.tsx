@@ -13,6 +13,7 @@ export default function TableFilters({selectedEvents, setSelectedEvents}: Readon
         for (const [key] of Object.entries(selectedEvents)) {
             selectedEventsCopy[key] = value;
         }
+        selectedEventsCopy["Aucun"] = true; // Ensure "Aucun" is always selected
         setSelectedEvents(selectedEventsCopy);
     };
 
@@ -22,12 +23,12 @@ export default function TableFilters({selectedEvents, setSelectedEvents}: Readon
 
     return (
         <Stack direction={"row"} alignItems={"center"} width={"90%"} spacing={2}>
-            <Button variant={"contained"} onClick={() => handleAllClick(true)}>Tous</Button>
+            <Button variant={"contained"} onClick={() => handleAllClick(true)}>Activer tous</Button>
             {Object.entries(selectedEvents).map(([eventName, selected]) => (
                 <Chip key={eventName} label={eventName} variant={selected ? "filled" : "outlined"} color={"primary"}
                       onClick={() => handleEventClick(eventName)}/>
             ))}
-            <Button variant={"contained"} onClick={() => handleAllClick(false)}>Aucun</Button>
+            <Button variant={"contained"} onClick={() => handleAllClick(false)}>Activer aucun</Button>
         </Stack>
     );
 }
