@@ -1,9 +1,9 @@
 export enum TableStatusEnum {
-    AVAILABLE = "AVAILABLE",
-    RESERVED = "RESERVED",
-    OCCUPIED = "OCCUPIED",
-    ORDER_IN_PROGRESS = "ORDER_IN_PROGRESS",
-    ORDER_READY = "ORDER_READY"
+    AVAILABLE = "Libre",
+    RESERVED = "Réservée",
+    OCCUPIED = "Occupée",
+    ORDER_IN_PROGRESS = "En préparation",
+    ORDER_READY = "Commande prête"
 }
 
 export interface Table {
