@@ -1,6 +1,6 @@
 import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 
-export const tables: Table[] = [
+export const tablesMock: Table[] = [
     {
         table: 1,
         nbPeople: 2,

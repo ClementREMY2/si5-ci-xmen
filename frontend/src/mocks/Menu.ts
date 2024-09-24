@@ -1,6 +1,6 @@
 import {MenuCategoryEnum, MenuItem} from "../interfaces/Menu.ts";
 
-export const menuNormal: MenuItem[] = [
+export const menuNormalMock: MenuItem[] = [
     {
         id: "1",
         fullName: "Coca-cola",

@@ -5,7 +5,7 @@ import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuList from "../components/order/MenuList.tsx";
 import {Order} from "../interfaces/Order.ts";
-import {menuNormal} from "../mocks/Menu.ts";
+import {menuNormalMock} from "../mocks/Menu.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 
 export default function OrderPage() {
@@ -27,7 +27,7 @@ export default function OrderPage() {
 
     const changeItemQuantity = (id: string, delta: number) => {
         // Find the item in the menu
-        const item = menuNormal.find(item => item.id === id);
+        const item = menuNormalMock.find(item => item.id === id);
         if (!item) {
             console.warn(`Cannot find item with id: ${id}`);
             return;
@@ -74,7 +74,7 @@ export default function OrderPage() {
                 title={`Table ${order.table}`}
                 leftTitle={"Avisto"}
                 rightTitle={`${order.total} €`}
-                mainContent={<MenuList menu={menuNormal} order={order} changeItemQuantity={changeItemQuantity}/>}
+                mainContent={<MenuList menu={menuNormalMock} order={order} changeItemQuantity={changeItemQuantity}/>}
                 buttons={<>
                     <Button onClick={cancelOrder} variant={"contained"} color={"error"} sx={{width: "200px"}}>
                         Cancel
