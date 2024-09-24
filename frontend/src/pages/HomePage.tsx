@@ -1,11 +1,11 @@
 import {Card, CardActionArea, CardContent, CardHeader, Divider, Grid2, Stack, Typography} from "@mui/material";
 import "../index.css";
 import {blue, green, grey, red, yellow} from "@mui/material/colors";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import TableFilters from "../components/home/TableFilters.tsx";
 import MainHeader from "../components/MainHeader.tsx";
 import {DictionaryBoolean} from "../interfaces/Generics.ts";
-import {TableStatusEnum} from "../interfaces/Table.ts";
+import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
 import {tablesMock} from "../mocks/Tables.ts";
 
@@ -18,6 +18,12 @@ const events: DictionaryBoolean = eventsMock
 
 export default function HomePage() {
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>(events);
+    const [tables, setTables] = useState<Table[]>(tablesMock);
+
+    useMemo(() => {
+        const filteredTables = tablesMock.filter(table => selectedEvents[table.event ?? "Aucun"]);
+        setTables(filteredTables);
+    }, [selectedEvents]);
 
     const tableColor = (status: TableStatusEnum): string => {
         switch (status) {
@@ -40,10 +46,10 @@ export default function HomePage() {
             <MainHeader width={"90%"}/>
             <TableFilters selectedEvents={selectedEvents} setSelectedEvents={setSelectedEvents}/>
             <Grid2 container spacing={3} width={"90%"} overflow={"auto"}>
-                {tablesMock.map(table => (
+                {tables.map(table => (
                     <Grid2 key={table.id} size={4}>
                         <Card
-                            sx={{backgroundColor: tableColor(table.status), color: "black", border: "1px solid black"}}>
+                            sx={{backgroundColor: tableColor(table.status), color: "black"}}>
                             <CardActionArea onClick={() => console.log(table)}>
                                 <CardHeader title={`Table ${table.table}`}
                                             titleTypographyProps={{variant: "h4", align: "center"}}/>

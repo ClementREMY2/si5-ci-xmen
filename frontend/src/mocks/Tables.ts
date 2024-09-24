@@ -4,12 +4,14 @@ export const tablesMock: Table[] = [
     {
         table: 1,
         nbPeople: 2,
-        status: TableStatusEnum.AVAILABLE
+        status: TableStatusEnum.AVAILABLE,
+        event: "Avisto"
     },
     {
         table: 2,
         nbPeople: 4,
-        status: TableStatusEnum.RESERVED
+        status: TableStatusEnum.RESERVED,
+        event: "Avisto"
     },
     {
         table: 3,
@@ -19,12 +21,14 @@ export const tablesMock: Table[] = [
     {
         table: 4,
         nbPeople: 5,
-        status: TableStatusEnum.ORDER_IN_PROGRESS
+        status: TableStatusEnum.ORDER_IN_PROGRESS,
+        event: "SAP"
     },
     {
         table: 5,
         nbPeople: 6,
-        status: TableStatusEnum.ORDER_READY
+        status: TableStatusEnum.ORDER_READY,
+        event: "Air France"
     },
     {
         table: 6,
