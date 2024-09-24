@@ -12,7 +12,7 @@ export default function MainPage() {
 
     return (
         <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"}>
-            <Box height={"100%"} overflow={"auto"}>
+            <Box height={"100%"} maxHeight={"100%"} overflow={"auto"}>
                 <Outlet/> {/* This is where the child routes will be rendered */}
             </Box>
             <AppBar position={"sticky"} elevation={3}>
