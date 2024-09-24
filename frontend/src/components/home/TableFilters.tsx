@@ -5,9 +5,10 @@ import {DictionaryBoolean} from "../../interfaces/Generics.ts";
 interface TableFiltersProps {
     selectedEvents: DictionaryBoolean;
     setSelectedEvents: React.Dispatch<React.SetStateAction<DictionaryBoolean>>;
+    width?: string | number;
 }
 
-export default function TableFilters({selectedEvents, setSelectedEvents}: Readonly<TableFiltersProps>) {
+export default function TableFilters({selectedEvents, setSelectedEvents, width}: Readonly<TableFiltersProps>) {
     const handleAllClick = (value: boolean) => {
         const selectedEventsCopy = {...selectedEvents};
         for (const [key] of Object.entries(selectedEvents)) {
@@ -22,7 +23,7 @@ export default function TableFilters({selectedEvents, setSelectedEvents}: Readon
     };
 
     return (
-        <Stack direction={"row"} alignItems={"center"} width={"90%"} spacing={2}>
+        <Stack direction={"row"} alignItems={"center"} spacing={2} sx={{width}}>
             <Button variant={"contained"} onClick={() => handleAllClick(true)}>Activer tous</Button>
             {Object.entries(selectedEvents).map(([eventName, selected]) => (
                 <Chip key={eventName} label={eventName} variant={selected ? "filled" : "outlined"} color={"primary"}
