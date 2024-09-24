@@ -7,14 +7,27 @@ interface TableFiltersProps {
     setSelectedEvents: React.Dispatch<React.SetStateAction<DictionaryBoolean>>;
 }
 
-export default function TableFilters({selectedEvents}: Readonly<TableFiltersProps>) {
+export default function TableFilters({selectedEvents, setSelectedEvents}: Readonly<TableFiltersProps>) {
+    const handleAllClick = (value: boolean) => {
+        const selectedEventsCopy = {...selectedEvents};
+        for (const [key] of Object.entries(selectedEvents)) {
+            selectedEventsCopy[key] = value;
+        }
+        setSelectedEvents(selectedEventsCopy);
+    };
+
+    const handleEventClick = (eventName: string) => {
+        setSelectedEvents((prevState) => ({...prevState, [eventName]: !prevState[eventName]}));
+    };
+
     return (
         <Stack direction={"row"} alignItems={"center"} width={"90%"} spacing={2}>
-            <Button variant={"contained"}>Tous</Button>
+            <Button variant={"contained"} onClick={() => handleAllClick(true)}>Tous</Button>
             {Object.entries(selectedEvents).map(([eventName, selected]) => (
-                <Chip key={eventName} label={eventName} variant={"outlined"} color={"primary"} disabled={selected}/>
+                <Chip key={eventName} label={eventName} variant={selected ? "filled" : "outlined"} color={"primary"}
+                      onClick={() => handleEventClick(eventName)}/>
             ))}
-            <Button variant={"contained"}>Aucun</Button>
+            <Button variant={"contained"} onClick={() => handleAllClick(false)}>Aucun</Button>
         </Stack>
     );
 }
