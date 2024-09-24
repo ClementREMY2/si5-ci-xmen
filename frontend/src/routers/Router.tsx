@@ -1,4 +1,5 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
+import EventPage from "../pages/EventPage.tsx";
 import EventsPage from "../pages/EventsPage.tsx";
 import HomePage from "../pages/HomePage.tsx";
 import LoginPage from "../pages/LoginPage.tsx";
@@ -10,7 +11,6 @@ import ProfilePage from "../pages/ProfilePage.tsx";
 import ReservationPage from "../pages/ReservationPage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
-import EventPage from "../pages/EventPage.tsx";
 
 const getDefaultRedirection = () => privateRoutes.home;
 
