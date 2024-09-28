@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -15,12 +15,13 @@ import {
     Typography
 } from "@mui/material";
 import {useMemo, useState} from "react";
-import {generatePath, Outlet, useLocation, useNavigate} from "react-router-dom";
+import {generatePath, Outlet, useNavigate} from "react-router-dom";
 import "../index.css";
 import {privateRoutes} from "../utils/Routes.ts";
 import { getTables } from "../services/diningService.ts"
 import { Table, TableStatusEnum, TableWithOrderDto } from "../interfaces/Table.ts"
 
+/*
 const tablesData = [
     {id: 101, seats: 2, status: "En cours", event: "Avisto", color: ""},
     {id: 102, seats: 4, status: "Réservée", event: "Avisto", color: ""},
@@ -32,6 +33,7 @@ const tablesData = [
     {id: 108, seats: 4, status: "Libre", event: "Avisto", color: ""},
     {id: 109, seats: 8, status: "Prête", event: "SAP", color: ""}
 ];
+*/
 
 
 export const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
@@ -61,7 +63,7 @@ export const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
 
 
 const applyTableColors = (tables: Table[]) => {
-    return tables.map((table) => {
+    tables.map((table) => {
         if (table.status === TableStatusEnum.ORDER_IN_PROGRESS) {
             table.color = "var(--waiting-table)";
         } else if (table.status === TableStatusEnum.RESERVED) {
@@ -75,13 +77,13 @@ const applyTableColors = (tables: Table[]) => {
         } else {
             table.color = "#9e9e9e";
         }
-        return table;
+        const tablesCopy = tables;
+        return tablesCopy;
     });
 };
 
 export default function HomePage() {
     const navigate = useNavigate();
-    const location = useLocation();
 
     const [selectedEvent, setSelectedEvent] = useState("Tous");
     const [selectedTable, setSelectedTable] = useState<Table | null>(null);
@@ -110,6 +112,7 @@ export default function HomePage() {
         fetchTables();
     }, []);
 
+    /*
     if (loading) {
         return <p>Chargement des tables...</p>;
     }
@@ -117,6 +120,7 @@ export default function HomePage() {
     if (error) {
         return <p>{error}</p>;
     }
+        */
 
     applyTableColors(tables);
 
@@ -131,8 +135,6 @@ export default function HomePage() {
             setOpenModalType("orderModal");
         }
     };
-
-    const isBookTablePage = location.pathname.startsWith("/bookTable");
 
     const handleCloseModal = () => {
         tables.forEach((table) => {
@@ -149,12 +151,11 @@ export default function HomePage() {
 
 
     const filteredTables = useMemo(() => {
-        if (selectedEvent === "Tous") {
-            return tables;
-        }
-        return tables.filter((table) => table.event === selectedEvent);
-    }, [selectedEvent]);
-
+        return selectedEvent === "Tous" 
+            ? tables 
+            : tables.filter((table) => table.event === selectedEvent);
+    }, [selectedEvent, tables]);   
+    
     return (
         <Box display={"flex"} flexDirection={"column"} height={"100%"} overflow={"unset"}>
             <Box height={"100%"} overflow={"auto"} padding={2}>
@@ -174,7 +175,7 @@ export default function HomePage() {
                     </Box>
                 </Paper>
 
-                {!isBookTablePage && (
+                {(
                     <>
                         {/* Event Selector */}
                         <Box sx={{marginY: 2}}>
