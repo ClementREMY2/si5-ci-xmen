@@ -6,19 +6,19 @@ import TableDialog from "./TableDialog.tsx";
 
 interface TableGridProps {
     tables: Table[];
-    handleTableChange?: (changedTable: Table) => void;
+    handleTableModify?: (modifiedTable: Table) => void;
     width?: string | number;
 }
 
-export default function TableGrid({tables, handleTableChange, width}: Readonly<TableGridProps>) {
+export default function TableGrid({tables, handleTableModify, width}: Readonly<TableGridProps>) {
     const [selectedTable, setSelectedTable] = useState<Table | undefined>(undefined);
 
     const onTableClick = (table: Table) => {
         setSelectedTable(table);
     };
 
-    const onTableReserve = (table: Table) => {
-        handleTableChange?.(table);
+    const onTableModify = (table: Table) => {
+        handleTableModify?.(table);
         onClose();
     };
 
@@ -34,7 +34,7 @@ export default function TableGrid({tables, handleTableChange, width}: Readonly<T
                 </Grid2>
             ))}
             {selectedTable &&
-                <TableDialog open={!!selectedTable} table={selectedTable} handleTableReserve={onTableReserve}
+                <TableDialog open={!!selectedTable} table={selectedTable} handleTableModify={onTableModify}
                              onClose={onClose}/>
             }
         </Grid2>

@@ -25,11 +25,11 @@ export default function HomePage() {
         setTables(filteredTables);
     }, [selectedEvents]);
 
-    const handleTableChange = (changedTable: Table) => {
+    const handleTableModify = (modifiedTable: Table) => {
         const newTables = [...tables];
-        const index = newTables.findIndex((table) => table.id === changedTable.id);
+        const index = newTables.findIndex((table) => table.id === modifiedTable.id);
         if (index !== -1) {
-            newTables[index] = {...changedTable};
+            newTables[index] = {...modifiedTable};
             setTables(newTables);
         }
     };
@@ -39,7 +39,7 @@ export default function HomePage() {
                overflow={"unset"}>
             <MainHeader width={"90%"}/>
             <TableFilters selectedEvents={selectedEvents} setSelectedEvents={setSelectedEvents} width={"90%"}/>
-            <TableGrid tables={tables} handleTableChange={handleTableChange} width={"90%"}/>
+            <TableGrid tables={tables} handleTableModify={handleTableModify} width={"90%"}/>
         </Stack>
     );
 }

@@ -3,14 +3,14 @@ import {useMemo} from "react";
 import {Table, TableStatusEnum} from "../../interfaces/Table.ts";
 import {eventsMock} from "../../mocks/Event.ts";
 
-interface ReservationCardProps {
+interface ModifyTableMainContentProps {
     table: Table;
     handleChange: (key: keyof Table, value: string | number | undefined) => void;
 }
 
 const modifyStatusList = [TableStatusEnum.AVAILABLE, TableStatusEnum.RESERVED, TableStatusEnum.OCCUPIED];
 
-export default function ReservationMainContent({table, handleChange}: Readonly<ReservationCardProps>) {
+export default function ModifyTableMainContent({table, handleChange}: Readonly<ModifyTableMainContentProps>) {
     const readonlyStatus = useMemo(() => !modifyStatusList.find(status => table.status === status), [table.status]);
 
     return (
