@@ -1,23 +1,27 @@
 export enum MenuCategoryEnum {
-    BEVERAGE = "BEVERAGE",
-    STARTER = "STARTER",
-    MAIN = "MAIN",
-    DESSERT = "DESSERT"
+    BEVERAGE = "Boisson",
+    STARTER = "Entrée",
+    MAIN = "Plat",
+    DESSERT = "Dessert"
 }
 
-export interface MenuItem {
+export interface GenericMenuItem {
     id: string;
     fullName: string;
     shortName: string;
     price: number;
+}
+
+export interface MenuItem extends GenericMenuItem {
     category: MenuCategoryEnum;
 }
 
-export interface MenuEvent {
-    id: string;
-    name: string;
-    price: number;
+export interface MenuEvent extends GenericMenuItem {
     menu: {[key: string]: MenuItem};
+}
+
+export type Menu = {
+    [key in MenuCategoryEnum]: MenuItem[]
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +32,7 @@ export interface MenuItemShort {
     category: string;
 }
 
-export interface Menu {
+export interface OldMenu {
     title: string;
     entree: MenuItemShort;
     mainCourse: MenuItemShort;
