@@ -12,7 +12,7 @@ import {tablesMock} from "../mocks/Tables.ts";
 const events: DictionaryBoolean = eventsMock
     .map((event) => event.name)
     .reduce<{[key: string]: boolean}>((acc, eventName) => {
-        acc[eventName] = false;
+        acc[eventName] = true;
         return acc;
     }, {});
 

@@ -8,7 +8,6 @@ import NotFound from "../pages/NotFoundPage.tsx";
 import OrderPage from "../pages/OrderPage.tsx";
 import PaymentPage from "../pages/PaymentPage.tsx";
 import ProfilePage from "../pages/ProfilePage.tsx";
-import ReservationPage from "../pages/ReservationPage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
 
@@ -30,7 +29,6 @@ export const router = createBrowserRouter([
                     {path: privateRoutes.profile, element: <ProfilePage/>}
                 ]
             },
-            {path: privateRoutes.reserveTable, element: <ReservationPage/>},
             {path: privateRoutes.orderTable, element: <OrderPage/>},
             {path: privateRoutes.payment, element: <PaymentPage/>},
             {path: privateRoutes.event, element: <EventPage/>},
