@@ -1,4 +1,5 @@
 import {Box, MenuItem, TextField} from "@mui/material";
+import {useMemo} from "react";
 import {Table, TableStatusEnum} from "../../interfaces/Table.ts";
 import {eventsMock} from "../../mocks/Event.ts";
 
@@ -7,22 +8,25 @@ interface ReservationCardProps {
     handleChange: (key: keyof Table, value: string | number | undefined) => void;
 }
 
-const displayedStatusList = [TableStatusEnum.AVAILABLE, TableStatusEnum.RESERVED, TableStatusEnum.OCCUPIED];
+const modifyStatusList = [TableStatusEnum.AVAILABLE, TableStatusEnum.RESERVED, TableStatusEnum.OCCUPIED];
 
 export default function ReservationMainContent({table, handleChange}: Readonly<ReservationCardProps>) {
+    const readonlyStatus = useMemo(() => !modifyStatusList.find(status => table.status === status), [table.status]);
+
     return (
         <Box width={"70%"} marginX={"auto"}>
             <TextField label={"Nombre"} type={"number"} value={table.nbPeople} variant={"outlined"}
                        onChange={e => handleChange("nbPeople", e.target.value)}
                        margin={"normal"} slotProps={{htmlInput: {min: 1}}} required fullWidth/>
             <TextField label={"État"} select value={table.status} variant={"outlined"}
-                       onChange={e => handleChange("status", e.target.value)}
-                       margin={"normal"} required fullWidth>
-                {displayedStatusList.map(status => (
-                    <MenuItem key={status} value={status}>
-                        {status}
-                    </MenuItem>
-                ))}
+                       onChange={e => handleChange("status", e.target.value)} margin={"normal"}
+                       disabled={readonlyStatus} required fullWidth>
+                {readonlyStatus
+                    ? <MenuItem value={table.status}>{table.status}</MenuItem>
+                    : modifyStatusList.map(status => (
+                        <MenuItem key={status} value={status}>{status}</MenuItem>
+                    ))
+                }
             </TextField>
             <TextField label={"Événement"} select value={table.event ?? "Aucun"} variant={"outlined"}
                        onChange={e => handleChange("event", e.target.value === "Aucun" ? undefined : e.target.value)}
