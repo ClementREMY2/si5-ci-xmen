@@ -1,6 +1,9 @@
-import {Button, Dialog, Stack, Typography} from "@mui/material";
+import {Button, Dialog, Divider, Stack, Typography} from "@mui/material";
+import {grey} from "@mui/material/colors";
 import {useState} from "react";
-import {Table} from "../../interfaces/Table.ts";
+import {generatePath, useNavigate} from "react-router-dom";
+import {Table, TableStatusEnum} from "../../interfaces/Table.ts";
+import {privateRoutes} from "../../utils/Routes.ts";
 import ModifyTableMainContent from "./ModifyTableMainContent.tsx";
 
 interface ReservationDialogProps {
@@ -16,21 +19,47 @@ export default function TableDialog({
     handleTableModify = () => {},
     onClose
 }: Readonly<ReservationDialogProps>) {
+    const navigate = useNavigate();
+
     const [modifiedTable, setModifiedTable] = useState<Table>(table);
 
     const handleChange = (key: keyof Table, value: string | number | undefined) => {
         setModifiedTable({...modifiedTable, [key]: value});
     };
 
+    const onOrder = () => {
+        navigate(generatePath(privateRoutes.orderTable, {table: table.id}));
+    };
+
+    const onPayment = () => {
+        navigate(generatePath(privateRoutes.payment, {table: table.id}));
+    };
+
+    const displayActions = (
+        table.status !== TableStatusEnum.AVAILABLE && table.status !== TableStatusEnum.RESERVED && (<>
+            <Divider flexItem color={grey[200]} sx={{backgroundColor: grey[200]}}/>
+            <Button onClick={onOrder} variant={"contained"} sx={{width: "200px"}}>
+                Commander
+            </Button>
+            <Button onClick={onPayment} variant={"contained"} sx={{width: "200px"}}>
+                Paiement
+            </Button>
+        </>)
+    );
+
     return (
         <Dialog open={open} onClose={onClose}>
-            {table && <Stack spacing={2} margin={2} alignItems={"center"}>
-                <Typography variant={"h4"}>{`Modifier la table ${table.table}`}</Typography>
-                <ModifyTableMainContent table={modifiedTable} handleChange={handleChange}/>
-                <Button onClick={() => handleTableModify(modifiedTable)} variant={"contained"} sx={{width: "200px"}}>
-                    Modifier
-                </Button>
-            </Stack>}
+            <Stack spacing={3} margin={3} alignItems={"center"}>
+                <Stack spacing={2} alignItems={"center"}>
+                    <Typography variant={"h4"}>{`Modifier la table ${table.table}`}</Typography>
+                    <ModifyTableMainContent table={modifiedTable} handleChange={handleChange}/>
+                    <Button onClick={() => handleTableModify(modifiedTable)} variant={"contained"}
+                            sx={{width: "200px"}}>
+                        Modifier
+                    </Button>
+                </Stack>
+                {displayActions}
+            </Stack>
         </Dialog>
     );
 }
