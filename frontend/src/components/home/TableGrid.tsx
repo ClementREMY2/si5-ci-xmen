@@ -1,5 +1,6 @@
 import {Grid2} from "@mui/material";
 import {useState} from "react";
+import {toast} from "react-toastify";
 import {Table} from "../../interfaces/Table.ts";
 import TableCard from "./TableCard.tsx";
 import TableDialog from "./TableDialog.tsx";
@@ -19,7 +20,7 @@ export default function TableGrid({tables, handleTableModify, width}: Readonly<T
 
     const onTableModify = (table: Table) => {
         handleTableModify?.(table);
-        onClose();
+        toast.success(`Table ${table.table} modifiée avec succès`, {theme: "dark"});
     };
 
     const onClose = () => {

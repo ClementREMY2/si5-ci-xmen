@@ -1,5 +1,7 @@
+import "react-toastify/dist/ReactToastify.css";
 import {Box, createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import {Outlet} from "react-router-dom";
+import {ToastContainer} from "react-toastify";
 import PageTemplate from "../pages/PageTemplate.tsx";
 
 const theme = createTheme({
@@ -22,6 +24,7 @@ export default function RouterContent() {
         <ThemeProvider theme={theme}>
             <Box display={"flex"} height={"100%"}>
                 <CssBaseline/>
+                <ToastContainer position={"top-center"} theme={"colored"} closeOnClick/>
                 <PageTemplate>
                     <Outlet/> {/* This is where the child routes will be rendered */}
                 </PageTemplate>
