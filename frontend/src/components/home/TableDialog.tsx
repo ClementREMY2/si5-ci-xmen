@@ -28,11 +28,11 @@ export default function TableDialog({
     };
 
     const onOrder = () => {
-        navigate(generatePath(privateRoutes.orderTable, {table: table.id}));
+        navigate(generatePath(privateRoutes.orderTable, {table: table.table}));
     };
 
     const onPayment = () => {
-        navigate(generatePath(privateRoutes.payment, {table: table.id}));
+        navigate(generatePath(privateRoutes.payment, {table: table.table}));
     };
 
     const displayActions = (
