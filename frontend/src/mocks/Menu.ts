@@ -1,4 +1,4 @@
-import {MenuCategoryEnum, MenuItem} from "../interfaces/Menu.ts";
+import {MenuCategoryEnum, MenuEvent, MenuItem} from "../interfaces/Menu.ts";
 
 export const menuNormalMock: MenuItem[] = [
     {
@@ -115,5 +115,39 @@ export const menuNormalMock: MenuItem[] = [
         shortName: "F Choco",
         price: 7,
         category: MenuCategoryEnum.DESSERT
+    }
+];
+
+export const menusAvisto: MenuEvent[] = [
+    {
+        id: "1",
+        fullName: "Menu Avisto 1",
+        shortName: "Menu 1",
+        price: 22,
+        menu: {
+            [MenuCategoryEnum.STARTER]: menuNormalMock[4],
+            [MenuCategoryEnum.MAIN]: menuNormalMock[9],
+            [MenuCategoryEnum.DESSERT]: menuNormalMock[13]
+        }
+    }, {
+        id: "2",
+        fullName: "Menu Avisto 2",
+        shortName: "Menu 2",
+        price: 24,
+        menu: {
+            [MenuCategoryEnum.STARTER]: menuNormalMock[5],
+            [MenuCategoryEnum.MAIN]: menuNormalMock[11],
+            [MenuCategoryEnum.DESSERT]: menuNormalMock[14]
+        }
+    }, {
+        id: "3",
+        fullName: "Menu Avisto 3",
+        shortName: "Menu 3",
+        price: 25,
+        menu: {
+            [MenuCategoryEnum.STARTER]: menuNormalMock[6],
+            [MenuCategoryEnum.MAIN]: menuNormalMock[12],
+            [MenuCategoryEnum.DESSERT]: menuNormalMock[15]
+        }
     }
 ];
