@@ -41,7 +41,7 @@ export default function MenuList({menu, order, changeItemQuantity}: Readonly<Men
         <List sx={{width: "100%"}}>
             <MenuListItem
                 title={"BEVERAGES"}
-                icon={<LocalBar/>}
+                icon={<LocalBar color={"primary"}/>}
                 items={beverages}
                 order={order}
                 changeItemQuantity={changeItemQuantity}
@@ -50,7 +50,7 @@ export default function MenuList({menu, order, changeItemQuantity}: Readonly<Men
             />
             <MenuListItem
                 title={"STARTERS"}
-                icon={<Tapas/>}
+                icon={<Tapas color={"primary"}/>}
                 items={starters}
                 order={order}
                 changeItemQuantity={changeItemQuantity}
@@ -59,7 +59,7 @@ export default function MenuList({menu, order, changeItemQuantity}: Readonly<Men
             />
             <MenuListItem
                 title={"MAIN COURSES"}
-                icon={<Restaurant/>}
+                icon={<Restaurant color={"primary"}/>}
                 items={courses}
                 order={order}
                 changeItemQuantity={changeItemQuantity}
@@ -68,7 +68,7 @@ export default function MenuList({menu, order, changeItemQuantity}: Readonly<Men
             />
             <MenuListItem
                 title={"DESSERTS"}
-                icon={<Cookie/>}
+                icon={<Cookie color={"primary"}/>}
                 items={desserts}
                 order={order}
                 changeItemQuantity={changeItemQuantity}
@@ -78,7 +78,7 @@ export default function MenuList({menu, order, changeItemQuantity}: Readonly<Men
             {specials.length > 0 &&
                 <MenuListItem
                     title={"SPECIALS"}
-                    icon={<Star/>}
+                    icon={<Star color={"primary"}/>}
                     items={specials}
                     order={order}
                     changeItemQuantity={changeItemQuantity}

@@ -19,10 +19,10 @@ export default function MenuSubListItem({item, quantity, addOne, removeOne}: Rea
             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                 <Typography>Quantity: {quantity}</Typography>
                 <Stack direction={"row"}>
-                    <IconButton onClick={removeOne} disabled={quantity < 1}>
+                    <IconButton onClick={removeOne} color={"primary"} disabled={quantity < 1}>
                         <RemoveCircle/>
                     </IconButton>
-                    <IconButton edge={"end"} onClick={addOne}>
+                    <IconButton edge={"end"} color={"primary"} onClick={addOne}>
                         <AddCircle/>
                     </IconButton>
                 </Stack>
