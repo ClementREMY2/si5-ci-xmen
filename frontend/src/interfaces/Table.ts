@@ -12,4 +12,12 @@ export interface Table {
     nbPeople: number;
     event?: string;
     status: TableStatusEnum;
+    color: string;
+}
+
+export class TableWithOrderDto {
+    _id?: string;
+    number?: number;
+    taken?: boolean;
+    tableOrderId?: string; 
 }

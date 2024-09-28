@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -17,6 +18,8 @@ import {useMemo, useState} from "react";
 import {generatePath, Outlet, useLocation, useNavigate} from "react-router-dom";
 import "../index.css";
 import {privateRoutes} from "../utils/Routes.ts";
+import { getTables } from "../services/diningService.ts"
+import { Table, TableStatusEnum, TableWithOrderDto } from "../interfaces/Table.ts"
 
 const tablesData = [
     {id: 101, seats: 2, status: "En cours", event: "Avisto", color: ""},
@@ -30,25 +33,44 @@ const tablesData = [
     {id: 109, seats: 8, status: "Prête", event: "SAP", color: ""}
 ];
 
-interface Table {
-    id: number;
-    seats: number;
-    status: string;
-    event: string;
-    color: string;
-}
+
+export const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
+    return dto.map((tableDto) => {
+      // Détermine le statut de la table en fonction de la propriété 'taken' et de la logique business
+      let status: TableStatusEnum;
+      if (!tableDto.taken) {
+        status = TableStatusEnum.AVAILABLE;
+      } else if (tableDto.tableOrderId) {
+        status = TableStatusEnum.ORDER_IN_PROGRESS;
+      } else {
+        status = TableStatusEnum.OCCUPIED;
+      }
+  
+      const table: Table = {
+        id: tableDto._id,           // Correspond à l'ID dans le back-end
+        table: tableDto.number ?? 0,     // Le numéro de la table
+        nbPeople: 4,                // Fixe ou à calculer si tu as des données (ici, j'utilise un nombre fictif)
+        status: status,             // Le statut déterminé plus haut
+        event: '',
+        color: ''                // Aucune info sur l'événement, donc vide pour l'instant
+      };
+  
+      return table;
+    });
+};
+
 
 const applyTableColors = (tables: Table[]) => {
     return tables.map((table) => {
-        if (table.status === "En cours") {
+        if (table.status === TableStatusEnum.ORDER_IN_PROGRESS) {
             table.color = "var(--waiting-table)";
-        } else if (table.status === "Réservée") {
+        } else if (table.status === TableStatusEnum.RESERVED) {
             table.color = "var(--booked-table)";
-        } else if (table.status === "Occupée") {
+        } else if (table.status === TableStatusEnum.OCCUPIED) {
             table.color = "var(--in-use-table)";
-        } else if (table.status === "Libre") {
+        } else if (table.status === TableStatusEnum.AVAILABLE) {
             table.color = "var(--free-table)";
-        } else if (table.status === "Prête") {
+        } else if (table.status === TableStatusEnum.ORDER_READY) {
             table.color = "var(--ready-table)";
         } else {
             table.color = "#9e9e9e";
@@ -67,13 +89,41 @@ export default function HomePage() {
     const [status, setStatus] = useState("Libre");
     const [openModalType, setOpenModalType] = useState<"orderModal" | "reservedModal" | null>(null);
 
+    const [tables, setTables] = useState<Table[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    applyTableColors(tablesData);
+    useEffect(() => {
+        const fetchTables = async () => {
+            try {
+                let dataDTO = await getTables();
+                const dataFront = transformTableData(dataDTO);
+                setTables(dataFront);
+            } catch (error: any) {
+                setError('Erreur lors de la récupération des tables.');
+                console.error(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTables();
+    }, []);
+
+    if (loading) {
+        return <p>Chargement des tables...</p>;
+    }
+
+    if (error) {
+        return <p>{error}</p>;
+    }
+
+    applyTableColors(tables);
 
     const handleTableClick = (table: Table) => {
         setSelectedTable(table);
-        if (table.status === "Libre") {
-            setSeats(table.seats);
+        if (table.status === TableStatusEnum.AVAILABLE) {
+            setSeats(4);
             setStatus(table.status);
             setOpenModalType("reservedModal");
         } else {
@@ -85,11 +135,10 @@ export default function HomePage() {
     const isBookTablePage = location.pathname.startsWith("/bookTable");
 
     const handleCloseModal = () => {
-        tablesData.forEach((table) => {
+        tables.forEach((table) => {
             if (table.id === selectedTable?.id) {
-                table.status = status;
-                table.seats = seats;
-                applyTableColors(tablesData);
+                table.status = status as TableStatusEnum;
+                applyTableColors(tables);
             }
         });
         setSelectedTable(null);
@@ -101,9 +150,9 @@ export default function HomePage() {
 
     const filteredTables = useMemo(() => {
         if (selectedEvent === "Tous") {
-            return tablesData;
+            return tables;
         }
-        return tablesData.filter((table) => table.event === selectedEvent);
+        return tables.filter((table) => table.event === selectedEvent);
     }, [selectedEvent]);
 
     return (
@@ -147,7 +196,7 @@ export default function HomePage() {
 
                         <Grid2 container spacing={3} justifyContent="center">
                             {filteredTables.map((table) => (
-                                <Grid2 size={4} onClick={() => handleTableClick(table)}
+                                <Grid2 size={4} onClick={() => handleTableClick(table) } 
                                     //style={{ cursor: table.status === "Libre" ? "pointer" : "not-allowed" }}
                                 >
                                     <Paper
@@ -163,7 +212,7 @@ export default function HomePage() {
                                         }}
                                     >
                                         <Typography variant="h6">TABLE {table.id}</Typography>
-                                        <Typography variant="body2">Nombre : {table.seats}</Typography>
+                                        <Typography variant="body2">Nombre : {4}</Typography>
                                         <Typography variant="body2">État : {table.status}</Typography>
                                         <Typography variant="body2">Événement : {table.event}</Typography>
                                     </Paper>
