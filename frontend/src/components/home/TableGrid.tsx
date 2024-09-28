@@ -1,47 +1,42 @@
-import {Card, CardActionArea, CardContent, CardHeader, Divider, Grid2, Stack, Typography} from "@mui/material";
-import {blue, green, grey, red, yellow} from "@mui/material/colors";
-import {Table, TableStatusEnum} from "../../interfaces/Table.ts";
+import {Grid2} from "@mui/material";
+import {useState} from "react";
+import {Table} from "../../interfaces/Table.ts";
+import TableCard from "./TableCard.tsx";
+import TableDialog from "./TableDialog.tsx";
 
 interface TableGridProps {
     tables: Table[];
+    handleTableChange?: (changedTable: Table) => void;
     width?: string | number;
 }
 
-const tableColor = (status: TableStatusEnum): string => {
-    switch (status) {
-        case TableStatusEnum.AVAILABLE:
-            return grey[200];
-        case TableStatusEnum.RESERVED:
-            return yellow[200];
-        case TableStatusEnum.OCCUPIED:
-            return red[200];
-        case TableStatusEnum.ORDER_READY:
-            return green[200];
-        case TableStatusEnum.ORDER_IN_PROGRESS:
-            return blue[200];
-    }
-};
+export default function TableGrid({tables, handleTableChange, width}: Readonly<TableGridProps>) {
+    const [selectedTable, setSelectedTable] = useState<Table | undefined>(undefined);
 
-export default function TableGrid({tables, width}: Readonly<TableGridProps>) {
+    const onTableClick = (table: Table) => {
+        setSelectedTable(table);
+    };
+
+    const onTableReserve = (table: Table) => {
+        handleTableChange?.(table);
+        onClose();
+    };
+
+    const onClose = () => {
+        setSelectedTable(undefined);
+    };
+
     return (
         <Grid2 container spacing={3} overflow={"auto"} sx={{width}}>
             {tables.map(table => (
                 <Grid2 key={table.id} size={4}>
-                    <Card
-                        sx={{backgroundColor: tableColor(table.status), color: "black"}}>
-                        <CardActionArea onClick={() => console.log(table)}>
-                            <CardHeader title={`Table ${table.table}`}
-                                        titleTypographyProps={{variant: "h4", align: "center"}}/>
-                            <Divider color={"black"} sx={{backgroundColor: "black"}}/>
-                            <CardContent component={Stack} spacing={1}>
-                                <Typography fontSize={"large"}>Nombre : {table.nbPeople}</Typography>
-                                <Typography fontSize={"large"}>État : {table.status}</Typography>
-                                <Typography fontSize={"large"}>Événement : {table.event ?? "Aucun"}</Typography>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
+                    <TableCard table={table} onClick={() => onTableClick(table)}/>
                 </Grid2>
             ))}
+            {selectedTable &&
+                <TableDialog open={!!selectedTable} table={selectedTable} handleTableReserve={onTableReserve}
+                             onClose={onClose}/>
+            }
         </Grid2>
     );
 }

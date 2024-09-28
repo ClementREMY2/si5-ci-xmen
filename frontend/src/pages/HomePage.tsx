@@ -25,12 +25,21 @@ export default function HomePage() {
         setTables(filteredTables);
     }, [selectedEvents]);
 
+    const handleTableChange = (changedTable: Table) => {
+        const newTables = [...tables];
+        const index = newTables.findIndex((table) => table.id === changedTable.id);
+        if (index !== -1) {
+            newTables[index] = {...changedTable};
+            setTables(newTables);
+        }
+    };
+
     return (
         <Stack height={"100%"} alignItems={"center"} paddingX={2} paddingTop={4} paddingBottom={2} spacing={3}
                overflow={"unset"}>
             <MainHeader width={"90%"}/>
             <TableFilters selectedEvents={selectedEvents} setSelectedEvents={setSelectedEvents} width={"90%"}/>
-            <TableGrid tables={tables} width={"90%"}/>
+            <TableGrid tables={tables} handleTableChange={handleTableChange} width={"90%"}/>
         </Stack>
     );
 }

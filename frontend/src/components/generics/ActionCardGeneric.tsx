@@ -1,12 +1,12 @@
-import {Box, Card, CardContent, Stack, Typography} from "@mui/material";
-import React, {useMemo} from "react";
+import {Box, Card, CardContent, Stack, SxProps, Typography} from "@mui/material";
+import {ReactNode, useMemo} from "react";
 
 interface ActionCardGenericProps {
     title: string;
     leftTitle?: string;
     rightTitle?: string;
-    mainContent?: React.ReactNode;
-    buttons?: React.ReactNode;
+    mainContent?: ReactNode;
+    buttons?: ReactNode;
     minWidth?: string | number;
     minHeight?: string | number;
 }
@@ -20,9 +20,9 @@ export default function ActionCardGeneric({
     minWidth,
     minHeight
 }: Readonly<ActionCardGenericProps>) {
-    const cardSx = useMemo(() => ({
-        minWidth: minWidth ?? "50%",
-        minHeight: minHeight ?? "30%",
+    const cardSx: SxProps = useMemo(() => ({
+        minWidth,
+        minHeight,
         maxWidth: "95%",
         maxHeight: "95%",
         borderRadius: 5
