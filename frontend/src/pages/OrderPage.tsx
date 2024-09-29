@@ -12,6 +12,7 @@ import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
 import {menuNormalMock} from "../mocks/Menu.ts";
 import {tablesMock} from "../mocks/Tables.ts";
+import {checkTableNumber} from "../utils/PageUtils.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 
 const getTable = (tableNumber: number): Table => {
@@ -43,13 +44,7 @@ export default function OrderPage() {
     const {table: tableNumber} = useParams();
 
     useEffect(() => {
-        if (tableNumber === undefined || isNaN(parseFloat(tableNumber))) {
-            console.warn("No table specified, redirecting to home page");
-            navigate(privateRoutes.home);
-        } else if (!tablesMock.some(table => table.id === tableNumber)) {
-            console.warn(`No table found for table number: ${tableNumber}, redirecting to home page`);
-            navigate(privateRoutes.home);
-        }
+        if (!checkTableNumber(tableNumber)) navigate(privateRoutes.home);
     }, [navigate, tableNumber]);
 
     const table = getTable(parseFloat(tableNumber!));
@@ -57,6 +52,7 @@ export default function OrderPage() {
 
     const [order, setOrder] = useState<Order>({
         table: table.table,
+        event: event?.name,
         total: 0
     });
 
