@@ -1,6 +1,6 @@
-import {AddCircle, RemoveCircle} from "@mui/icons-material";
-import {Box, IconButton, Stack, Typography} from "@mui/material";
+import {Box, Stack, Typography} from "@mui/material";
 import {MenuItem} from "../../interfaces/Menu.ts";
+import QuantityButtonsGeneric from "../generics/QuantityButtonsGeneric.tsx";
 
 interface MenuSubListItemProps {
     item: MenuItem;
@@ -18,14 +18,12 @@ export default function MenuSubListItem({item, quantity, addOne, removeOne}: Rea
             </Stack>
             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                 <Typography>Quantity: {quantity}</Typography>
-                <Stack direction={"row"}>
-                    <IconButton onClick={removeOne} color={"primary"} disabled={quantity < 1}>
-                        <RemoveCircle/>
-                    </IconButton>
-                    <IconButton edge={"end"} color={"primary"} onClick={addOne}>
-                        <AddCircle/>
-                    </IconButton>
-                </Stack>
+                <QuantityButtonsGeneric
+                    removeOne={removeOne}
+                    removeDisabled={quantity < 1}
+                    addOne={addOne}
+                    hideEdgeEnd
+                />
             </Stack>
         </Box>
     );

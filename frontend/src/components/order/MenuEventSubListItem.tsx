@@ -1,6 +1,6 @@
-import {AddCircle, RemoveCircle} from "@mui/icons-material";
-import {Box, IconButton, Stack, Typography} from "@mui/material";
+import {Box, Stack, Typography} from "@mui/material";
 import {MenuCategoryEnum, MenuEvent} from "../../interfaces/Menu.ts";
+import QuantityButtonsGeneric from "../generics/QuantityButtonsGeneric.tsx";
 
 interface MenuEventSubListItemProps {
     item: MenuEvent;
@@ -16,14 +16,12 @@ export default function MenuEventSubListItem({item, quantity, addOne, removeOne}
                 <Typography flex={1.05} variant={"h6"}>{item.fullName}</Typography>
                 <Stack flex={0.95} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                     <Typography>Quantity: {quantity}</Typography>
-                    <Stack direction={"row"}>
-                        <IconButton onClick={removeOne} color={"primary"} disabled={quantity < 1}>
-                            <RemoveCircle/>
-                        </IconButton>
-                        <IconButton edge={"end"} color={"primary"} onClick={addOne}>
-                            <AddCircle/>
-                        </IconButton>
-                    </Stack>
+                    <QuantityButtonsGeneric
+                        removeOne={removeOne}
+                        removeDisabled={quantity < 1}
+                        addOne={addOne}
+                        hideEdgeEnd
+                    />
                 </Stack>
             </Stack>
             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
