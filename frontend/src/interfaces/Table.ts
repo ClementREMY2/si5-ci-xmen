@@ -12,7 +12,6 @@ export interface Table {
     nbPeople: number;
     event?: string;
     status: TableStatusEnum;
-    color: string;
 }
 
 export class TableWithOrderDto {

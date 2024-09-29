@@ -18,68 +18,26 @@ import {useMemo, useState} from "react";
 import {generatePath, Outlet, useNavigate} from "react-router-dom";
 import "../index.css";
 import {privateRoutes} from "../utils/Routes.ts";
-import { getTables } from "../services/diningService.ts"
+import { getTables } from "../services/DiningService.ts"
 import { Table, TableStatusEnum, TableWithOrderDto } from "../interfaces/Table.ts"
-
-/*
-const tablesData = [
-    {id: 101, seats: 2, status: "En cours", event: "Avisto", color: ""},
-    {id: 102, seats: 4, status: "Réservée", event: "Avisto", color: ""},
-    {id: 103, seats: 5, status: "Réservée", event: "Avisto", color: ""},
-    {id: 104, seats: 5, status: "Réservée", event: "Avisto", color: ""},
-    {id: 105, seats: 6, status: "Occupée", event: "Aucun", color: ""},
-    {id: 106, seats: 2, status: "Occupée", event: "Aucun", color: ""},
-    {id: 107, seats: 6, status: "Occupée", event: "SAP", color: ""},
-    {id: 108, seats: 4, status: "Libre", event: "Avisto", color: ""},
-    {id: 109, seats: 8, status: "Prête", event: "SAP", color: ""}
-];
-*/
+import { transformTableData } from "../formatter/TableFormatter.ts"   
 
 
-export const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
-    return dto.map((tableDto) => {
-      // Détermine le statut de la table en fonction de la propriété 'taken' et de la logique business
-      let status: TableStatusEnum;
-      if (!tableDto.taken) {
-        status = TableStatusEnum.AVAILABLE;
-      } else if (tableDto.tableOrderId) {
-        status = TableStatusEnum.ORDER_IN_PROGRESS;
-      } else {
-        status = TableStatusEnum.OCCUPIED;
-      }
-  
-      const table: Table = {
-        id: tableDto._id,           // Correspond à l'ID dans le back-end
-        table: tableDto.number ?? 0,     // Le numéro de la table
-        nbPeople: 4,                // Fixe ou à calculer si tu as des données (ici, j'utilise un nombre fictif)
-        status: status,             // Le statut déterminé plus haut
-        event: '',
-        color: ''                // Aucune info sur l'événement, donc vide pour l'instant
-      };
-  
-      return table;
-    });
-};
+export const applyTableColors = (table: Table) => {
+    if (table.status === TableStatusEnum.ORDER_IN_PROGRESS) {
+        return "var(--waiting-table)";
+    } else if (table.status === TableStatusEnum.RESERVED) {
+        return "var(--booked-table)";
+    } else if (table.status === TableStatusEnum.OCCUPIED) {
+        return "var(--in-use-table)";
+    } else if (table.status === TableStatusEnum.AVAILABLE) {
+        return "var(--free-table)";
+    } else if (table.status === TableStatusEnum.ORDER_READY) {
+        return "var(--ready-table)";
+    } else {
+        return "#9e9e9e";
+    }
 
-
-const applyTableColors = (tables: Table[]) => {
-    tables.map((table) => {
-        if (table.status === TableStatusEnum.ORDER_IN_PROGRESS) {
-            table.color = "var(--waiting-table)";
-        } else if (table.status === TableStatusEnum.RESERVED) {
-            table.color = "var(--booked-table)";
-        } else if (table.status === TableStatusEnum.OCCUPIED) {
-            table.color = "var(--in-use-table)";
-        } else if (table.status === TableStatusEnum.AVAILABLE) {
-            table.color = "var(--free-table)";
-        } else if (table.status === TableStatusEnum.ORDER_READY) {
-            table.color = "var(--ready-table)";
-        } else {
-            table.color = "#9e9e9e";
-        }
-        const tablesCopy = tables;
-        return tablesCopy;
-    });
 };
 
 export default function HomePage() {
@@ -91,38 +49,11 @@ export default function HomePage() {
     const [status, setStatus] = useState("Libre");
     const [openModalType, setOpenModalType] = useState<"orderModal" | "reservedModal" | null>(null);
 
-    const [tables, setTables] = useState<Table[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const tables = transformTableData(getTables() as unknown as TableWithOrderDto[]);
 
-    useEffect(() => {
-        const fetchTables = async () => {
-            try {
-                let dataDTO = await getTables();
-                const dataFront = transformTableData(dataDTO);
-                setTables(dataFront);
-            } catch (error: any) {
-                setError('Erreur lors de la récupération des tables.');
-                console.error(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTables();
-    }, []);
-
-    /*
-    if (loading) {
-        return <p>Chargement des tables...</p>;
+    for (let table of tables) {
+        applyTableColors(table);
     }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
-        */
-
-    applyTableColors(tables);
 
     const handleTableClick = (table: Table) => {
         setSelectedTable(table);
@@ -140,7 +71,9 @@ export default function HomePage() {
         tables.forEach((table) => {
             if (table.id === selectedTable?.id) {
                 table.status = status as TableStatusEnum;
-                applyTableColors(tables);
+                for (let table of tables) {
+                    applyTableColors(table);
+                }
             }
         });
         setSelectedTable(null);
@@ -204,7 +137,7 @@ export default function HomePage() {
                                         sx={{
                                             padding: 2,
                                             textAlign: "center",
-                                            backgroundColor: table.color,
+                                            backgroundColor: applyTableColors(table),
                                             height: "100px",
                                             display: "flex",
                                             flexDirection: "column",
