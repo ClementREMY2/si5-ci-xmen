@@ -85,8 +85,8 @@ export default function OrderPage() {
 
         // Update the order
         const newOrder = {...order, total: order.total + item.price * delta};
-        if (isEventMenu) order.itemsEvent = {...order.itemsEvent, [id]: newQuantity};
-        else order.items = {...order.items, [id]: newQuantity};
+        if (isEventMenu) newOrder.itemsEvent = {...order.itemsEvent, [id]: newQuantity};
+        else newOrder.items = {...order.items, [id]: newQuantity};
         setOrder(newOrder);
     };
 

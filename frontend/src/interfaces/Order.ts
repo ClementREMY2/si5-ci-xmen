@@ -4,7 +4,8 @@ export interface OrderItems {
 
 export interface Order {
     id?: string;
-    table: number;
+    table?: number;
+    event?: string;
     datetime?: Date;
     total: number;
     items?: OrderItems;

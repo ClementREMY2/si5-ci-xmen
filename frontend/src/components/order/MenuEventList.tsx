@@ -29,7 +29,7 @@ export default function MenuEventList({event, order, changeItemQuantity}: Readon
                 title={MenuCategoryEnum.BEVERAGE.toUpperCase()}
                 icon={<LocalBar color={"primary"}/>}
                 menuItems={event.beverages}
-                orderItems={order.itemsEvent ?? {}}
+                orderItems={order.items ?? {}}
                 changeItemQuantity={changeItemQuantity}
                 open={open["beverages"]}
                 handleOpen={() => handleOpen("beverages")}
