@@ -1,6 +1,9 @@
+import {Groups} from "@mui/icons-material";
 import {Button, Chip, Stack} from "@mui/material";
 import React, {useMemo} from "react";
 import {DictionaryBoolean} from "../../interfaces/Generics.ts";
+import {TableStatusEnum} from "../../interfaces/Table.ts";
+import {tablesMock} from "../../mocks/Tables.ts";
 
 interface TableFiltersProps {
     selectedEvents: DictionaryBoolean;
@@ -36,6 +39,13 @@ export default function TableFilters({selectedEvents, setSelectedEvents, width}:
         console.log("Paying all tables for", singleEvent);
     };
 
+    const disablePayAll = useMemo(() => {
+        if (!singleEvent) return true;
+        // Check if all tables for this event are occupied, otherwise disable the button
+        return tablesMock.filter(table => table.event === singleEvent)
+        .some(table => table.status !== TableStatusEnum.OCCUPIED);
+    }, [singleEvent]);
+
     return (
         <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} spacing={3} sx={{width}}>
             <Stack direction={"row"} alignItems={"center"} spacing={2}>
@@ -47,7 +57,8 @@ export default function TableFilters({selectedEvents, setSelectedEvents, width}:
                 <Button variant={"contained"} onClick={() => handleAllClick(false)}>Activer aucun</Button>
             </Stack>
             {singleEvent &&
-                <Button variant={"contained"} onClick={handlePayAllClick} sx={{width: 150}}>
+                <Button variant={"contained"} onClick={handlePayAllClick} disabled={disablePayAll}
+                        sx={{width: 170}} startIcon={<Groups fontSize={"large"}/>}>
                     Payer toutes
                 </Button>}
         </Stack>
