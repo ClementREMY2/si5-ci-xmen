@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -18,9 +17,8 @@ import {useMemo, useState} from "react";
 import {generatePath, Outlet, useNavigate} from "react-router-dom";
 import "../index.css";
 import {privateRoutes} from "../utils/Routes.ts";
-import { getTables } from "../services/DiningService.ts"
-import { Table, TableStatusEnum, TableWithOrderDto } from "../interfaces/Table.ts"
-import { transformTableData } from "../formatter/TableFormatter.ts"   
+import { Table, TableStatusEnum } from "../interfaces/Table.ts"
+import useFetchTables from "../formatter/TableFormatter.ts";
 
 
 export const applyTableColors = (table: Table) => {
@@ -37,7 +35,6 @@ export const applyTableColors = (table: Table) => {
     } else {
         return "#9e9e9e";
     }
-
 };
 
 export default function HomePage() {
@@ -49,7 +46,7 @@ export default function HomePage() {
     const [status, setStatus] = useState("Libre");
     const [openModalType, setOpenModalType] = useState<"orderModal" | "reservedModal" | null>(null);
 
-    const tables = transformTableData(getTables() as unknown as TableWithOrderDto[]);
+    const { tables }: { tables: Table[] } = useFetchTables();
 
     for (let table of tables) {
         applyTableColors(table);
@@ -68,7 +65,7 @@ export default function HomePage() {
     };
 
     const handleCloseModal = () => {
-        tables.forEach((table) => {
+        tables.forEach((table: Table) => {
             if (table.id === selectedTable?.id) {
                 table.status = status as TableStatusEnum;
                 for (let table of tables) {
@@ -86,7 +83,7 @@ export default function HomePage() {
     const filteredTables = useMemo(() => {
         return selectedEvent === "Tous" 
             ? tables 
-            : tables.filter((table) => table.event === selectedEvent);
+            : tables.filter((table: Table) => table.event === selectedEvent);
     }, [selectedEvent, tables]);   
     
     return (
