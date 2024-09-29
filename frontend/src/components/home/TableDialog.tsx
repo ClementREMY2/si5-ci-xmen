@@ -42,7 +42,7 @@ export default function TableDialog({
                 Commander
             </Button>
             <Button onClick={onPayment} variant={"contained"} sx={{width: "200px"}}>
-                Paiement
+                Payer {table.event && ` pour ${table.event}`}
             </Button>
         </>)
     );
