@@ -1,5 +1,5 @@
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
-import {ListItemButton, ListItemIcon, ListItemText} from "@mui/material";
+import {ListItem, ListItemButton, ListItemIcon, ListItemText, Stack} from "@mui/material";
 import React, {useMemo} from "react";
 import {MenuEvent} from "../../interfaces/Menu.ts";
 import {OrderItems} from "../../interfaces/Order.ts";
@@ -26,14 +26,16 @@ export default function MenuEventListItem({
 }: Readonly<MenuEventListItemProps>) {
     const hasItems = useMemo(() => menuItems.length > 0, [menuItems]);
 
-    return (<>
-        <ListItemButton onClick={handleOpen}>
-            {icon && <ListItemIcon>{icon}</ListItemIcon>}
-            <ListItemText primary={title}/>
-            {hasItems && (open ? <ExpandLess/> : <ExpandMore/>)}
-        </ListItemButton>
-        {hasItems &&
-            <MenuEventSubList menuItems={menuItems} orderItems={orderItems}
-                              changeEventItemQuantity={changeEventItemQuantity} open={open}/>}
-    </>);
+    return (
+        <ListItem><Stack width={"100%"}>
+            <ListItemButton onClick={handleOpen}>
+                {icon && <ListItemIcon>{icon}</ListItemIcon>}
+                <ListItemText primary={title}/>
+                {hasItems && (open ? <ExpandLess/> : <ExpandMore/>)}
+            </ListItemButton>
+            {hasItems &&
+                <MenuEventSubList menuItems={menuItems} orderItems={orderItems}
+                                  changeEventItemQuantity={changeEventItemQuantity} open={open}/>}
+        </Stack></ListItem>
+    );
 }
