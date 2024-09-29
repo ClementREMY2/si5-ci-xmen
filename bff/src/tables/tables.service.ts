@@ -7,16 +7,7 @@ export class TablesService {
     private readonly tables = [];
 
     tableFromBackToFront(backTable) {
-        const tableOrderId = backTable.tableOrderId.split('|');
-        const frontTable = {
-            id: backTable.id,
-            table: backTable.number,
-            taken: true,
-            nbPeople: tableOrderId[0],
-            event: tableOrderId[1],
-            status: tableOrderId[2]
-        }
-        return frontTable;
+        return backTable // TODO: setup the map between back and front 
     }
     
 

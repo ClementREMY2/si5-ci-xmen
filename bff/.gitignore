@@ -28,3 +28,4 @@ lerna-debug.log*
 
 # Build output
 dist/
+node_modules/
