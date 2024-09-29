@@ -5,8 +5,7 @@ export const tablesMock: Table[] = [
         id: "1",
         table: 1,
         nbPeople: 2,
-        status: TableStatusEnum.AVAILABLE,
-        event: "Avisto"
+        status: TableStatusEnum.AVAILABLE
     },
     {
         id: "2",
@@ -19,7 +18,8 @@ export const tablesMock: Table[] = [
         id: "3",
         table: 3,
         nbPeople: 5,
-        status: TableStatusEnum.OCCUPIED
+        status: TableStatusEnum.OCCUPIED,
+        event: "Avisto"
     },
     {
         id: "4",
