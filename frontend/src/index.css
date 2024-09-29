@@ -7,7 +7,7 @@ body, #root {
   --waiting-table: #A0B2FA;
   --booked-table: #E2C657;
   --in-use-table: #FAA0A0;
-  --free-table: #F5F5F5;
+  --free-table: #312E2E;
   --ready-table: #77DD77;
 }
 

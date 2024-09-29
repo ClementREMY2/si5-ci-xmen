@@ -4,6 +4,7 @@ import {toast} from "react-toastify";
 import {Table} from "../../interfaces/Table.ts";
 import TableCard from "./TableCard.tsx";
 import TableDialog from "./TableDialog.tsx";
+import {applyTableColors} from "../../formatter/TableFormatter.ts";
 
 interface TableGridProps {
     tables: Table[];
@@ -22,6 +23,7 @@ export default function TableGrid({tables, handleTableModify, width}: Readonly<T
         handleTableModify?.(modifiedTable);
         setSelectedTable(modifiedTable);
         toast.success(`Table ${modifiedTable.table} modifiée avec succès`, {theme: "dark"});
+        applyTableColors(modifiedTable);
     };
 
     const onClose = () => {
