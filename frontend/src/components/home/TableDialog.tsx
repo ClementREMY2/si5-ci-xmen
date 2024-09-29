@@ -38,10 +38,10 @@ export default function TableDialog({
     const displayActions = (
         table.status !== TableStatusEnum.AVAILABLE && table.status !== TableStatusEnum.RESERVED && (<>
             <Divider flexItem color={grey[200]} sx={{backgroundColor: grey[200]}}/>
-            <Button onClick={onOrder} variant={"contained"} sx={{width: "200px"}}>
+            <Button onClick={onOrder} variant={"contained"} sx={{width: "220px"}}>
                 Commander
             </Button>
-            <Button onClick={onPayment} variant={"contained"} sx={{width: "200px"}}>
+            <Button onClick={onPayment} variant={"contained"} sx={{width: "220px"}}>
                 Payer {table.event && ` pour ${table.event}`}
             </Button>
         </>)
@@ -54,7 +54,7 @@ export default function TableDialog({
                     <Typography variant={"h4"}>{`Modifier la table ${table.table}`}</Typography>
                     <ModifyTableMainContent table={modifiedTable} handleChange={handleChange}/>
                     <Button onClick={() => handleTableModify(modifiedTable)} variant={"contained"}
-                            sx={{width: "200px"}}>
+                            sx={{width: "220px"}}>
                         Modifier
                     </Button>
                 </Stack>

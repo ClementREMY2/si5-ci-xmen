@@ -5,7 +5,7 @@ import TableFilters from "../components/home/TableFilters.tsx";
 import TableGrid from "../components/home/TableGrid.tsx";
 import MainHeader from "../components/MainHeader.tsx";
 import {DictionaryBoolean} from "../interfaces/Generics.ts";
-import {Table} from "../interfaces/Table.ts";
+import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
 import {tablesMock} from "../mocks/Tables.ts";
 
@@ -25,10 +25,20 @@ export default function HomePage() {
         setTables(filteredTables);
     }, [selectedEvents]);
 
+    const correctModifiedTable = (previousTable: Table, modifiedTable: Table) => {
+        if (!previousTable.event && modifiedTable.event && modifiedTable.status === TableStatusEnum.AVAILABLE) {
+            modifiedTable.status = TableStatusEnum.RESERVED;
+        }
+        if (modifiedTable.status === TableStatusEnum.AVAILABLE) {
+            modifiedTable.event = undefined;
+        }
+    };
+
     const handleTableModify = (modifiedTable: Table) => {
         const newTables = [...tables];
         const index = newTables.findIndex((table) => table.id === modifiedTable.id);
         if (index !== -1) {
+            correctModifiedTable(newTables[index], modifiedTable);
             newTables[index] = {...modifiedTable};
             setTables(newTables);
         }
