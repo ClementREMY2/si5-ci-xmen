@@ -1,31 +1,35 @@
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {Box, Button, Typography} from "@mui/material";
 import EventsList from "../components/EventsList/EventsList";
+import { SetStateAction, useEffect, useState } from "react";
+import axios from "axios";
+
 
 
 export default function EventsPage() {
-    const sampleEvents = [
-        {
-            id: 1,
-            title: "Avisto",
-            details: ["3 menus", "22/09/2024"]
-        },
-        {
-            id: 2,
-            title: "SAP",
-            details: ["2 menus", "24/09/2024"]
-        },
-        {
-            id: 3,
-            title: "Air France",
-            details: ["4 menus", "26/09/2024"]
-        }
-    ];
 
-    const ev = {
-        todayEvents: [sampleEvents[0]],
-        nextDaysEvents: [sampleEvents[1], sampleEvents[2]]
+    const [sampleEvents, setSampleEvents] = useState([]);
+    let ev = {
+        todayEvents: [],
+        nextDaysEvents: []
     };
+
+    useEffect(() => {
+        axios.get("http://localhost:3003/events")
+            .then((response: { data: SetStateAction<never[]>; }) => {
+                console.log(response.data);
+                setSampleEvents(response.data);
+                ev = {
+                    todayEvents: [sampleEvents[1]],
+                    nextDaysEvents: []
+                };
+
+            })
+            .catch((error: any) => {
+                console.error("There was an error fetching the events!", error);
+            });
+    }, []);
+
 
     return (<>
         <Box display="flex" justifyContent="center" sx={{margin: 2}}>
@@ -36,6 +40,6 @@ export default function EventsPage() {
                 Ajouter un évenement
             </Button>
         </Box>
-        <EventsList todayEvents={ev.todayEvents} nextDaysEvents={ev.nextDaysEvents}/>
+        {sampleEvents[1] && <EventsList todayEvents={[sampleEvents[1]]} nextDaysEvents={ev.nextDaysEvents}/>}
     </>);
 }

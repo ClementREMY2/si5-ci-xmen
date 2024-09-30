@@ -12,22 +12,24 @@ import {
 } from "@mui/material";
 import {generatePath, useNavigate} from "react-router-dom";
 import {privateRoutes} from "../../utils/Routes.ts";
+import {Event} from "../../interfaces/Event.ts";
 
-interface EventItem {
-    id: number;
-    title: string;
-    details: string[];
-}
+// interface EventItem {
+//     id: number;
+//     title: string;
+//     details: string[];
+// }
 
 interface EventsListProps {
-    todayEvents: EventItem[];
-    nextDaysEvents: EventItem[];
+    todayEvents: Event[];
+    nextDaysEvents: Event[];
 }
 
 export default function EventsList({todayEvents, nextDaysEvents}: Readonly<EventsListProps>) {
     const navigate = useNavigate();
+    console.log(todayEvents);
 
-    const handleSeeDetails = (eventId: number) => {
+    const handleSeeDetails = (eventId: string | undefined) => {
         console.log(eventId);
         navigate(generatePath(privateRoutes.event, {id: eventId}));
     };
@@ -42,7 +44,7 @@ export default function EventsList({todayEvents, nextDaysEvents}: Readonly<Event
                     <List>
                         {todayEvents.map(event => (
                             <ListItem key={event.id}>
-                                <ListItemText primary={event.title} secondary={event.details.join(", ")}/>
+                                <ListItemText primary={event.name} secondary={`${event.menus.length}, ${event.date}`}/>
                                 <Button onClick={() => handleSeeDetails(event.id)}>Voir Détails</Button>
                             </ListItem>
                         ))}
@@ -57,11 +59,10 @@ export default function EventsList({todayEvents, nextDaysEvents}: Readonly<Event
                     <List>
                         {nextDaysEvents.map(event => (
                             <ListItem key={event.id}>
-                                <ListItemText primary={event.title} secondary={event.details.join(", ")}/>
+                                <ListItemText primary={event.name} secondary={`${event.menus.length}, ${event.date}`}/>
                                 <Button onClick={() => handleSeeDetails(event.id)}>Voir Détails</Button>
                             </ListItem>
                         ))}
-
                     </List>
                 </AccordionDetails>
             </Accordion>
