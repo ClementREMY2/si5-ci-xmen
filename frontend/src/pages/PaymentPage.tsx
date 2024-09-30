@@ -98,7 +98,7 @@ export default function PaymentPage() {
             return;
         }
 
-        const newPaying = {...order, total: order.total - paid.total};
+        const newPaying = {total: order.total - paid.total, items: {...order.items}, itemsEvent: {...order.itemsEvent}};
         if (newPaying.items && paid.items) {
             Object.entries(paid.items).forEach(([id, quantity]) => {
                 newPaying.items![id] -= quantity;
