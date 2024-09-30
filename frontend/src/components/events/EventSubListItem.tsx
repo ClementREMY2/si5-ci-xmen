@@ -13,7 +13,7 @@ export default function EventSubListItem({event}: Readonly<EventSubListItemProps
     const navigate = useNavigate();
 
     const handleSeeDetails = () => {
-        navigate(generatePath(privateRoutes.event, {id: event.id}));
+        navigate(generatePath(privateRoutes.event, {event: event.name}));
     };
 
     return (<>
