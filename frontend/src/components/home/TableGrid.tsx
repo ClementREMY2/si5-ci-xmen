@@ -26,8 +26,8 @@ export default function TableGrid({tables, handleTableModify, width}: Readonly<T
         toast.success(`Table ${modifiedTable.table} modifiée avec succès`, {theme: "dark"});
         applyTableColors(modifiedTable);
         postUpdateTable(modifiedTable, "");
-        if (modifiedTable.event != undefined && modifiedTable.event != "") {
-            postUpdateTable(modifiedTable, modifiedTable.event);
+        if (modifiedTable.event != undefined && modifiedTable.event != String("")) {
+            postUpdateTable(modifiedTable, modifiedTable.event as "" || "");
         }
     };
 

@@ -70,32 +70,6 @@ export const updateTable = async (updatedTable: TableOrderDTO) => {
                 console.error('Erreur lors de la mise à jour de la table:', error);
                 throw error;
         }
-}
-
-export const addTable = async (newTable: { tableNumber: number, seats: number }) => {
-        try {
-                const response = await axios.post(Constants.gatewayUrl + '/tables', newTable);
-                return response.data;
-        } catch (error) {
-                if ((error as any).response && (error as any).response.status === 409) {
-                        throw new Error('TableAlreadyExistsException');
-                }
-                console.error('Erreur lors de l\'ajout de la table:', error);
-                throw error;
-        }
-};
-
-export const getTableByNumber = async (tableNumber: Table["table"]) => {
-        try {
-                const response = await axios.get(Constants.gatewayUrl + '/tables/' + tableNumber);
-                return response.data;
-        } catch (error) {
-                if ((error as any).response && (error as any).response.status === 404) {
-                        throw new Error('TableNumberNotFoundException');
-                }
-                console.error('Erreur lors de la récupération de la table:', error);
-                throw error;
-        }
 };
 
 export const getTableOrders = async () => {
@@ -104,32 +78,6 @@ export const getTableOrders = async () => {
                 return response.data;
         } catch (error) {
                 console.error('Erreur lors de la récupération des commandes de table:', error);
-                throw error;
-        }
-};
-
-export const addTableOrder = async (newTableOrder: { tableNumber:  Table["table"], items: { itemId: number, quantity: number }[] }) => {
-        try {
-                const response = await axios.post(Constants.gatewayUrl + '/tableOrders', newTableOrder);
-                return response.data;
-        } catch (error) {
-                if ((error as any).response && (error as any).response.status === 409) {
-                        throw new Error('TableAlreadyTakenException');
-                }
-                console.error('Erreur lors de l\'ajout de la commande de table:', error);
-                throw error;
-        }
-};
-
-export const getTableOrderById = async (tableOrderId: number) => {
-        try {
-                const response = await axios.get(Constants.gatewayUrl + '/tableOrders/' + tableOrderId);
-                return response.data;
-        } catch (error) {
-                if ((error as any).response && (error as any).response.status === 404) {
-                        throw new Error('TableOrderIdNotFoundException');
-                }
-                console.error('Erreur lors de la récupération de la commande de table:', error);
                 throw error;
         }
 };
@@ -149,7 +97,10 @@ export const updateTableOrder = async (tableOrderId: number, updatedOrder: any) 
 
 export  const updateOrderingItemIdDTO = async (tableOrderId: number, orderingItemIdDTO: any) => {
         try {
-                const response = await axios.post(Constants.gatewayUrl + '/tableOrders/' + tableOrderId, orderingItemIdDTO);
+                console.log("tableOrderId", tableOrderId);
+                console.log("orderingItemIdDTO", orderingItemIdDTO);
+                console.log("Constants.gatewayUrl", Constants.gatewayUrl + 'tableOrders/' + tableOrderId + " | " + orderingItemIdDTO);
+                const response = await axios.post(Constants.gatewayUrl + 'tableOrders/' + tableOrderId, orderingItemIdDTO);
                 return response.data;
         } catch (error) {
                 if ((error as any).response && (error as any).response.status === 404) {
@@ -159,32 +110,3 @@ export  const updateOrderingItemIdDTO = async (tableOrderId: number, orderingIte
                 throw error;
         }
 }
-
-export const prepareTableOrder = async (tableOrderId: number) => {
-        try {
-                const response = await axios.post(Constants.gatewayUrl + '/tableOrders/' + tableOrderId + '/prepare');
-                return response.data;
-        } catch (error) {
-                if ((error as any).response && (error as any).response.status === 404) {
-                        throw new Error('TableOrderIdNotFoundException');
-                }
-                console.error('Erreur lors de la préparation de la commande:', error);
-                throw error;
-        }
-};
-
-export const billTableOrder = async (tableOrderId: number) => {
-        try {
-                const response = await axios.post(Constants.gatewayUrl + '/tableOrders/' + tableOrderId + '/bill');
-                return response.data;
-        } catch (error) {
-                if ((error as any).response && (error as any).response.status === 409) {
-                        throw new Error('TableOrderAlreadyBilledException');
-                } else if ((error as any).response && (error as any).response.status === 404) {
-                        throw new Error('TableOrderIdNotFoundException');
-                }
-                console.error('Erreur lors de la facturation de la commande:', error);
-                throw error;
-        }
-};
-
