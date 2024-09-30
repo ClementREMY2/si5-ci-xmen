@@ -24,22 +24,24 @@ export default function HomePage() {
     console.log(getTables());
     console.log(getMenusGateway());
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>({...events, "Aucun": true});
-    const [tables, setTables] = useState<Table[]>([]);
+    const [allTables, setAllTables] = useState<Table[]>([]);
+    const [filteredTables, setFilteredTables] = useState<Table[]>([]);
+
 
     // Loading asynchronously the tables
     useEffect(() => {
         const fetchTables = async () => {
             const fetchedTables = await getTables();
-            setTables(fetchedTables);
+            setAllTables(fetchedTables);
         };
 
         fetchTables();
     }, []);
 
-    useMemo(() => {
-        const filteredTables = tables.filter(table => selectedEvents[table.event ?? "Aucun"]);
-        setTables(filteredTables);
-    }, [selectedEvents]);
+    useEffect(() => {
+        const filtered = allTables.filter(table => selectedEvents[table.event ?? "Aucun"]);
+        setFilteredTables(filtered);
+    }, [selectedEvents, allTables]);
 
     const correctModifiedTable = (previousTable: Table, modifiedTable: Table) => {
         if (!previousTable.event && modifiedTable.event && modifiedTable.status === TableStatusEnum.AVAILABLE) {
@@ -54,12 +56,12 @@ export default function HomePage() {
     };
 
     const handleTableModify = (modifiedTable: Table) => {
-        const newTables = [...tables];
+        const newTables = [...allTables];
         const index = newTables.findIndex((table) => table.id === modifiedTable.id);
         if (index !== -1) {
             correctModifiedTable(newTables[index], modifiedTable);
             newTables[index] = {...modifiedTable};
-            setTables(newTables);
+            setAllTables(newTables);
             // TODO: update the table in the backend
             const newMenu: MenuBackendNoId = {
                 fullName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
@@ -78,7 +80,7 @@ export default function HomePage() {
                overflow={"unset"}>
             <MainHeader width={"90%"}/>
             <TableFilters selectedEvents={selectedEvents} setSelectedEvents={setSelectedEvents} width={"90%"}/>
-            <TableGrid tables={tables} handleTableModify={handleTableModify} width={"90%"}/>
+            <TableGrid tables={filteredTables} handleTableModify={handleTableModify} width={"90%"}/>
         </Stack>
     );
 }
