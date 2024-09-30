@@ -32,7 +32,8 @@ export default function TableDialog({
     };
 
     const onPayment = () => {
-        navigate(generatePath(privateRoutes.payment, {table: table.table}));
+        if (table.event) navigate(generatePath(privateRoutes.paymentEvent, {event: table.event}));
+        else navigate(generatePath(privateRoutes.payment, {table: table.table}));
     };
 
     const displayActions = (

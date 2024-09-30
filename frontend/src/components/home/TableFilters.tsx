@@ -1,9 +1,11 @@
 import {Groups} from "@mui/icons-material";
 import {Button, Chip, Stack} from "@mui/material";
 import React, {useMemo} from "react";
+import {generatePath, useNavigate} from "react-router-dom";
 import {DictionaryBoolean} from "../../interfaces/Generics.ts";
 import {TableStatusEnum} from "../../interfaces/Table.ts";
 import {tablesMock} from "../../mocks/Tables.ts";
+import {privateRoutes} from "../../utils/Routes.ts";
 
 interface TableFiltersProps {
     selectedEvents: DictionaryBoolean;
@@ -12,6 +14,8 @@ interface TableFiltersProps {
 }
 
 export default function TableFilters({selectedEvents, setSelectedEvents, width}: Readonly<TableFiltersProps>) {
+    const navigate = useNavigate();
+    
     const handleAllClick = (value: boolean) => {
         const selectedEventsCopy = {...selectedEvents};
         for (const [key] of Object.entries(selectedEvents)) {
@@ -36,7 +40,7 @@ export default function TableFilters({selectedEvents, setSelectedEvents, width}:
     }, [selectedEvents]);
 
     const handlePayAllClick = () => {
-        console.log("Paying all tables for", singleEvent);
+        navigate(generatePath(privateRoutes.paymentEvent, {event: singleEvent}));
     };
 
     const disablePayAll = useMemo(() => {
