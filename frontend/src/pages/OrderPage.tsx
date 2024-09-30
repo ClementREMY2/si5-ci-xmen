@@ -56,16 +56,16 @@ export default function OrderPage() {
         total: 0
     });
 
-    const getItem = (id: string, isEventMenu: boolean = false): MenuItem | MenuEvent | undefined => {
+    const getItem = (id: string, isEventMenu: boolean): MenuItem | MenuEvent | undefined => {
         if (isEventMenu) return event?.menus.find(menu => menu.id === id);
         if (event) return event?.beverages.find(item => item.id === id);
         return menuNormalMock.find(item => item.id === id);
     };
 
-    const getNewQuantity = (id: string, delta: number, isEventMenu: boolean = false): number => {
+    const getNewQuantity = (id: string, delta: number, isEventMenu: boolean): number => {
         const items = isEventMenu ? order.itemsEvent : order.items;
         if (!items || !items[id]) return delta;
-        else return items![id] + delta;
+        else return items[id] + delta;
     };
 
     const changeItemQuantity = (id: string, delta: number, isEventMenu: boolean = false) => {
