@@ -42,15 +42,14 @@ const transformTableData = (dto: TableBackend[]): Table[] => {
 // Update the tables with the informations stored in the backend (menus)
 const updateTableWithInfosInMenus = async (tables: Table[]): Promise<Table[]> => {
         const menus: GenericMenuItem[] = await getMenus();
-        menus.sort((a, b) => a.fullName.localeCompare(b.fullName));
 
         for (let table of tables) {
                 for (let menuItem of menus) {
-                        if (menuItem.fullName.startsWith(table.table.toString())) {
-                                const tablesInfos = menuItem.fullName.split("|");
-                                table.nbPeople = parseInt(tablesInfos[0]);
-                                table.event = tablesInfos[1];
-                                table.status = tablesInfos[2] as TableStatusEnum;
+                        const tablesInfos = menuItem.fullName.split("|");
+                        if (tablesInfos[0] === table.table.toString()) {
+                                table.nbPeople = parseInt(tablesInfos[1]);
+                                table.event = tablesInfos[2];
+                                table.status = tablesInfos[3] as TableStatusEnum;
                         }       
                 }
         }
