@@ -19,7 +19,6 @@ const events: DictionaryBoolean = eventsMock
 export default function HomePage() {
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>({...events, "Aucun": true});
     const [tables, setTables] = useState<Table[]>(tablesMock);
-
     useMemo(() => {
         const filteredTables = tablesMock.filter(table => selectedEvents[table.event ?? "Aucun"]);
         setTables(filteredTables);
