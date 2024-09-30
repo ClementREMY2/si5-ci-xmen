@@ -119,9 +119,11 @@ export default function PaymentPage() {
     const handlePayment = () => {
         const total = paid.total + paying.total;
         if (total === order.total) {
+            setPaid({...order});
             toast.success("Paiement terminé!");
             navigate(privateRoutes.home);
         }
+
         const newPaid = {...paid, total};
 
         // Copy the items from paying to paid

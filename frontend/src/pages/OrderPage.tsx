@@ -1,6 +1,7 @@
 import {Box, Button} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
+import {toast} from "react-toastify";
 import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuEventList from "../components/order/MenuEventList.tsx";
@@ -102,6 +103,7 @@ export default function OrderPage() {
         // Send the order to the server
         setOrder(newOrder);
         console.log(newOrder);
+        toast.success("Commande envoyée!");
         navigate(privateRoutes.home);
     };
 

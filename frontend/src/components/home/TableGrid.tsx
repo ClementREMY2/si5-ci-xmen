@@ -21,7 +21,7 @@ export default function TableGrid({tables, handleTableModify, width}: Readonly<T
     const onTableModify = (modifiedTable: Table) => {
         handleTableModify?.(modifiedTable);
         setSelectedTable(modifiedTable);
-        toast.success(`Table ${modifiedTable.table} modifiée avec succès`, {theme: "dark"});
+        toast.success(`Table ${modifiedTable.table} modifiée avec succès`);
     };
 
     const onClose = () => {

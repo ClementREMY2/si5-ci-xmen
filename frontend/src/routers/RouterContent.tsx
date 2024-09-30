@@ -24,7 +24,7 @@ export default function RouterContent() {
         <ThemeProvider theme={theme}>
             <Box display={"flex"} height={"100%"}>
                 <CssBaseline/>
-                <ToastContainer position={"top-center"} theme={"colored"} closeOnClick/>
+                <ToastContainer position={"top-center"} theme={"dark"} closeOnClick/>
                 <PageTemplate>
                     <Outlet/> {/* This is where the child routes will be rendered */}
                 </PageTemplate>
