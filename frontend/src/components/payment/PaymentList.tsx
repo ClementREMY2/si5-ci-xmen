@@ -47,12 +47,12 @@ export default function PaymentList({order, paying, changePayingQuantity, addAll
     }
 
     return (
-        <Stack spacing={3} height={"100%"} paddingTop={2}>
+        <Stack spacing={3} height={"100%"} paddingTop={2} overflow={"unset"}>
             <Stack direction={"row"} justifyContent={"end"} alignItems={"center"}>
                 <Typography fontSize={"large"} fontWeight={"bold"}>Payer le total :</Typography>
                 <Checkbox checked={payingAll} onClick={handlePayingAllChange}/>
             </Stack>
-            <List sx={{flexGrow: 1}}>
+            <List sx={{height: "100%", overflowY: "auto"}}>
                 {order.items && Object.entries(order.items).map(([id, quantity]) => (
                     <PaymentListItem
                         key={id}
@@ -74,7 +74,6 @@ export default function PaymentList({order, paying, changePayingQuantity, addAll
                         icon={<Star color={"primary"}/>}
                     />
                 ))}
-
             </List>
             <Stack direction={"row"} justifyContent={"center"} alignItems={"center"}>
                 <TextField label={"Pourboire"} type={"number"} value={tip} variant={"outlined"}
