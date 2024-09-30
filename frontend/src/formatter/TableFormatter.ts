@@ -34,7 +34,7 @@ const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
         const table: Table = {
             id: "" + tableDto.number,
             table: tableDto.number ?? 0,
-            nbPeople: 4,  // Default value, can be updated later
+            nbPeople: 4,
             status: status
         };
 
