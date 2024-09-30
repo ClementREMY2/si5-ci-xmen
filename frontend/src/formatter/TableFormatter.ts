@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useState} from "react";
 import "../index.css";
-import { getTables } from '../services/DiningService.ts'
-import { Table, TableStatusEnum, TableWithOrderDto } from "../interfaces/Table.ts"
+import { getTables, getTablesOrders, updateTableOrder, updateTable as updateTableService } from '../services/DiningService.ts'
+import { TableOrderDTO, Table, TableStatusEnum, TableWithOrderDto } from "../interfaces/Table.ts"
+import { Order, OrderDTO, OrderingItemIdDTO } from "../interfaces/Order.ts";
 
 export const applyTableColors = (table: Table) => {
         if (table.status === TableStatusEnum.ORDER_IN_PROGRESS) {
@@ -19,10 +20,6 @@ export const applyTableColors = (table: Table) => {
             return "#9e9e9e";
         }
 };
-
-export const updateTable = (table: Table) => {
-        console.log("Table updated:", table);
-}
 
 const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
         return dto.map((tableDto) => {
@@ -46,6 +43,21 @@ const transformTableData = (dto: TableWithOrderDto[]): Table[] => {
         });
 };
 
+const transformTableOrderData = (dto: OrderDTO[]): Order[] => {
+        return dto.map((tableDto) => {
+                const order: Order = {
+                        id: tableDto._id,
+                        table: tableDto.tableNumber,
+                        datetime: tableDto.opened,
+                        total: tableDto.preparations.length,
+                        items: undefined,
+                        itemsEvent: undefined,
+                };
+
+                return order;
+        });
+}
+
 const useFetchTables = () => {
         const [tables, setTables] = useState<Table[]>([]);
         const [error, setError] = useState<string | null>(null);
@@ -68,8 +80,66 @@ const useFetchTables = () => {
           fetchTables();
         }, []);
 
+        let dataFront: OrderDTO[] = [];
+
+        useEffect(() => {
+                async () => {
+                  try {
+                    const dataDTO = await getTablesOrders();
+                    dataFront = dataDTO;
+                  } catch (error: any) {
+                    setError('Erreur lors de la récupération des tables.');
+                    console.error(error.message);
+                  } finally {
+                    setLoading(false);  
+                  }
+                };
+        }, []);
+
+        for (const table of tables) {
+                for (const order of dataFront) {
+                        if (table.table === order.tableNumber) {
+                                table.nbPeople = order.customersCount;
+                                for (const line of order.lines) {
+                                        table.event = line.item.shortName;
+                                }
+                        }
+                }                
+        }
+
         return { tables, error, loading };
 };
+
+
+export const postUpdateTable = async (table: Table, event: string ) => {
+        if (event === null) {
+                const tableDTO: TableOrderDTO = {
+                        tableNumber: table.table,
+                        customersCount: table.nbPeople
+                };
+                try {
+                        console.log(tableDTO);
+                        await updateTableService(tableDTO);
+                } catch (error) {
+                        console.error('Erreur lors de la mise à jour de la table:', error);
+                        throw error;
+                }
+        }
+        else {
+                const orderingItem: OrderingItemIdDTO = {
+                        menuItemId: event,
+                        menuItemShortName: event,
+                        howMany: 1
+                }
+                try {
+                        console.log(orderingItem);
+                        await updateTableOrder(table.table, orderingItem);
+                } catch (error) {
+                        console.error('Erreur lors de la mise à jour de la table:', error);
+                        throw error;
+                }
+        }
+}
 
 
 export default useFetchTables;

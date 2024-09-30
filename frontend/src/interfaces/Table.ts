@@ -20,3 +20,8 @@ export class TableWithOrderDto {
     taken?: boolean;
     tableOrderId?: string; 
 }
+
+export class TableOrderDTO {
+    tableNumber!: number;
+    customersCount!: number;
+}
