@@ -21,11 +21,12 @@ const events: DictionaryBoolean = eventsMock
     }, {});
 
 export default function HomePage() {
-    console.log(getMenusGateway())
+    console.log(getTables());
+    console.log(getMenusGateway());
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>({...events, "Aucun": true});
     const [tables, setTables] = useState<Table[]>([]);
 
-    // Charger les tables de manière asynchrone dans un useEffect
+    // Loading asynchronously the tables
     useEffect(() => {
         const fetchTables = async () => {
             const fetchedTables = await getTables();
@@ -47,6 +48,9 @@ export default function HomePage() {
         if (modifiedTable.status === TableStatusEnum.AVAILABLE) {
             modifiedTable.event = undefined;
         }
+        if (modifiedTable.event === undefined) {
+            modifiedTable.event = "Aucun";
+        }
     };
 
     const handleTableModify = (modifiedTable: Table) => {
@@ -58,8 +62,8 @@ export default function HomePage() {
             setTables(newTables);
             // TODO: update the table in the backend
             const newMenu: MenuBackendNoId = {
-                fullName: modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
-                shortName: modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
+                fullName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
+                shortName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
                 price: 1,
                 category: "DESSERT",
                 image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
