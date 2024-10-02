@@ -41,9 +41,9 @@ export const addMenu = async (newMenuItem: MenuBackendNoId) => {
         }
 };
 
-export const getMenuItemById = async (menuItemId: MenuItem["id"]) => {
+export const getMenuById = async (id: string) => {
         try {
-                const response = await axios.get(Constants.gatewayUrl + `/menus/${menuItemId}`);
+                const response = await axios.get(Constants.gatewayUrl + `menu/menus/${id}`);
                 return response.data;
         } catch (error) {
                 if ((error as any).response && (error as any).response.status === 404) {

@@ -1,6 +1,6 @@
 import {Stack} from "@mui/material";
 import "../index.css";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import TableFilters from "../components/home/TableFilters.tsx";
 import TableGrid from "../components/home/TableGrid.tsx";
 import MainHeader from "../components/MainHeader.tsx";
@@ -9,9 +9,8 @@ import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
 import { getTables } from "../formatter/TableFormatter.ts";
 import { getMenusGateway } from "../services/MenuService.ts";
-import { tablesMock } from "../mocks/Tables.ts";
 import { addMenu } from "../formatter/MenuFormatter.ts";
-import { MenuBackendNoId, MenuCategoryEnumBackend } from "../interfaces/Menu.ts";
+import { MenuBackendNoId } from "../interfaces/Menu.ts";
 
 const events: DictionaryBoolean = eventsMock
     .map((event) => event.name)
@@ -21,12 +20,9 @@ const events: DictionaryBoolean = eventsMock
     }, {});
 
 export default function HomePage() {
-    console.log(getTables());
-    console.log(getMenusGateway());
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>({...events, "Aucun": true});
     const [allTables, setAllTables] = useState<Table[]>([]);
     const [filteredTables, setFilteredTables] = useState<Table[]>([]);
-
 
     // Loading asynchronously the tables
     useEffect(() => {

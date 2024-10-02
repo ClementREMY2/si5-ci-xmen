@@ -23,12 +23,15 @@ export default function MenuEventList({event, order, changeItemQuantity}: Readon
         setOpen(prevState => ({...prevState, [category]: !prevState[category]}));
     };
 
+    const beverages = event?.beverages || []; // Valeur par défaut : tableau vide
+    const menus = event?.menus || []; // Valeur par défaut : tableau vide
+
     return (
         <List sx={{width: "100%"}}>
             <MenuListItem
                 title={MenuCategoryEnum.BEVERAGE.toUpperCase()}
                 icon={<LocalBar color={"primary"}/>}
-                menuItems={event.beverages}
+                menuItems={beverages}
                 orderItems={order.items ?? {}}
                 changeItemQuantity={changeItemQuantity}
                 open={open["beverages"]}
@@ -37,7 +40,7 @@ export default function MenuEventList({event, order, changeItemQuantity}: Readon
             <MenuEventListItem
                 title={"MENU"}
                 icon={<Star color={"primary"}/>}
-                menuItems={event.menus}
+                menuItems={menus}
                 orderItems={order.itemsEvent ?? {}}
                 changeEventItemQuantity={(id, delta) => changeItemQuantity(id, delta, true)}
                 open={open["menus"]}
