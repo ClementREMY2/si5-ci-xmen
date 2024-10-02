@@ -25,6 +25,7 @@ export default function OrderPage() {
     useEffect(() => {
         const fetchMenus = async () => {
             const menusData = await getMenusGateway();
+            console.log("menusData1" + menusData); 
             setMenus(menusData);
         };
         fetchMenus();
@@ -33,7 +34,6 @@ export default function OrderPage() {
     useEffect(() => {
         const fetchTables = async () => {
             const tablesData = await getTables();
-            console.log(tablesData);
             setTables(tablesData);
         };
         fetchTables();
@@ -42,10 +42,15 @@ export default function OrderPage() {
     useEffect(() => {
         const fetchEvents = async () => {
             const eventsData = getAllEvents(menus);
+            console.log("eventsData" + eventsData);
+            console.log("menusData2" + menus);
             setEvents(eventsData);
         };
-        fetchEvents();
-    }, []);
+        if (menus.length > 0) {
+            fetchEvents();
+        }
+    }, [menus]); 
+    
 
     useEffect(() => {
         const fetchMenus = async () => {
@@ -86,7 +91,7 @@ export default function OrderPage() {
     };
 
     const table = getTable(parseFloat(tableNumber!));
-    console.log("table" + table?.event + " " + table?.table + " " + table?.status + " " + table?.nbPeople);   
+    // console.log("table" + table?.event + " " + table?.table + " " + table?.status + " " + table?.nbPeople);   
     const event = table?.event ? extractEvent(table.event) : undefined;
 
     const [order, setOrder] = useState<Order>({
@@ -147,7 +152,7 @@ export default function OrderPage() {
     const card: React.ReactNode = (
         <Box display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} height={"100%"}>
             <ActionCardGeneric
-                title={`Table ${order.table}`}
+                title={`Table ${table?.table}`}
                 leftTitle={table?.event}
                 rightTitle={`${order.total} €`}
                 mainContent={
