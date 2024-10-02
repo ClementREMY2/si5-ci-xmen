@@ -20,7 +20,6 @@ export const applyTableColors = (table: Table) => {
         }
 };
 
-
 // Return a table from a backend table
 const transformTableData = (dto: TableBackend[]): Table[] => {
         return dto.map((tableDto) => {
@@ -55,7 +54,6 @@ const updateTableWithInfosInMenus = async (tables: Table[]): Promise<Table[]> =>
         }
         return tables;
 };
-
 
 // Get all the tables from the backend
 export const getTables = async (): Promise<Table[]> => {
