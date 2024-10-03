@@ -1,41 +1,48 @@
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import {Box, Button, Typography} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import EventsList from "../components/EventsList/EventsList";
-
+import { getAllEvents, getNextEvents, getTodayEvents } from "../formatter/EventFormatter";
+import { getMenusBackend } from "../formatter/MenuFormatter";
+import { Event, EventItem } from "../interfaces/Event";
 
 export default function EventsPage() {
-    const sampleEvents = [
-        {
-            id: 1,
-            title: "Avisto",
-            details: ["3 menus", "22/09/2024"]
-        },
-        {
-            id: 2,
-            title: "SAP",
-            details: ["2 menus", "24/09/2024"]
-        },
-        {
-            id: 3,
-            title: "Air France",
-            details: ["4 menus", "26/09/2024"]
-        }
-    ];
+    const [events, setEvents] = useState<Event[] | undefined>(undefined);
+    const [todayEvents, setTodayEvents] = useState<EventItem[]>([]);
+    const [nextDaysEvents, setNextDaysEvents] = useState<EventItem[]>([]);
+    
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const menus = await getMenusBackend();
+                const allEvents = getAllEvents(menus);
+                setEvents(allEvents); 
 
-    const ev = {
-        todayEvents: [sampleEvents[0]],
-        nextDaysEvents: [sampleEvents[1], sampleEvents[2]]
-    };
+                setTodayEvents(getTodayEvents(allEvents));
+                setNextDaysEvents(getNextEvents(allEvents));
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        };
 
-    return (<>
-        <Box display="flex" justifyContent="center" sx={{margin: 2}}>
-            <Typography variant="h4">Événements</Typography>
-        </Box>
-        <Box display="flex" justifyContent="flex-start" sx={{margin: 2}} gap={2} mt={2}>
-            <Button variant="contained" color="primary" endIcon={<AddCircleOutlineIcon/>}>
-                Ajouter un évenement
-            </Button>
-        </Box>
-        <EventsList todayEvents={ev.todayEvents} nextDaysEvents={ev.nextDaysEvents}/>
-    </>);
+        fetchEvents();
+    }, []);
+
+    if (!events) {
+        return <Typography>Chargement des événements...</Typography>;
+    }
+
+    return (
+        <>
+            <Box display="flex" justifyContent="center" sx={{ margin: 2 }}>
+                <Typography variant="h4">Événements</Typography>
+            </Box>
+            <Box display="flex" justifyContent="flex-start" sx={{ margin: 2 }} gap={2} mt={2}>
+                <Button variant="contained" color="primary" endIcon={<AddCircleOutlineIcon />}>
+                    Ajouter un évenement
+                </Button>
+            </Box>
+            <EventsList todayEvents={todayEvents} nextDaysEvents={nextDaysEvents} />
+        </>
+    );
 }
