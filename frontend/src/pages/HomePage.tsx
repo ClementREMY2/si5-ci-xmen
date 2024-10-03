@@ -8,7 +8,6 @@ import {DictionaryBoolean} from "../interfaces/Generics.ts";
 import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
 import { getTables } from "../formatter/TableFormatter.ts";
-import { getMenusGateway } from "../services/MenuService.ts";
 import { addMenu } from "../formatter/MenuFormatter.ts";
 import { MenuBackendNoId } from "../interfaces/Menu.ts";
 
