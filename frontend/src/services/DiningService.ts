@@ -40,6 +40,26 @@ export const getTables = async () => {
         }
 };
 
+export const getTable = async (tableId: number) => {
+        try {
+                const response = await axios.get(Constants.gatewayUrl + 'dining/tables/' + tableId);
+                const data = response.data;
+
+                return {
+                        _id: data._id,
+                        number: data.number,
+                        taken: data.taken,
+                        tableOrderId: data.tableOrderId,
+                } as TableBackend;
+        } catch (error) {
+                if ((error as any).response && (error as any).response.status === 404) {
+                        throw new Error('TableIdNotFoundException');
+                }
+                console.error('Erreur lors de la récupération de la table:', error);
+                throw error;
+        }
+}
+
 export const getTablesOrders = async () => {
         try {
                 const response = await axios.get(Constants.gatewayUrl + 'dining/tableOrders');
