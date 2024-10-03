@@ -7,3 +7,9 @@ export interface Event {
     menus: MenuEvent[];
     beverages: MenuItem[];
 }
+
+export interface EventItem {
+    id: number;
+    title: string;
+    details: string[];
+}
