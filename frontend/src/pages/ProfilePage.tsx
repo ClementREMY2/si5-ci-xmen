@@ -2,9 +2,7 @@ import { Box, Avatar, Typography, Container } from "@mui/material";
 
 export default function ProfilePage() {
     return (
-        <Container maxWidth="sm">
-
-            
+        <Container maxWidth="sm">           
             <Typography variant="h4" align="center" sx={{ mt: 10 }}>
                 Profil
             </Typography>
