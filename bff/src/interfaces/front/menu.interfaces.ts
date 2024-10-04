@@ -6,7 +6,7 @@ export enum MenuCategoryEnum {
 }
 
 export interface GenericMenuItem {
-    id: string;
+    id?: string;
     fullName: string;
     shortName: string;
     price: number;

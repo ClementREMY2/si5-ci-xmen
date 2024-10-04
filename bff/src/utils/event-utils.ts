@@ -23,7 +23,8 @@ function createEvent(menu: Menu, relatedMenus: Menu[], menusBack: Menu[]) : Even
         date: new Date(year, month, day),
         menus: menus,
         beverages: beverages,
-        id: menu._id
+        id: menu._id,
+        length: 0
     };
 
     return event;

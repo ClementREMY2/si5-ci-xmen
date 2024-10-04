@@ -1,5 +1,5 @@
 export interface OrderItems {
-    [id: string]: number; // id du menu item: quantity
+    [id: string]: number;
 }
 
 export interface Order {

@@ -3,6 +3,8 @@ import { Menu } from "src/interfaces/back/menu.interface";
 import { Order } from "src/interfaces/front/order.interface";
 import { Payment } from "src/interfaces/front/payment.interface";
 import { Event } from "src/interfaces/front/event.interface";
+import { Table } from "src/interfaces/front/table.interface";
+import { MenuItem } from "src/interfaces/front/menu.interfaces";
 
 
 function encodeObjectToBase64(obj: any): any {
@@ -145,4 +147,115 @@ async function getLastPaymentOfTable(tableNumber: number): Promise<Payment> {
     
 }
 
-export { encodeObjectToBase64, saveMenu, findAllOrders, getLastPaymentOfTable, findAllEvents };
+
+function isTable(obj: any): obj is Table {
+    return (
+        typeof obj.table === 'number' &&
+        typeof obj.nbPeople === 'number' &&
+        typeof obj.status === 'string'
+    );
+}
+
+async function findAllTables() : Promise<Table[]> {
+    const menuItems: Menu[] = await axios.get('http://localhost:9500/menu/menus')
+        .then(response => response.data)
+        .catch(error => {
+            throw new Error(`Failed to fetch menus: ${error.message}`);
+        });
+
+    const fullNamesDecoded = menuItems.map((menuItem) => {
+        try {
+            const decoded = Buffer.from(menuItem.fullName, 'base64').toString('ascii');
+            const decodedObj = JSON.parse(decoded);
+            decodedObj.id = menuItem._id;
+            return decodedObj;
+        }
+        catch (e) {
+            return null;
+        }
+    }).filter((decoded) => decoded !== null).filter(isTable);
+
+    const uniqueTables = fullNamesDecoded.reduce((acc, table) => {
+        const existingTable = acc.find(t => t.table === table.table);
+        if (!existingTable) {
+            acc.push(table);
+        } else {
+            const index = acc.indexOf(existingTable);
+            acc[index] = table;
+        }
+        return acc;
+    }, []);
+
+    return uniqueTables;
+}
+
+async function saveTable(table: Table): Promise<Table> {
+    const encoded = encodeObjectToBase64(table);
+
+    const res: Menu = await saveMenu(encoded);
+
+    table.id = res._id;
+    return table;
+
+}
+
+async function findTable(tableNumber: number): Promise<Table> {
+    const tables = await findAllTables();
+    return tables.find(table => table.table == tableNumber);
+}
+
+
+// export interface GenericMenuItem {
+//     id?: string;
+//     fullName: string;
+//     shortName: string;
+//     price: number;
+// }
+
+function isMenuItem(obj: any): obj is MenuItem {
+    return (
+        typeof obj.fullName === 'string' &&
+        typeof obj.price === 'number' &&
+        typeof obj.shortName === 'string' &&
+        typeof obj.category === 'string'
+    );
+}
+
+
+async function findAllMenus() : Promise<MenuItem[]> {
+    const menuItems: Menu[] = await axios.get('http://localhost:9500/menu/menus')
+        .then(response => response.data)
+        .catch(error => {
+            throw new Error(`Failed to fetch menus: ${error.message}`);
+        });
+
+    const fullNamesDecoded = menuItems.map((menuItem) => {
+        try {
+            const decoded = Buffer.from(menuItem.fullName, 'base64').toString('ascii');
+            const decodedObj = JSON.parse(decoded);
+            decodedObj.id = menuItem._id;
+            return decodedObj;
+        }
+        catch (e) {
+            return null;
+        }
+    }
+    ).filter((decoded) => decoded !== null).filter(isMenuItem);
+
+
+    const uniqueMenuItems = fullNamesDecoded.reduce((acc, menuItem) => {
+        const existingMenuItem = acc.find(item => item.shortName === menuItem.shortName);
+        if (!existingMenuItem) {
+            acc.push(menuItem);
+        } else {
+            const index = acc.indexOf(existingMenuItem);
+            acc[index] = menuItem;
+        }
+        return acc;
+    }, []);
+
+    return uniqueMenuItems;
+
+    return fullNamesDecoded;
+}
+export { encodeObjectToBase64, saveMenu, findAllOrders, getLastPaymentOfTable, findAllEvents, findAllTables, saveTable, findTable , findAllMenus};

@@ -5,6 +5,11 @@ import { encodeObjectToBase64, saveMenu, findAllEvents as findAll } from 'src/ut
 
 @Injectable()
 export class Events64Service {
+    async findEventById(id: string) : Promise<Event> {
+        const events = await this.findAllEvents();
+        return events.reverse().find(event => event.id === id);
+    }
+
     async findAllEvents() {
         const events = await findAll();
         const uniqueEvents = new Map<string, Event>();
