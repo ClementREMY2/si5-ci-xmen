@@ -1,5 +1,5 @@
 import { getAllMenuEvent, getAllMenuItem } from "./MenuFormatter";
-import { Menu, MenuBackend } from "../interfaces/Menu";
+import { MenuBackend, MenuBackendNoId } from "../interfaces/Menu";
 import { Event, EventItem } from "../interfaces/Event";
 
 
@@ -95,6 +95,28 @@ export function getNextEvents(events: Event[]) : EventItem[] {
             details: [`${event.menus.length} menus`, event.date.toLocaleDateString()]
         };
     });
+}
+
+export function postEvent(event: Event): MenuBackendNoId {
+    const date = event.date;
+
+    
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    const dateStr = `${year}${month < 10 ? '0' : ''}${month}${day < 10 ? '0' : ''}${day}`;
+
+    const menu: MenuBackendNoId = {
+        // and also beverages
+        fullName: `event|${event.menus.map(menu => menu.id).join('|')+event.beverages.map(beverage => beverage.id).join('|')}`,
+        shortName: event.name,
+        price: parseInt(dateStr),
+        category: 'STARTER',
+        image: 'https://via.placeholder.com'
+    };
+
+    return menu;    
 }
 
 
