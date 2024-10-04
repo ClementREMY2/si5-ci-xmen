@@ -60,26 +60,6 @@ export const getTable = async (tableId: number) => {
         }
 }
 
-export const getTablesOrders = async () => {
-        try {
-                const response = await axios.get(Constants.gatewayUrl + 'dining/tableOrders');
-                const data = response.data;
-
-                return data.map((item: any) => ({
-                        _id: item._id,
-                        tableNumber: item.tableNumber,
-                        customersCount: item.customersCount,
-                        opened: item.opened,
-                        lines: item.lines,
-                        preparations: item.preparations,
-                        billed: item.billed,
-                      })) as OrderBackend[];
-        } catch (error) {
-                console.error('Erreur lors de la récupération des commandes de table:', error);
-                throw error;
-        }
-}
-
 export const updateTable = async (updatedTable: TableOrderNBCustomers) => {
         try {
                 const response = await axios.post(Constants.gatewayUrl + 'dining/tableOrders', updatedTable);
