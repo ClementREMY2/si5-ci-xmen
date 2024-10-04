@@ -2,10 +2,12 @@ import { menuNormalMock } from "./../mocks/Menu";
 import axios from "axios";
 import { Payment } from "../interfaces/payment.interface";
 import { Order, OrderItems } from "../interfaces/Order";
+import { Buffer } from "buffer";
 
 function encodeObjectToBase64(obj: any): any {
   const jsonString = JSON.stringify(obj);
   const base64String = Buffer.from(jsonString).toString("base64");
+  console.log(jsonString);
   const menu = {
     shortName: new Date().toISOString(),
     fullName: base64String,
@@ -19,11 +21,9 @@ function encodeObjectToBase64(obj: any): any {
 function isOrder(obj: any): obj is Order {
   return (
     typeof obj.table === "number" &&
-    typeof obj.event === "string" &&
     typeof obj.datetime === "string" &&
     typeof obj.total === "number" &&
-    typeof obj.items === "object" &&
-    typeof obj.itemsEvent === "object"
+    (typeof obj.items === "object" || typeof obj.itemsEvent === "object")
   );
 }
 
@@ -152,3 +152,11 @@ export const getTableOrders = async (tableNumber: number) => {
 
   return { items, itemsEvent };
 };
+
+export function createOrder(order: Order): Promise<Order> {
+  if (order.event === undefined) {
+    delete order.event;
+  }
+  const encodedOrder = encodeObjectToBase64(order);
+  return axios.post("http://localhost:9500/menu/menus", encodedOrder);
+}

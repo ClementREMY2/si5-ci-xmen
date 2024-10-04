@@ -13,8 +13,10 @@ import {checkTableNumber} from "../utils/PageUtils.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 import { getTables } from "../formatter/TableFormatter.ts";
 import { getAllEvents } from "../formatter/EventFormatter.ts";
-import { getAllMenuItem } from "../formatter/MenuFormatter.ts";
+// import { getAllMenuItem } from "../formatter/MenuFormatter.ts";
 import { getMenusGateway } from "../services/MenuService.ts";
+import { getMenuItems } from "../services/MenuItemsService.ts";
+import { createOrder } from "../services/OrderService.ts";
 
 export default function OrderPage() {
     const [tables, setTables] = useState<Table[]>([]);
@@ -31,17 +33,19 @@ export default function OrderPage() {
         fetchMenus();
     }, []);
 
-    useEffect(() => {
-        const fetchTables = async () => {
-            const tablesData = await getTables();
-            setTables(tablesData);
-        };
-        fetchTables();
-    }, []);
+
+    // pas compris pourquoi on doit faire ca, et ca casse le deuxieme useEffect pour les menuItems
+    // useEffect(() => {
+    //     const fetchTables = async () => {
+    //         const tablesData = await getTables();
+    //         setTables(tablesData);
+    //     };
+    //     fetchTables();
+    // }, []);
 
     useEffect(() => {
         const fetchEvents = async () => {
-            const eventsData = getAllEvents(menus);
+            const eventsData: Event[] = [];
             console.log("eventsData" + eventsData);
             console.log("menusData2" + menus);
             setEvents(eventsData);
@@ -53,11 +57,15 @@ export default function OrderPage() {
     
 
     useEffect(() => {
-        const fetchMenus = async () => {
-            const menusItems: MenuItem[] = await getAllMenuItem(menus);
-            setMenuItems(menusItems);
+        const fetchMenuItems = async () => {
+            try {
+                const menuItemsData = await getMenuItems();
+                setMenuItems(menuItemsData);
+            } catch (error) {
+                console.error("Error fetching menu items:", error);
+            }
         };
-        fetchMenus();
+        fetchMenuItems();
     }, []);
 
     const navigate = useNavigate();
@@ -85,6 +93,8 @@ export default function OrderPage() {
         [MenuCategoryEnum.DESSERT]: []
     } as Menu);
     
+    console.log("extractedMenu" + JSON.stringify(extractedMenu, null, 2));
+
     const extractEvent = (eventName: string): Event => {
         const event = events.find(event => event.name === eventName);
         return event!;
@@ -138,13 +148,15 @@ export default function OrderPage() {
         navigate(privateRoutes.home);
     };
 
-    const confirmOrder = () => {
+    const confirmOrder = async () => {
         const newOrder = {
             ...order,
-            date: new Date()
+            datetime: new Date()
         };
+        newOrder.table = parseFloat(tableNumber!);
+        const o: Order = await createOrder(newOrder);
+        setOrder(o);
         // Send the order to the server
-        setOrder(newOrder);
         console.log(newOrder);
         navigate(privateRoutes.home);
     };
@@ -152,7 +164,7 @@ export default function OrderPage() {
     const card: React.ReactNode = (
         <Box display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} height={"100%"}>
             <ActionCardGeneric
-                title={`Table ${table?.table}`}
+                title={`Table ${parseFloat(tableNumber!)}`}
                 leftTitle={table?.event}
                 rightTitle={`${order.total} €`}
                 mainContent={

@@ -30,6 +30,7 @@ export default function MenuList({menu, orderItems, changeItemQuantity}: Readonl
         setOpen(prevState => ({...prevState, [category]: !prevState[category]}));
     };
 
+    console.log("menuList", JSON.stringify(menuList));
     return (
         <List sx={{width: "100%"}}>
             {menuList.map(({key, category, icon}) => (
