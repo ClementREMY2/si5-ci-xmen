@@ -39,7 +39,7 @@ export interface MenuBackendNoId {
     price: number,
     category: string,
     image: string
-} 
+}
 
 export enum MenuCategoryEnumBackend {
     BEVERAGE,

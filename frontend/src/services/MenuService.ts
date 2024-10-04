@@ -53,3 +53,13 @@ export const getMenuById = async (id: string) => {
                 throw error;
         }
 };
+
+export const postMenu = async (menu: MenuBackendNoId) => {
+        try {
+                const response = await axios.post(Constants.gatewayUrl + `menu/menus`, menu);
+                return response.data;
+        } catch (error) {
+                console.error('Erreur lors de la création du menu:', error);
+                throw error;
+        }
+}
