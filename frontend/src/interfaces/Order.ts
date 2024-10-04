@@ -12,6 +12,8 @@ export interface Order {
     itemsEvent?: OrderItems;
 }
 
+////// For backend : 
+
 export interface OrderBackend {
     _id: string,
     tableNumber: number,

@@ -1,5 +1,5 @@
 import { getAllMenuEvent, getAllMenuItem } from "./MenuFormatter";
-import { MenuBackend } from "../interfaces/Menu";
+import { Menu, MenuBackend } from "../interfaces/Menu";
 import { Event, EventItem } from "../interfaces/Event";
 
 
@@ -51,6 +51,26 @@ export function getAllEvents(menusBack: MenuBackend[]) : Event[] {
     }
 
     return events;
+}
+
+export function getOneEvent(menusBack: MenuBackend[], name: string) : Event | undefined {
+    let event: Event | undefined;
+
+    const menuMap = new Map<string, MenuBackend>();
+
+    for (const menu of menusBack) {
+        menuMap.set(menu._id.toString(), menu);
+    }
+
+    for (const menu of menusBack) {
+        const [type, ...ids] = menu.fullName.split('|');
+        if (type === 'event' && menu.shortName === name) {
+            const relatedMenus = ids.map(id => menuMap.get(id)).filter(Boolean) as MenuBackend[];
+            event = createEvent(menu, relatedMenus, menusBack);
+        }
+    }
+
+    return event;
 }
 
 export function getTodayEvents(events: Event[]) : EventItem[] {
