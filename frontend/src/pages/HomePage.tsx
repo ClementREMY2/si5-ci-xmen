@@ -10,6 +10,7 @@ import {eventsMock} from "../mocks/Event.ts";
 import { getTables } from "../formatter/TableFormatter.ts";
 import { addMenu } from "../formatter/MenuFormatter.ts";
 import { MenuBackendNoId } from "../interfaces/Menu.ts";
+import { savePayment } from "../services/OrderService.ts";
 
 const events: DictionaryBoolean = eventsMock
     .map((event) => event.name)
@@ -65,7 +66,11 @@ export default function HomePage() {
                 category: "DESSERT",
                 image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
             }
-            console.log(newMenu);
+        
+            if(modifiedTable.status === TableStatusEnum.OCCUPIED) {
+                // send a payment with emtpy items not ended 
+                savePayment({table: modifiedTable.table, date: new Date(), ended: false, items: {}, itemsEvent: {}});
+            }
             addMenu(newMenu);
         }
     };

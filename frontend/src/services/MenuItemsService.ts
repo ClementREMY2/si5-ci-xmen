@@ -12,7 +12,6 @@ interface Menu {
 }
 
 function isMenuItem(obj: any): obj is MenuItem {
-  console.log("obj", obj);
   return (
     typeof obj.fullName === "string" &&
     typeof obj.price === "number" &&
@@ -34,12 +33,10 @@ async function findAllMenus(): Promise<MenuItem[]> {
         const decoded = Buffer.from(menuItem.fullName, "base64").toString(
           "ascii"
         );
-        console.log(decoded);
         const decodedObj = JSON.parse(decoded);
         decodedObj.id = menuItem._id;
         return decodedObj;
       } catch (e) {
-        console.log("error", e);
         return null;
       }
     })
@@ -61,16 +58,27 @@ async function findAllMenus(): Promise<MenuItem[]> {
     []
   );
 
-  console.log("menuItem", uniqueMenuItems);
   return uniqueMenuItems;
 }
 
 export const getMenuItems = async () => {
   try {
     const menuItems = await findAllMenus();
-    console.log("menuItems", menuItems);
     return menuItems;
   } catch (error) {
     throw new Error("Failed to fetch menu items");
+  }
+};
+
+export const getMenuItemById = async (id: string) => {
+  try {
+    const menuItems = await findAllMenus();
+    const menuItem = menuItems.find((item) => item.id === id);
+    if (!menuItem) {
+      throw new Error("Menu item not found");
+    }
+    return menuItem;
+  } catch (error) {
+    throw new Error("Failed to fetch menu item");
   }
 };

@@ -28,7 +28,6 @@ export default function EventsList({todayEvents, nextDaysEvents}: Readonly<Event
     const navigate = useNavigate();
 
     const handleSeeDetails = (eventId: number) => {
-        console.log(eventId);
         navigate(generatePath(privateRoutes.event, {id: eventId}));
     };
 

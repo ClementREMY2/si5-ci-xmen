@@ -26,7 +26,6 @@ export default function MenuListItem({
 }: Readonly<MenuListItemProps>) {
     const hasItems = useMemo(() => menuItems.length > 0, [menuItems]);
 
-    console.log("menuItems", JSON.stringify(menuItems));
     return (
         <ListItem><Stack width={"100%"}>
             <ListItemButton onClick={handleOpen}>
