@@ -27,7 +27,6 @@ export default function OrderPage() {
     useEffect(() => {
         const fetchMenus = async () => {
             const menusData = await getMenusGateway();
-            console.log("menusData1" + menusData); 
             setMenus(menusData);
         };
         fetchMenus();
@@ -46,8 +45,6 @@ export default function OrderPage() {
     useEffect(() => {
         const fetchEvents = async () => {
             const eventsData: Event[] = [];
-            console.log("eventsData" + eventsData);
-            console.log("menusData2" + menus);
             setEvents(eventsData);
         };
         if (menus.length > 0) {
@@ -92,8 +89,6 @@ export default function OrderPage() {
         [MenuCategoryEnum.MAIN]: [],
         [MenuCategoryEnum.DESSERT]: []
     } as Menu);
-    
-    console.log("extractedMenu" + JSON.stringify(extractedMenu, null, 2));
 
     const extractEvent = (eventName: string): Event => {
         const event = events.find(event => event.name === eventName);
@@ -101,7 +96,6 @@ export default function OrderPage() {
     };
 
     const table = getTable(parseFloat(tableNumber!));
-    // console.log("table" + table?.event + " " + table?.table + " " + table?.status + " " + table?.nbPeople);   
     const event = table?.event ? extractEvent(table.event) : undefined;
 
     const [order, setOrder] = useState<Order>({
@@ -156,8 +150,6 @@ export default function OrderPage() {
         newOrder.table = parseFloat(tableNumber!);
         const o: Order = await createOrder(newOrder);
         setOrder(o);
-        // Send the order to the server
-        console.log(newOrder);
         navigate(privateRoutes.home);
     };
 
