@@ -24,6 +24,31 @@ export type Menu = {
     [key in MenuCategoryEnum]: MenuItem[]
 }
 
+export interface MenuBackend {
+    _id: string,
+    fullName: string,
+    shortName: string,
+    price: number,
+    category: MenuCategoryEnumBackend,
+    image: string
+}
+
+export interface MenuBackendNoId {
+    fullName: string,
+    shortName: string,
+    price: number,
+    category: string,
+    image: string
+}
+
+export enum MenuCategoryEnumBackend {
+    BEVERAGE,
+    STARTER,
+    MAIN,
+    DESSERT 
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface MenuItemShort {

@@ -30,7 +30,6 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
     const updatedMenu = { ...editedMenu
     };
     setTotalPrice(calculateTotalPrice());
-    console.log(totalPrice)
     onMenuUpdate(updatedMenu);
   };
 

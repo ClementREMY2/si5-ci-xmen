@@ -1,13 +1,16 @@
 import {Stack} from "@mui/material";
 import "../index.css";
-import {useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import TableFilters from "../components/home/TableFilters.tsx";
 import TableGrid from "../components/home/TableGrid.tsx";
 import MainHeader from "../components/MainHeader.tsx";
 import {DictionaryBoolean} from "../interfaces/Generics.ts";
 import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
-import {tablesMock} from "../mocks/Tables.ts";
+import { getTables } from "../formatter/TableFormatter.ts";
+import { addMenu } from "../formatter/MenuFormatter.ts";
+import { MenuBackendNoId } from "../interfaces/Menu.ts";
+import { savePayment } from "../services/OrderService.ts";
 
 const events: DictionaryBoolean = eventsMock
     .map((event) => event.name)
@@ -18,12 +21,23 @@ const events: DictionaryBoolean = eventsMock
 
 export default function HomePage() {
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>({...events, "Aucun": true});
-    const [tables, setTables] = useState<Table[]>(tablesMock);
+    const [allTables, setAllTables] = useState<Table[]>([]);
+    const [filteredTables, setFilteredTables] = useState<Table[]>([]);
 
-    useMemo(() => {
-        const filteredTables = tablesMock.filter(table => selectedEvents[table.event ?? "Aucun"]);
-        setTables(filteredTables);
-    }, [selectedEvents]);
+    // Loading asynchronously the tables
+    useEffect(() => {
+        const fetchTables = async () => {
+            const fetchedTables = await getTables();
+            setAllTables(fetchedTables);
+        };
+
+        fetchTables();
+    }, []);
+
+    useEffect(() => {
+        const filtered = allTables.filter(table => selectedEvents[table.event ?? "Aucun"]);
+        setFilteredTables(filtered);
+    }, [selectedEvents, allTables]);
 
     const correctModifiedTable = (previousTable: Table, modifiedTable: Table) => {
         if (!previousTable.event && modifiedTable.event && modifiedTable.status === TableStatusEnum.AVAILABLE) {
@@ -32,15 +46,32 @@ export default function HomePage() {
         if (modifiedTable.status === TableStatusEnum.AVAILABLE) {
             modifiedTable.event = undefined;
         }
+        if (modifiedTable.event === undefined) {
+            modifiedTable.event = "Aucun";
+        }
     };
 
     const handleTableModify = (modifiedTable: Table) => {
-        const newTables = [...tables];
+        const newTables = [...allTables];
         const index = newTables.findIndex((table) => table.id === modifiedTable.id);
         if (index !== -1) {
             correctModifiedTable(newTables[index], modifiedTable);
             newTables[index] = {...modifiedTable};
-            setTables(newTables);
+            setAllTables(newTables);
+            // TODO: update the table in the backend
+            const newMenu: MenuBackendNoId = {
+                fullName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
+                shortName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
+                price: 1,
+                category: "DESSERT",
+                image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
+            }
+        
+            if(modifiedTable.status === TableStatusEnum.OCCUPIED) {
+                // send a payment with emtpy items not ended 
+                savePayment({table: modifiedTable.table, date: new Date(), ended: false, items: {}, itemsEvent: {}});
+            }
+            addMenu(newMenu);
         }
     };
 
@@ -49,7 +80,7 @@ export default function HomePage() {
                overflow={"unset"}>
             <MainHeader width={"90%"}/>
             <TableFilters selectedEvents={selectedEvents} setSelectedEvents={setSelectedEvents} width={"90%"}/>
-            <TableGrid tables={tables} handleTableModify={handleTableModify} width={"90%"}/>
+            <TableGrid tables={filteredTables} handleTableModify={handleTableModify} width={"90%"}/>
         </Stack>
     );
 }

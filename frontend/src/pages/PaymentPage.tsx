@@ -15,6 +15,8 @@ import {eventOrderMock, tableOrderMock} from "../mocks/Order.ts";
 import {tablesMock} from "../mocks/Tables.ts";
 import {checkEventName, checkTableNumber} from "../utils/PageUtils.ts";
 import {privateRoutes} from "../utils/Routes.ts";
+import { getEventOrders, getTableOrders, savePayment } from "../services/OrderService.ts";
+import { getMenuItemById } from "../services/MenuItemsService.ts";
 
 const findTable = (tableNumber?: string): Table | undefined => {
     if (!checkTableNumber(tableNumber, false)) return undefined;
@@ -35,18 +37,31 @@ export default function PaymentPage() {
     const table = findTable(tableNumber);
     const event = findEvent(eventName);
 
+    console.log(JSON.stringify(table), JSON.stringify(event));
+
     useEffect(() => {
-        if (!table && !event) {
-            console.warn("No table found for table number:", tableNumber, "and no event found for name:", eventName,
-                "=> redirecting to home page");
-            navigate(privateRoutes.home);
-        } else if (table && event) {
-            console.warn("Can't have table and event for payment, redirecting to home page");
-            navigate(privateRoutes.home);
-        }
+        const fetchOrder = async () => {
+            if (!table && !event) {
+                console.warn("No table found for table number:", tableNumber, "and no event found for name:", eventName,
+                    "=> redirecting to home page");
+                navigate(privateRoutes.home);
+            } else if (table && event) {
+                console.warn("Can't have table and event for payment, redirecting to home page");
+                navigate(privateRoutes.home);
+            } else if (table && !event) {
+                const order = await getTableOrders(table.table);
+                console.log(JSON.stringify(order));
+                setOrder(await getTableOrders(table.table));
+            } else if (!table && event) {
+                if(event.id)
+                    setOrder(await getEventOrders(event.id));
+            }
+        };
+
+        fetchOrder();
     }, [navigate, tableNumber, table, eventName, event]);
 
-    const order = table ? tableOrderMock : eventOrderMock;
+    const [order, setOrder] = useState<Order>({total: 0});
     const [paying, setPaying] = useState<Order>({
         total: 0,
         items: {},
@@ -59,10 +74,10 @@ export default function PaymentPage() {
     });
     const [tip, setTip] = useState<number>(0);
 
-    const getItem = (id: string, isEventMenu: boolean): MenuItem | MenuEvent | undefined => {
+    const getItem = async (id: string, isEventMenu: boolean): Promise<MenuItem | MenuEvent | undefined> => {
         if (isEventMenu) return event?.menus.find(menu => menu.id === id);
         if (event) return event?.beverages.find(item => item.id === id);
-        return menuNormalMock.find(item => item.id === id);
+        return await getMenuItemById(id);
     };
 
     const getNewQuantity = (id: string, delta: number, isEventMenu: boolean): number => {
@@ -70,9 +85,9 @@ export default function PaymentPage() {
         return (items[id] || 0) + delta;
     };
 
-    const changePayingQuantity = (id: string, delta: number, isEventMenu: boolean = false) => {
+    const changePayingQuantity = async (id: string, delta: number, isEventMenu: boolean = false) => {
         // Find the item in the menu
-        const item = getItem(id, isEventMenu);
+        const item = await getItem(id, isEventMenu);
         if (!item) {
             console.warn(`Cannot find item with id: ${id}`);
             return;
@@ -118,6 +133,14 @@ export default function PaymentPage() {
 
     const handlePayment = () => {
         const total = paid.total + paying.total;
+        let payment = {
+            table: order.table ?? 0,
+            date: new Date(),
+            items: paying.items ?? {},
+            itemsEvent: paying.itemsEvent ?? {},
+            ended: total === order.total
+        };
+        savePayment(payment);
         if (total === order.total) {
             toast.success("Paiement terminé!");
             navigate(privateRoutes.home);

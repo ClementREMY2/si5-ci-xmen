@@ -32,7 +32,7 @@ export default function TableDialog({
     };
 
     const onPayment = () => {
-        if (table.event) navigate(generatePath(privateRoutes.paymentEvent, {event: table.event}));
+        if (table.event && table.event !== "Aucun") navigate(generatePath(privateRoutes.paymentEvent, {event: table.event}));
         else navigate(generatePath(privateRoutes.payment, {table: table.table}));
     };
 
@@ -43,7 +43,7 @@ export default function TableDialog({
                 Commander
             </Button>
             <Button onClick={onPayment} variant={"contained"} sx={{width: "220px"}}>
-                Payer {table.event && ` pour ${table.event}`}
+                Payer {table.event && table.event !== "Aucun" && ` pour ${table.event}`}
             </Button>
         </>)
     );
