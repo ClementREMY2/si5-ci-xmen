@@ -115,6 +115,13 @@ async function getLastPaymentOfTable(
 }
 
 export const getTableOrders = async (tableNumber: number): Promise<Order> => {
+  if (process.env.IS_USING_BFF === "true") {
+    const response = await axios.get(
+      `http://localhost:3003/orders-64/bill/table?tableNumber=${tableNumber}`
+    );
+    console.log(response.data);
+    return response.data;
+  }
   const lastPaymentOfTable = await getLastPaymentOfTable(tableNumber);
 
   const orders = await findAllOrders();
