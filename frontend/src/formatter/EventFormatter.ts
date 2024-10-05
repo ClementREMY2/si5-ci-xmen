@@ -1,6 +1,6 @@
 import { getAllMenuEvent, getAllMenuItem } from "./MenuFormatter";
 import { MenuBackend, MenuBackendNoId } from "../interfaces/Menu";
-import { Event, EventItem } from "../interfaces/Event";
+import { Event } from "../interfaces/Event";
 import axios from "axios";
 import { Buffer } from "buffer";
 
@@ -74,6 +74,11 @@ export function getOneEvent(menusBack: MenuBackend[], name: string) : Event | un
 
     return event;
 }
+interface EventItem {
+    id: string;
+    title: string;
+    details: string[];
+}
 
 export function getTodayEvents(events: Event[]): EventItem[] {
     const today = new Date();
@@ -87,7 +92,7 @@ export function getTodayEvents(events: Event[]): EventItem[] {
 
     return todayEvents.map(event => {
         return {
-            id: event.id ? parseInt(event.id.toString()) : 0,  // Assure que l'id est un nombre, 0 si undefined
+            id: event.id ? event.id.toString() : "0",  // Assure que l'id est un nombre, 0 si undefined
             title: event.name,
             details: [`${event.menus.length} menus`, new Date(event.date).toLocaleDateString()]
         };
@@ -100,7 +105,7 @@ export function getNextEvents(events: Event[]) : EventItem[] {
     const nextEvents = events.filter(event => event.date > today);
     return nextEvents.map(event => {
         return {
-            id: parseInt(event.id?.toString() as string),
+            id: event.id?.toString() as string,
             title: event.name,
             details: [`${event.menus.length} menus`, event.date.toLocaleDateString()]
         };

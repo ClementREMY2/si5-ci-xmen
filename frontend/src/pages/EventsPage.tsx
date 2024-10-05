@@ -3,7 +3,13 @@ import { Box, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import EventsList from "../components/EventsList/EventsList";
 import { findAllEvents, getNextEvents, getTodayEvents } from "../formatter/EventFormatter";
-import { Event, EventItem } from "../interfaces/Event";
+import { Event } from "../interfaces/Event";
+
+interface EventItem {
+    id: string;
+    title: string;
+    details: string[];
+}
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[] | undefined>(undefined);

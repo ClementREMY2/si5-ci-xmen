@@ -5,51 +5,44 @@ import {useNavigate, useParams} from "react-router-dom";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuCard from "../components/MenuCard/MenuCard";
 import {privateRoutes} from "../utils/Routes.ts";
+import {getMenuById} from "../services/MenuService.ts"
+import { MenuEvent } from "../interfaces/Menu.ts";
+import { Event } from "../interfaces/Event.ts"
 
 export default function EventsPage() {
     const navigate = useNavigate();
     const {id: eventId} = useParams();
+    const [evente, setEvente] = useState<Event>();
+
 
     useEffect(() => {
         if (eventId === undefined || isNaN(parseFloat(eventId))) {
             console.warn("No event specified, redirecting to events page");
             navigate(privateRoutes.events);
+            
         }
     }, [navigate, eventId]);
+
+    useEffect(() => {
+            
+        }
+    );
+
+    useEffect(() => {
+        const fetchEvent = async () => {
+            if (eventId) {
+                const eventSelected: Event = await getMenuById(eventId);
+                setEvente(eventSelected);
+            }
+        };
+        fetchEvent();
+    }, []);
 
     const [isEdited, setIsEdited] = useState(false);
     const [isANewMenu, setIsANewMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    const menus = [
-        {
-            title: "Menu classique",
-            entree: {category: "Entrée", name: "Salade", price: 5},
-            mainCourse: {category: "Plat", name: "Steak frites", price: 15},
-            dessert: {category: "Dessert", name: "Tarte aux pommes", price: 7},
-            drink1: {category: "Boisson 1", name: "Vin rouge", price: 10},
-            drink2: {category: "Boisson 2", name: "Café", price: 3},
-            price: 30
-        },
-        {
-            title: "Menu enfant",
-            entree: {category: "Entrée", name: "Soupe", price: 4},
-            mainCourse: {category: "Plat", name: "Poulet rôti", price: 14},
-            dessert: {category: "Dessert", name: "Mousse au chocolat", price: 6},
-            drink1: {category: "Boisson 1", name: "Bière", price: 5},
-            drink2: {category: "Boisson 2", name: "Thé", price: 2},
-            price: 27
-        },
-        {
-            title: "Menu végétarien",
-            entree: {category: "Entrée", name: "Bruschetta", price: 6},
-            mainCourse: {category: "Plat", name: "Pâtes", price: 12},
-            dessert: {category: "Dessert", name: "Tiramisu", price: 8},
-            drink1: {category: "Boisson 1", name: "Vin blanc", price: 9},
-            drink2: {category: "Boisson 2", name: "Limonade", price: 3},
-            price: 28
-        }
-    ];
+    const menus: MenuEvent[] =  evente?.menus || [];
 
     const ev = {
         name: "Soirée d'entreprise - Avisto",
@@ -110,20 +103,7 @@ export default function EventsPage() {
                 </Button>
             </Box>
             {menus.map((menu, index) => (
-                <MenuCard
-                    key={index}
-                    title={menu.title}
-                    entree={menu.entree}
-                    mainCourse={menu.mainCourse}
-                    dessert={menu.dessert}
-                    drink1={menu.drink1}
-                    drink2={menu.drink2}
-                    price={menu.price}
-                    onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
-                    editing={false}
-                    allowEdit={!isEditing}
-                    isOnEdition={(e) => handleIsOnEdition(e)}
-                />
+                <p>{JSON.stringify(menu)}</p>
             ))}
             {isANewMenu && (
                 <MenuCard
