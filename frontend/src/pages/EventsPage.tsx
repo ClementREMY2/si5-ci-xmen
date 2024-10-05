@@ -2,8 +2,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import EventsList from "../components/EventsList/EventsList";
-import { getAllEvents, getNextEvents, getTodayEvents } from "../formatter/EventFormatter";
-import { getMenusBackend } from "../formatter/MenuFormatter";
+import { findAllEvents, getNextEvents, getTodayEvents } from "../formatter/EventFormatter";
 import { Event, EventItem } from "../interfaces/Event";
 
 export default function EventsPage() {
@@ -14,8 +13,8 @@ export default function EventsPage() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const menus = await getMenusBackend();
-                const allEvents = getAllEvents(menus);
+                const allEvents = await findAllEvents();
+                console.log(allEvents);
                 setEvents(allEvents); 
 
                 setTodayEvents(getTodayEvents(allEvents));

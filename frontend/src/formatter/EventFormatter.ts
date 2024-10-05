@@ -1,6 +1,8 @@
 import { getAllMenuEvent, getAllMenuItem } from "./MenuFormatter";
 import { MenuBackend, MenuBackendNoId } from "../interfaces/Menu";
 import { Event, EventItem } from "../interfaces/Event";
+import axios from "axios";
+import { Buffer } from "buffer";
 
 
 
@@ -73,17 +75,25 @@ export function getOneEvent(menusBack: MenuBackend[], name: string) : Event | un
     return event;
 }
 
-export function getTodayEvents(events: Event[]) : EventItem[] {
+export function getTodayEvents(events: Event[]): EventItem[] {
     const today = new Date();
-    const todayEvents = events.filter(event => event.date.toDateString() === today.toDateString());
+    const todayEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+
+        return eventDate.getFullYear() === today.getFullYear() &&
+               eventDate.getMonth() === today.getMonth()
+
+    });
+
     return todayEvents.map(event => {
         return {
-            id: parseInt(event.id?.toString() as string),
+            id: event.id ? parseInt(event.id.toString()) : 0,  // Assure que l'id est un nombre, 0 si undefined
             title: event.name,
-            details: [`${event.menus.length} menus`, event.date.toLocaleDateString()]
+            details: [`${event.menus.length} menus`, new Date(event.date).toLocaleDateString()]
         };
     });
 }
+
 
 export function getNextEvents(events: Event[]) : EventItem[] {
     const today = new Date();
@@ -118,6 +128,48 @@ export function postEvent(event: Event): MenuBackendNoId {
 
     return menu;    
 }
+
+export async function findAllEvents(): Promise<Event[]> {
+    const menuItems: MenuBackend[] = await axios
+      .get('http://localhost:9500/menu/menus')
+      .then((response) => response.data)
+      .catch((error) => {
+        throw new Error(`Failed to fetch menus: ${error.message}`);
+      });
+  
+    const fullNamesDecoded = menuItems
+      .map((menuItem) => {
+        try {
+          const decoded = Buffer.from(menuItem.fullName, 'base64').toString(
+            'ascii',
+          );
+          const decodedObj = JSON.parse(decoded);
+          decodedObj.id = menuItem._id;
+          return decodedObj;
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter((decoded) => decoded !== null)
+      .filter(isEvent);
+
+    return fullNamesDecoded;
+}
+
+function isEvent(obj: any): obj is Event {
+
+        console.log("obj", obj)
+        console.log("name", typeof obj.name === 'string' )
+        console.log("date", typeof obj.date === 'string' )
+        console.log("menus", typeof obj.menus === 'object' , obj.menus)
+    
+        return (
+            typeof obj.name === 'string' &&
+            typeof obj.date === 'string' &&
+            typeof obj.menus === 'object' 
+        );
+}
+  
 
 
     
