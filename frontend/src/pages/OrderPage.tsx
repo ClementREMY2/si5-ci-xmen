@@ -103,7 +103,7 @@ export default function OrderPage() {
         // Send the order to the server
         setOrder(newOrder);
         console.log(newOrder);
-        toast.success("Commande envoyée!");
+        toast.success("Commande envoyée");
         navigate(privateRoutes.home);
     };
 
@@ -127,7 +127,7 @@ export default function OrderPage() {
                         />
                 }
                 buttons={<>
-                    <Button onClick={cancelOrder} variant={"contained"} color={"error"} sx={{width: "200px"}}>
+                    <Button onClick={cancelOrder} variant={"contained"} color={"inherit"} sx={{width: "200px"}}>
                         Annuler
                     </Button>
                     <Button onClick={confirmOrder} disabled={!order.items && !order.itemsEvent}

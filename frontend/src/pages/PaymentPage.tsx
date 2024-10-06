@@ -120,7 +120,7 @@ export default function PaymentPage() {
         const total = paid.total + paying.total;
         if (total === order.total) {
             setPaid({...order});
-            toast.success("Paiement terminé!");
+            toast.success("Paiement terminé");
             navigate(privateRoutes.home);
         }
 
