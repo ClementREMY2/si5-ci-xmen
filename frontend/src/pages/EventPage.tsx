@@ -5,7 +5,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuCard from "../components/MenuCard/MenuCard";
 import {privateRoutes} from "../utils/Routes.ts";
-import {MenuEvent, MenuItem} from "../interfaces/Menu.ts";
+import {MenuEvent, MenuCategoryEnum} from "../interfaces/Menu.ts";
 import { getEvent, saveEvent } from "../services/EventService.ts";
 import {Event} from "../interfaces/Event.ts";
 
@@ -61,7 +61,6 @@ export default function EventsPage() {
 
     const handleSaveModifications = () => {
         console.log("Sauvegarde des modifications");
-        // TODO: Save modifications in back
         if (event)
             saveEvent(event);
         setIsEdited(false);
@@ -130,7 +129,11 @@ export default function EventsPage() {
                         fullName: "",
                         shortName: "",
                         price: 0,
-                        menu: {},
+                        menu: {
+                            starter: {id: "0" ,category: MenuCategoryEnum.STARTER, fullName: "", shortName:"", price: 0},
+                            main: {id: "0" ,category: MenuCategoryEnum.MAIN, fullName: "", shortName:"", price: 0},
+                            dessert: {id: "0" ,category: MenuCategoryEnum.DESSERT, fullName: "", shortName:"", price: 0},
+                        },
                         id: "0"
                     }}
                     onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
