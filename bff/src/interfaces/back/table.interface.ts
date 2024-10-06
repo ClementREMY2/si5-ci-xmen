@@ -3,9 +3,9 @@ export interface TableBackend {
         number: number,
         taken: boolean,
         tableOrderId: string
-    }
-    
-    export interface TableOrderNBCustomers {
+}
+
+export interface TableOrderNBCustomers {
         tableNumber: number;
         customersCount: number;
-    }
+}

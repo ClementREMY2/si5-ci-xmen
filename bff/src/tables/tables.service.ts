@@ -94,5 +94,14 @@ export class TablesService {
         }
     }
 
+    async update(table: Table): Promise<Table> {
+        try {
+            const response = await axios.post(`http://localhost:9500/menu/menus`, table);
+            return response.data;
+        } catch (error) {
+            throw new Error(`Failed to update table: ${error.message}`);
+        }
+    }
+
 
 }

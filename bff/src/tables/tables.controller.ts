@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { TablesService } from './tables.service';
 import { Table } from 'src/interfaces/front/table.interface';
 
@@ -6,14 +6,14 @@ import { Table } from 'src/interfaces/front/table.interface';
 export class TablesController {
     constructor(private readonly tablesService: TablesService) {}
 
-    @Get('/tables')
+    @Get()
     async findAll(): Promise<Table[]> {
         return await this.tablesService.findAll();
     }
 
-    @Post('/tables/' + )
-    async updateATable(): Promise<string> {
-        return await this.tablesService.update();
+    @Post()
+    async updateATable(@Body() table: Table): Promise<Table> {
+        return await this.tablesService.update(table);
     }
     
 }
