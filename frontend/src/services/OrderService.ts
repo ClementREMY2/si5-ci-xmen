@@ -266,6 +266,9 @@ export const getEventOrders = async (eventId: string): Promise<Order> => {
 };
 
 export function createOrder(order: Order): Promise<Order> {
+  if (isUsingBFF) {
+    return axios.post("http://localhost:3003/orders-64", order);
+  }
   if (order.event === undefined) {
     delete order.event;
   }
