@@ -1,8 +1,9 @@
-import { menuNormalMock } from "./../mocks/Menu";
 import axios from "axios";
 import { Payment } from "../interfaces/payment.interface";
 import { Order, OrderItems } from "../interfaces/Order";
 import { Buffer } from "buffer";
+
+const isUsingBFF = import.meta.env.VITE_APP_IS_USING_BFF === "true";
 
 function encodeObjectToBase64(obj: any): any {
   const jsonString = JSON.stringify(obj);
@@ -114,20 +115,29 @@ async function getLastPaymentOfTable(
   return lastPayment;
 }
 
-export const getTableOrders = async (tableNumber: number): Promise<Order> => {
-  const response = await axios
-    .get(
-      `http://localhost:3003/orders-64/bill/table?tableNumber=${tableNumber}`
-    )
-    .then((response) => {
-      console.log(response.data);
+const getTableOrdersBFF = async (tableNumber: number): Promise<Order> => {
+  var config = {
+    method: "get",
+    url: "http://localhost:3003/orders-64/bill/table?tableNumber=1",
+    headers: {},
+  };
+
+  const response = axios(config)
+    .then(function (response) {
       return response.data;
     })
-    .catch((error) => {
-      console.error(error);
-      return null;
+    .catch(function (error) {
+      console.log(error);
     });
+
   return response;
+};
+
+export const getTableOrders = async (tableNumber: number): Promise<Order> => {
+  if (isUsingBFF) {
+    const o = await getTableOrdersBFF(tableNumber);
+    return o;
+  }
 
   const lastPaymentOfTable = await getLastPaymentOfTable(tableNumber);
 
