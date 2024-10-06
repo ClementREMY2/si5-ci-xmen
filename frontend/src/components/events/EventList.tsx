@@ -7,6 +7,7 @@ import EventListItem from "./EventListItem.tsx";
 interface EventListProps {
     events: Events;
     width?: string | number;
+    createNewEvent: () => void;
 }
 
 const eventList = [
@@ -15,11 +16,12 @@ const eventList = [
     {key: "3", category: EventCategoryEnum.PAST, icon: <EventBusy color={"primary"}/>}
 ];
 
-export default function EventList({events, width}: Readonly<EventListProps>) {
+export default function EventList({events, width, createNewEvent}: Readonly<EventListProps>) {
     return (
         <Stack height={"100%"} overflow={"unset"} sx={{width}}>
             <Stack direction={"row"} justifyContent={"end"} alignItems={"center"}>
-                <Button variant={"contained"} color={"primary"} endIcon={<AddCircleOutlineIcon/>}>
+                <Button variant={"contained"} color={"primary"} onClick={createNewEvent}
+                        endIcon={<AddCircleOutlineIcon/>}>
                     Ajouter un événement
                 </Button>
             </Stack>

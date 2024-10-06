@@ -1,8 +1,10 @@
 import {Stack} from "@mui/material";
+import {generatePath, useNavigate} from "react-router-dom";
 import EventList from "../components/events/EventList.tsx";
 import MainHeader from "../components/MainHeader.tsx";
 import {EventCategoryEnum, Events} from "../interfaces/Event.ts";
 import {eventsMock} from "../mocks/Event.ts";
+import {privateRoutes} from "../utils/Routes.ts";
 
 const extractedEvents: Events = eventsMock.reduce((acc, item) => {
     if (item.date.toDateString() === new Date().toDateString()) acc[EventCategoryEnum.TODAY].push(item);
@@ -16,11 +18,17 @@ const extractedEvents: Events = eventsMock.reduce((acc, item) => {
 } as Events);
 
 export default function EventsPage() {
+    const navigate = useNavigate();
+
+    const createNewEvent = () => {
+        navigate(generatePath(privateRoutes.event, {event: "new"}));
+    };
+
     return (
         <Stack height={"100%"} alignItems={"center"} paddingX={2} paddingTop={4} paddingBottom={2} spacing={3}
                overflow={"unset"}>
             <MainHeader width={"90%"}/>
-            <EventList events={extractedEvents} width={"90%"}/>
+            <EventList events={extractedEvents} width={"90%"} createNewEvent={createNewEvent}/>
         </Stack>
     );
 }
