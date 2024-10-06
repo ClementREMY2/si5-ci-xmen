@@ -1,6 +1,7 @@
 import axios from "axios";
 import { MenuItem } from "../interfaces/Menu";
 import { Buffer } from "buffer";
+const isUsingBff = import.meta.env.VITE_APP_IS_USING_BFF === "true";
 
 interface Menu {
   _id: string;
@@ -21,6 +22,15 @@ function isMenuItem(obj: any): obj is MenuItem {
 }
 
 async function findAllMenus(): Promise<MenuItem[]> {
+  if (isUsingBff) {
+    const menuItems: MenuItem[] = await axios
+      .get("http://localhost:3003/menus-64")
+      .then((response: { data: any }) => response.data)
+      .catch((error) => {
+        throw new Error(`Failed to fetch menus: ${error.message}`);
+      });
+    return menuItems;
+  }
   const menuItems: Menu[] = await axios
     .get("http://localhost:9500/menu/menus")
     .then((response: { data: any }) => response.data)
