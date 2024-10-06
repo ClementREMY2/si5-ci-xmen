@@ -17,10 +17,12 @@ import { getEventOrders, getTableOrders, savePayment } from "../services/OrderSe
 import { getMenuItemById } from "../services/MenuItemsService.ts";
 import { addMenu } from "../services/MenuService.ts";
 import { getMenus } from "../formatter/MenuFormatter.ts";
+import { getTables } from "../formatter/TableFormatter.ts";
 
-const findTable = (tableNumber?: string): Table | undefined => {
+const findTable = (tables: Table[], tableNumber?: string): Table | undefined => {
     if (!checkTableNumber(tableNumber, false)) return undefined;
-    return tablesMock.find(table => table.table === parseFloat(tableNumber!));
+    console.log(tables);
+    return tables.find(table => table.table === parseFloat(tableNumber!));
 };
 
 const findEvent = (eventName?: string): Event | undefined => {
@@ -34,18 +36,52 @@ export default function PaymentPage() {
     const navigate = useNavigate();
     const {table: tableNumber, event: eventName} = useParams();
     const [menus, setMenus] = useState<GenericMenuItem[]>([]);
+    const [tables, setTables] = useState<Table[]>([]);
+    const [table, setTable] = useState<Table | undefined>(undefined);
+    const [event, setEvent] = useState<Event | undefined>(undefined);
 
-    const table = findTable(tableNumber);
-    const event = findEvent(eventName);
+    
+    // Loading asynchronously the menus
+    useEffect(() => {
+        const fetchMenus = async () => {
+            const fetchMenus = await getMenus();
+            setMenus(fetchMenus);
+        };
 
-    console.log(JSON.stringify(table), JSON.stringify(event));
+        fetchMenus();
+    }, []);
+
+    // Loading asynchronously the tables
+    useEffect(() => {
+        const fetchTables = async () => {
+            const fetchTables = await getTables();
+            setTables(fetchTables);
+        };
+
+        fetchTables();
+
+
+    }, []);
+
+    // Loading asynchronously the tables
+    useEffect(() => {
+        const fetchTables = async () => {
+            setTable(findTable(tables, tableNumber));
+            setEvent(findEvent(eventName));
+        };
+
+        fetchTables();
+    }, [tables]);
+
 
     useEffect(() => {
         const fetchOrder = async () => {
+         
+            console.log("table alone : " + JSON.stringify(table));
             if (!table && !event) {
                 console.warn("No table found for table number:", tableNumber, "and no event found for name:", eventName,
                     "=> redirecting to home page");
-                navigate(privateRoutes.home);
+                //navigate(privateRoutes.home);
             } else if (table && event) {
                 console.warn("Can't have table and event for payment, redirecting to home page");
                 navigate(privateRoutes.home);
@@ -57,20 +93,18 @@ export default function PaymentPage() {
                 if(event.id)
                     setOrder(await getEventOrders(event.id));
             }
-        };
-
+        };   
         fetchOrder();
-    }, [navigate, tableNumber, table, eventName, event]);
 
-    // Loading asynchronously the menus
-    useEffect(() => {
-        const fetchMenus = async () => {
-            const fetchMenus = await getMenus();
-            setMenus(fetchMenus);
-        };
+    }, [table]);
+    
 
-        fetchMenus();
-    }, []);
+    console.log(JSON.stringify(table), JSON.stringify(event));
+
+    // useEffect(() => {
+        
+
+    // }, [navigate, tableNumber, table, eventName, event, tables]);
 
     const [order, setOrder] = useState<Order>({total: 0});
     const [paying, setPaying] = useState<Order>({
@@ -155,8 +189,8 @@ export default function PaymentPage() {
         if (total === order.total) {
             toast.success("Paiement terminé!");
             const newMenu: MenuBackendNoId = {
-                fullName: "_|" + table?.table + "|" + table?.nbPeople + "|" + table?.event + "|" + table?.status,
-                shortName: menus.length + "|" + table?.table + "|" + table?.nbPeople + "|" + table?.event + "|" + table?.status,
+                fullName: "_|" + order.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.AVAILABLE,
+                shortName: menus.length + "|" + order.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.AVAILABLE,
                 price: 1,
                 category: "DESSERT",
                 image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"

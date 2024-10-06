@@ -1,4 +1,4 @@
-import {Stack} from "@mui/material";
+import {Box, Button, Stack, Typography} from "@mui/material";
 import "../index.css";
 import {useEffect, useState} from "react";
 import TableFilters from "../components/home/TableFilters.tsx";
@@ -11,6 +11,8 @@ import { getTables } from "../formatter/TableFormatter.ts";
 import { addMenu, getMenus } from "../formatter/MenuFormatter.ts";
 import { MenuBackendNoId, GenericMenuItem } from "../interfaces/Menu.ts";
 import { savePayment } from "../services/OrderService.ts";
+import { usePopup } from "../components/PopupContext"; // Importer le contexte
+
 
 const events: DictionaryBoolean = eventsMock
     .map((event) => event.name)
@@ -24,6 +26,13 @@ export default function HomePage() {
     const [allTables, setAllTables] = useState<Table[]>([]);
     const [filteredTables, setFilteredTables] = useState<Table[]>([]);
     const [menus, setMenus] = useState<GenericMenuItem[]>([]);
+    const { message, showPopup, hidePopup } = usePopup();
+
+    const closePopup = async () => {
+        hidePopup();
+        // Perform setTable operation here
+        setAllTables(await getTables());
+    };    
 
     // Loading asynchronously the tables
     useEffect(() => {
@@ -44,7 +53,6 @@ export default function HomePage() {
 
         fetchMenus();
     }, []);
-    
 
     useEffect(() => {
         const filtered = allTables.filter(table => selectedEvents[table.event ?? "Aucun"]);
@@ -90,10 +98,37 @@ export default function HomePage() {
 
     return (
         <Stack height={"100%"} alignItems={"center"} paddingX={2} paddingTop={4} paddingBottom={2} spacing={3}
-               overflow={"unset"}>
+            overflow={"unset"}>
+            <Box>
+                {/* Votre contenu de la page d'accueil */}
+                {showPopup && (
+                    <Box
+                        position="fixed"
+                        top="50%"
+                        left="50%"
+                        sx={{ transform: "translate(-50%, -50%)" }} // Centrer le popup
+                        bgcolor="black"
+                        border="2px solid orange"
+                        boxShadow={3}
+                        p={2}
+                        borderRadius={2}
+                        zIndex={1000}
+                    >
+                        <Typography>{message}</Typography>
+                        <Button onClick={closePopup}>Fermer</Button>
+                    </Box>
+                )}
+
+            </Box>
             <MainHeader width={"90%"}/>
             <TableFilters selectedEvents={selectedEvents} setSelectedEvents={setSelectedEvents} width={"90%"}/>
             <TableGrid tables={filteredTables} handleTableModify={handleTableModify} width={"90%"}/>
+
         </Stack>
+        
     );
+}
+
+function hidePopup() {
+    throw new Error("Function not implemented.");
 }

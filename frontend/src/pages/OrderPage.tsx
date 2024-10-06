@@ -6,23 +6,26 @@ import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuEventList from "../components/order/MenuEventList.tsx";
 import MenuList from "../components/order/MenuList.tsx";
 import {Event} from "../interfaces/Event.ts";
-import {Menu, MenuBackend, MenuCategoryEnum, MenuEvent, MenuItem} from "../interfaces/Menu.ts";
+import {Menu, MenuBackend, MenuBackendNoId, MenuCategoryEnum, MenuEvent, MenuItem} from "../interfaces/Menu.ts";
 import {Order} from "../interfaces/Order.ts";
 import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {checkTableNumber} from "../utils/PageUtils.ts";
 import {privateRoutes} from "../utils/Routes.ts";
-import { getTables } from "../formatter/TableFormatter.ts";
+import { applyTableColors, getTables } from "../formatter/TableFormatter.ts";
 import { getAllEvents } from "../formatter/EventFormatter.ts";
 // import { getAllMenuItem } from "../formatter/MenuFormatter.ts";
-import { getMenusGateway } from "../services/MenuService.ts";
+import { addMenu, getMenusGateway } from "../services/MenuService.ts";
 import { getMenuItems } from "../services/MenuItemsService.ts";
 import { createOrder } from "../services/OrderService.ts";
+import { usePopup } from "../components/PopupContext";
+
 
 export default function OrderPage() {
     const [tables, setTables] = useState<Table[]>([]);
     const [events, setEvents] = useState<Event[]>([]);
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [menus, setMenus] = useState<MenuBackend[]>([]);
+    const { setPopup } = usePopup();
 
     useEffect(() => {
         const fetchMenus = async () => {
@@ -150,7 +153,42 @@ export default function OrderPage() {
         newOrder.table = parseFloat(tableNumber!);
         const o: Order = await createOrder(newOrder);
         setOrder(o);
+
+        const tableString = localStorage.getItem("table");
+        const parsedString = JSON.parse(tableString!);
+        const localTable: Table = {
+            table: parsedString.table,
+            nbPeople: parsedString.nbPeople,
+            status: TableStatusEnum.ORDER_IN_PROGRESS,
+            event: parsedString.event
+        };
+
+        const orderProgress: MenuBackendNoId = {
+            fullName: "_|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_IN_PROGRESS,
+            shortName: menus.length + "|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_IN_PROGRESS,
+            price: 1,
+            category: "DESSERT",
+            image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
+        }
+        addMenu(orderProgress);
+
         navigate(privateRoutes.home);
+
+        setTimeout(async () => {
+            localTable.status = TableStatusEnum.ORDER_READY;
+
+            const orderDone: MenuBackendNoId = {
+                fullName: "_|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_READY,
+                shortName: menus.length+1 + "|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_READY,
+                price: 1,
+                category: "DESSERT",
+                image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
+            }
+            addMenu(orderDone);
+            setTables(await getTables());
+
+            setPopup(`La commande effectuée pour la table ${newOrder.table} est prête.`);
+        }, 5000);
     };
 
     const card: React.ReactNode = (
