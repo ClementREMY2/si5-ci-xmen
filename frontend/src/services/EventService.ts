@@ -47,6 +47,24 @@ async function findAllEvents(): Promise<Event[]> {
   return fullNamesDecoded;
 }
 
+export async function getEvent(id: string): Promise<Event> {
+  const event = await axios
+    .get(`http://localhost:9500/menu/menus/${id}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      throw new Error(`Failed to fetch menu: ${error.message}`);
+    });
+
+  const decoded = Buffer.from(event.fullName, "base64").toString("ascii");
+  const decodedObj = JSON.parse(decoded);
+  decodedObj.id = event._id;
+  console.log(isEvent(decodedObj));
+  if (isEvent(decodedObj)) {
+    return decodedObj;
+  }
+  throw new Error("Invalid event");
+}
+
 function isEvent(obj: any): obj is Event {
   return (
     typeof obj.name === "string" &&

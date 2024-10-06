@@ -5,6 +5,9 @@ import {useNavigate, useParams} from "react-router-dom";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuCard from "../components/MenuCard/MenuCard";
 import {privateRoutes} from "../utils/Routes.ts";
+import {MenuEvent, MenuItem} from "../interfaces/Menu.ts";
+import { getEvent } from "../services/EventService.ts";
+import {Event} from "../interfaces/Event.ts";
 
 export default function EventsPage() {
     const navigate = useNavigate();
@@ -20,45 +23,37 @@ export default function EventsPage() {
     const [isEdited, setIsEdited] = useState(false);
     const [isANewMenu, setIsANewMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    
 
-    const menus = [
-        {
-            title: "Menu classique",
-            entree: {category: "Entrée", name: "Salade", price: 5},
-            mainCourse: {category: "Plat", name: "Steak frites", price: 15},
-            dessert: {category: "Dessert", name: "Tarte aux pommes", price: 7},
-            drink1: {category: "Boisson 1", name: "Vin rouge", price: 10},
-            drink2: {category: "Boisson 2", name: "Café", price: 3},
-            price: 30
-        },
-        {
-            title: "Menu enfant",
-            entree: {category: "Entrée", name: "Soupe", price: 4},
-            mainCourse: {category: "Plat", name: "Poulet rôti", price: 14},
-            dessert: {category: "Dessert", name: "Mousse au chocolat", price: 6},
-            drink1: {category: "Boisson 1", name: "Bière", price: 5},
-            drink2: {category: "Boisson 2", name: "Thé", price: 2},
-            price: 27
-        },
-        {
-            title: "Menu végétarien",
-            entree: {category: "Entrée", name: "Bruschetta", price: 6},
-            mainCourse: {category: "Plat", name: "Pâtes", price: 12},
-            dessert: {category: "Dessert", name: "Tiramisu", price: 8},
-            drink1: {category: "Boisson 1", name: "Vin blanc", price: 9},
-            drink2: {category: "Boisson 2", name: "Limonade", price: 3},
-            price: 28
-        }
-    ];
+    const ev: Event = {
+        name: "Event",
+        date: new Date(),
+        menus: [],
+        beverages: []
+    }
 
-    const ev = {
-        name: "Soirée d'entreprise - Avisto",
-        date: "2022-12-31",
-        groupOrders: false,
-        menus: menus
-    };
+
+    const menus: MenuEvent[] = [];
+    const beverages: MenuItem[] = [];
 
     const [event, setEvent] = useState(ev);
+
+    useEffect(() => {
+        const fetchEvent = async () => {
+            try {
+                if (eventId) {
+                    const event = await getEvent(eventId);
+                    console.log("Event fetched:", event);
+                    setEvent(event);
+                }
+                setEvent(event);
+            } catch (error) {
+                console.error("Error fetching event:", error);
+            }
+        };
+        fetchEvent();
+    }, [eventId]);
+
 
 
     const handleMenuUpdate = (e: any) => {
@@ -112,13 +107,7 @@ export default function EventsPage() {
             {menus.map((menu, index) => (
                 <MenuCard
                     key={index}
-                    title={menu.title}
-                    entree={menu.entree}
-                    mainCourse={menu.mainCourse}
-                    dessert={menu.dessert}
-                    drink1={menu.drink1}
-                    drink2={menu.drink2}
-                    price={menu.price}
+                    menu={menu}
                     onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
                     editing={false}
                     allowEdit={!isEditing}
@@ -127,13 +116,13 @@ export default function EventsPage() {
             ))}
             {isANewMenu && (
                 <MenuCard
-                    title={""}
-                    entree={{category: "Entrée", name: "", price: 0}}
-                    mainCourse={{category: "Plat", name: "", price: 0}}
-                    dessert={{category: "Dessert", name: "", price: 0}}
-                    drink1={{category: "Boisson 1", name: "", price: 0}}
-                    drink2={{category: "Boisson 2", name: "", price: 0}}
-                    price={0}
+                    menu={{
+                        fullName: "",
+                        shortName: "",
+                        price: 0,
+                        menu: {},
+                        id: "0"
+                    }}
                     onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
                     editing={true}
                     allowEdit={!isEditing}

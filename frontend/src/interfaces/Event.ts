@@ -9,7 +9,7 @@ export interface Event {
 }
 
 export interface EventItem {
-  id: number;
+  id: string;
   title: string;
   details: string[];
 }

@@ -1,6 +1,12 @@
 import { getAllMenuEvent, getAllMenuItem } from "./MenuFormatter";
 import { MenuBackend, MenuBackendNoId } from "../interfaces/Menu";
-import { Event, EventItem } from "../interfaces/Event";
+import { Event } from "../interfaces/Event";
+
+interface EventItem {
+  id: string;
+  title: string;
+  details: string[];
+}
 
 function createEvent(
   menu: MenuBackend,
@@ -96,7 +102,7 @@ export function getTodayEvents(events: Event[]): EventItem[] {
   });
   return todayEvents.map((event) => {
     return {
-      id: parseInt(event.id?.toString() as string),
+      id: event.id?.toString() as string,
       title: event.name,
       details: [
         `${event.menus.length} menus`,
@@ -111,7 +117,7 @@ export function getNextEvents(events: Event[]): EventItem[] {
   const nextEvents = events.filter((event) => new Date(event.date) > today);
   return nextEvents.map((event) => {
     return {
-      id: parseInt(event.id?.toString() as string),
+      id: event.id?.toString() as string,
       title: event.name,
       details: [
         `${event.menus.length} menus`,

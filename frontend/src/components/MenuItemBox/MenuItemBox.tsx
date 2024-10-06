@@ -9,7 +9,7 @@ interface MenuItemBoxProps {
 }
 
 const MenuItemBox: React.FC<MenuItemBoxProps> = ({ menuItem, isEditing, onChanges }) => {
-  const [editedName, setEditedName] = useState(menuItem.name);
+  const [editedName, setEditedName] = useState(menuItem.fullName);
   const [editedPrice, setEditedPrice] = useState(menuItem.price);
 
   const handleChanges = (label: string, value: any) => {
