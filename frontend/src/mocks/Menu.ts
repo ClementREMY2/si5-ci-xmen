@@ -1,5 +1,13 @@
 import {MenuCategoryEnum, MenuEvent, MenuItem} from "../interfaces/Menu.ts";
 
+export const emptyMenuEvent: MenuEvent = {
+    id: "?",
+    fullName: "",
+    shortName: "",
+    price: 0,
+    menu: {}
+};
+
 export const menuNormalMock: MenuItem[] = [
     {
         id: "1",
