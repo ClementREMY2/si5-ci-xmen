@@ -118,7 +118,8 @@ async function getLastPaymentOfTable(
 const getTableOrdersBFF = async (tableNumber: number): Promise<Order> => {
   var config = {
     method: "get",
-    url: "http://localhost:3003/orders-64/bill/table?tableNumber=1",
+    url:
+      "http://localhost:3003/orders-64/bill/table?tableNumber=" + tableNumber,
     headers: {},
   };
 
@@ -277,6 +278,9 @@ export function createOrder(order: Order): Promise<Order> {
 }
 
 export async function savePayment(payment: Payment): Promise<Payment> {
+  if (isUsingBFF) {
+    return axios.post("http://localhost:3003/payments", payment);
+  }
   const lastPayment = await getLastPaymentOfTable(payment.table);
   if (lastPayment && !lastPayment.ended) {
     Object.entries(lastPayment.items).forEach(([itemId, quantity]) => {
