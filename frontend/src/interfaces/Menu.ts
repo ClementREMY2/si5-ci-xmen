@@ -1,6 +1,6 @@
 export enum MenuCategoryEnum {
   BEVERAGE = "Boisson",
-  STARTER = "Entrée",
+  STARTER = "Entree",
   MAIN = "Plat",
   DESSERT = "Dessert",
 }

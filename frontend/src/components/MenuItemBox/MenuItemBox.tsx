@@ -25,7 +25,7 @@ const MenuItemBox: React.FC<MenuItemBoxProps> = ({ menuItem, isEditing, onChange
 
   return (
     <Box display="flex" alignItems="center">
-      <Typography sx={{fontWeight: "bold", flexBasis: "20%"}}>{menuItem.category}</Typography>
+      <Typography sx={{fontWeight: "bold", flexBasis: "20%"}}>{menuItem.category === "EntrC)e" ? "Entrée" : menuItem.category}</Typography>
       {isEditing ? (
         <>
           <TextField

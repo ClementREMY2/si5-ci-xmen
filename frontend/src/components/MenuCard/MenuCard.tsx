@@ -54,7 +54,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
   const handleChangesInItem = (menuItem: any) => {
     console.log('Menu item:', menuItem);
     let category = menuItem.category;
-    if(category === "EntrC)e")
+    if(category === "EntrC)e" || category === "Entree")
       category = "starter";
     if(category === "Plat")
       category = "main";
