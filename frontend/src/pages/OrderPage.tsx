@@ -17,12 +17,15 @@ import { getAllEvents } from "../formatter/EventFormatter.ts";
 import { getMenusGateway } from "../services/MenuService.ts";
 import { getMenuItems } from "../services/MenuItemsService.ts";
 import { createOrder } from "../services/OrderService.ts";
+import { usePopup } from "../components/PopupContext";
+
 
 export default function OrderPage() {
     const [tables, setTables] = useState<Table[]>([]);
     const [events, setEvents] = useState<Event[]>([]);
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [menus, setMenus] = useState<MenuBackend[]>([]);
+    const { setPopup } = usePopup();
 
     useEffect(() => {
         const fetchMenus = async () => {
@@ -151,6 +154,12 @@ export default function OrderPage() {
         const o: Order = await createOrder(newOrder);
         setOrder(o);
         navigate(privateRoutes.home);
+
+        console.log("cjnzbfurhfiozfhjiozjfiozcejiozejciejeiz");
+        setTimeout(() => {
+            console.log("test popup");
+            setPopup(`La commande effectuée pour la table ${newOrder.table} est prête.`);
+        }, 5000);
     };
 
     const card: React.ReactNode = (
