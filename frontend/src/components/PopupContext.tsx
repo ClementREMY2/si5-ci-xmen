@@ -22,7 +22,7 @@ export const PopupProvider: React.FC<PopupProviderProps> = ({ children }) => {
         setShowPopup(true);
     };
 
-    const hidePopup = () => {
+    const hidePopup = () => {  
         setShowPopup(false);
     };
 

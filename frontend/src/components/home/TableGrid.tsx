@@ -15,6 +15,7 @@ export default function TableGrid({tables, handleTableModify, width}: Readonly<T
     const [selectedTable, setSelectedTable] = useState<Table | undefined>(undefined);
 
     const onTableClick = (table: Table) => {
+        localStorage.setItem("table", JSON.stringify(table));
         setSelectedTable(table);
     };
 

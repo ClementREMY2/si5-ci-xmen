@@ -26,7 +26,13 @@ export default function HomePage() {
     const [allTables, setAllTables] = useState<Table[]>([]);
     const [filteredTables, setFilteredTables] = useState<Table[]>([]);
     const [menus, setMenus] = useState<GenericMenuItem[]>([]);
-    const { message, showPopup, hidePopup } = usePopup(); // Utiliser le contexte
+    const { message, showPopup, hidePopup } = usePopup();
+
+    const closePopup = async () => {
+        hidePopup();
+        // Perform setTable operation here
+        setAllTables(await getTables());
+    };    
 
     // Loading asynchronously the tables
     useEffect(() => {
@@ -47,7 +53,6 @@ export default function HomePage() {
 
         fetchMenus();
     }, []);
-    
 
     useEffect(() => {
         const filtered = allTables.filter(table => selectedEvents[table.event ?? "Aucun"]);
@@ -110,7 +115,7 @@ export default function HomePage() {
                         zIndex={1000}
                     >
                         <Typography>{message}</Typography>
-                        <Button onClick={hidePopup}>Fermer</Button>
+                        <Button onClick={closePopup}>Fermer</Button>
                     </Box>
                 )}
 
@@ -122,4 +127,8 @@ export default function HomePage() {
         </Stack>
         
     );
+}
+
+function hidePopup() {
+    throw new Error("Function not implemented.");
 }

@@ -195,7 +195,6 @@ export default function PaymentPage() {
                 category: "DESSERT",
                 image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
             }
-            console.log
             addMenu(newMenu);
             navigate(privateRoutes.home);
         }
