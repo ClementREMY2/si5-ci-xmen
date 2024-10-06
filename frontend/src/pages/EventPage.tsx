@@ -6,7 +6,7 @@ import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import MenuCard from "../components/MenuCard/MenuCard";
 import {privateRoutes} from "../utils/Routes.ts";
 import {MenuEvent, MenuItem} from "../interfaces/Menu.ts";
-import { getEvent } from "../services/EventService.ts";
+import { getEvent, saveEvent } from "../services/EventService.ts";
 import {Event} from "../interfaces/Event.ts";
 
 export default function EventsPage() {
@@ -23,30 +23,16 @@ export default function EventsPage() {
     const [isEdited, setIsEdited] = useState(false);
     const [isANewMenu, setIsANewMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    
 
-    const ev: Event = {
-        name: "Event",
-        date: new Date(),
-        menus: [],
-        beverages: []
-    }
-
-
-    const menus: MenuEvent[] = [];
-    const beverages: MenuItem[] = [];
-
-    const [event, setEvent] = useState(ev);
+    const [event, setEvent] = useState<Event>();
 
     useEffect(() => {
         const fetchEvent = async () => {
             try {
                 if (eventId) {
-                    const event = await getEvent(eventId);
-                    console.log("Event fetched:", event);
-                    setEvent(event);
+                    const e = await getEvent(eventId);
+                    setEvent(e);
                 }
-                setEvent(event);
             } catch (error) {
                 console.error("Error fetching event:", error);
             }
@@ -55,9 +41,19 @@ export default function EventsPage() {
     }, [eventId]);
 
 
-
-    const handleMenuUpdate = (e: any) => {
+    const handleMenuUpdate = (e: MenuEvent) => {
         console.log(e);
+        const ev = event;
+        if (ev) {
+            const index = ev.menus.findIndex((menu) => menu.id === e.id);
+            if (index !== -1) {
+                ev.menus[index] = e;
+                setEvent(ev);
+            } else {
+                ev.menus.push(e);
+                setEvent(ev);
+            }
+        }
         setIsEdited(true);
         setIsANewMenu(false);
         setIsEditing(false);
@@ -65,6 +61,9 @@ export default function EventsPage() {
 
     const handleSaveModifications = () => {
         console.log("Sauvegarde des modifications");
+        // TODO: Save modifications in back
+        if (event)
+            saveEvent(event);
         setIsEdited(false);
         setIsEditing(false);
     };
@@ -89,14 +88,25 @@ export default function EventsPage() {
 
     const card = (
         <>
-            <Typography variant="h3" sx={{marginRight: 1}}>{event.name}</Typography>
+            <Typography variant="h3" sx={{marginRight: 1}}>{event && event.name}</Typography>
             <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
                 <Typography>Date de l'événement</Typography>
-                <input type="date"/>
+                <input
+                    type="date"
+                    value={event ? new Date(event.date).toISOString().split('T')[0] : ''}
+                />
             </Box>
             <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
                 <Typography>Grouper commandes</Typography>
                 <Checkbox></Checkbox>
+            </Box>
+            <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
+                <Typography>Boissons</Typography>
+                <Box>
+                    {event?.beverages.map((beverage, index) => (
+                        <Typography key={index}>{beverage.fullName}</Typography>
+                    ))}
+                </Box>
             </Box>
             <Box display="flex" justifyContent="flex-start" sx={{margin: 2}} gap={2} mt={2}>
                 <Button variant="contained" color="primary" disabled={isEditing} endIcon={<AddCircleOutlineIcon/>}
@@ -104,7 +114,7 @@ export default function EventsPage() {
                     Ajouter un menu
                 </Button>
             </Box>
-            {menus.map((menu, index) => (
+            {event && event.menus.map((menu, index) => (
                 <MenuCard
                     key={index}
                     menu={menu}

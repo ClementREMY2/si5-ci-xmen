@@ -72,3 +72,18 @@ function isEvent(obj: any): obj is Event {
     typeof obj.menus === "object"
   );
 }
+
+export async function saveEvent(event: Event): Promise<void> {
+  const encodedEvent = Buffer.from(JSON.stringify(event)).toString("base64");
+  await axios
+    .post("http://localhost:9500/menu/menus", {
+      fullName: encodedEvent,
+      shortName: "event|" + new Date().toISOString(),
+      price: 10,
+      category: "STARTER",
+      image: "https://via.placeholder.com/150",
+    })
+    .catch((error) => {
+      throw new Error(`Failed to save event: ${error.message}`);
+    });
+}

@@ -13,13 +13,13 @@ const MenuItemBox: React.FC<MenuItemBoxProps> = ({ menuItem, isEditing, onChange
   const [editedPrice, setEditedPrice] = useState(menuItem.price);
 
   const handleChanges = (label: string, value: any) => {
-    if (label === "name") {
+    if (label === "fullName") {
       setEditedName(value);
     }
     if (label === "price") {
       setEditedPrice(value);
     }
-    const updatedMenuItem = { ...menuItem, name: editedName, price: editedPrice };
+    const updatedMenuItem = { ...menuItem, fullName: editedName, price: editedPrice };
     onChanges(updatedMenuItem);
   }  
 
@@ -31,7 +31,7 @@ const MenuItemBox: React.FC<MenuItemBoxProps> = ({ menuItem, isEditing, onChange
           <TextField
             label="Nom"
             value={editedName}
-            onChange={(e) => handleChanges("name", e.target.value)}
+            onChange={(e) => handleChanges("fullName", e.target.value)}
             sx={{ marginRight: 1 }}
           />
           <TextField

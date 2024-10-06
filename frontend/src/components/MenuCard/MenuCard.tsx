@@ -11,7 +11,6 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
   const [isEditing, setIsEditing] = useState(editing);
   const [editedMenu, setEditedMenu] = useState({ ...menu });
 
-
   const calculateTotalPrice = (): number => {
     const items = Object.values(editedMenu.menu).filter((item) => item.price);
     return items.reduce((total, item) => total + item.price, 0);
@@ -32,6 +31,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
     setIsEditing(false);
     const updatedMenu = { ...editedMenu
     };
+    console.log('Updated menu:', updatedMenu);
     setTotalPrice(calculateTotalPrice());
     onMenuUpdate(updatedMenu);
   };
@@ -52,14 +52,15 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
   };
 
   const handleChangesInItem = (menuItem: any) => {
-    const mapping: { [key: string]: string } = {
-      'Entrée': 'entree',
-      'Plat': 'mainCourse',
-      'Dessert': 'dessert',
-      'Boisson 1': 'drink1',
-      'Boisson 2': 'drink2',
-    };
-    const updatedMenu = { ...editedMenu, [mapping[menuItem.type]]: menuItem };
+    console.log('Menu item:', menuItem);
+    let category = menuItem.category;
+    if(category === "EntrC)e")
+      category = "starter";
+    if(category === "Plat")
+      category = "main";
+    if(category === "Dessert")
+      category = "dessert";
+    const updatedMenu = { ...editedMenu, menu: { ...editedMenu.menu, [category]: menuItem } };
     setEditedMenu(updatedMenu);
   }
 
