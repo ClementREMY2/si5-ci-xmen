@@ -6,11 +6,14 @@ import { getAllEvents, getNextEvents, getTodayEvents } from "../formatter/EventF
 import { getMenusBackend } from "../formatter/MenuFormatter";
 import { Event, EventItem } from "../interfaces/Event";
 import {getEvents} from "../services/EventService";
+import {generatePath, useNavigate} from "react-router-dom";
+import {privateRoutes} from "../utils/Routes.ts";
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[] | undefined>(undefined);
     const [todayEvents, setTodayEvents] = useState<EventItem[]>([]);
     const [nextDaysEvents, setNextDaysEvents] = useState<EventItem[]>([]);
+    const navigate = useNavigate();
     
     useEffect(() => {
         const fetchEvents = async () => {
@@ -32,13 +35,18 @@ export default function EventsPage() {
         return <Typography>Chargement des événements...</Typography>;
     }
 
+
+    const createNewEvent = () => {
+        navigate(generatePath(privateRoutes.event, {id: "0"}));
+    }
+
     return (
         <>
             <Box display="flex" justifyContent="center" sx={{ margin: 2 }}>
                 <Typography variant="h4">Événements</Typography>
             </Box>
             <Box display="flex" justifyContent="flex-start" sx={{ margin: 2 }} gap={2} mt={2}>
-                <Button variant="contained" color="primary" endIcon={<AddCircleOutlineIcon />}>
+                <Button variant="contained" color="primary" endIcon={<AddCircleOutlineIcon />} onClick={createNewEvent}>
                     Ajouter un évenement
                 </Button>
             </Box>

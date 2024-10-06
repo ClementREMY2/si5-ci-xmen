@@ -1,5 +1,5 @@
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import {Box, Button, Checkbox, Typography} from "@mui/material";
+import {Box, Button, Checkbox, TextField, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
@@ -85,14 +85,49 @@ export default function EventsPage() {
         console.log(e);
     };
 
+    const handleTitleChange = (e: string) => {
+        setEvent({
+            ...event,
+            name: e,
+            date: event?.date || new Date(), 
+            menus: event?.menus || [],
+            beverages: event?.beverages || []
+        } as Event)
+        if (e !== "")
+            setIsEdited(true);
+        else
+            setIsEdited(false);
+    }
+
     const card = (
         <>
-            <Typography variant="h3" sx={{marginRight: 1}}>{event && event.name}</Typography>
+            {eventId!=="0" && <Typography variant="h3" sx={{marginRight: 1}}>{event && event.name}</Typography>}
+            {eventId === "0" && (
+                <TextField
+                    placeholder="Nom de l'événement"
+                    variant="outlined"
+                    size="medium"
+                    onChange={(e) =>
+                        handleTitleChange(e.target.value)
+                    }
+                />
+            )}
             <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
                 <Typography>Date de l'événement</Typography>
                 <input
                     type="date"
                     value={event ? new Date(event.date).toISOString().split('T')[0] : ''}
+                    onChange={(e) => {
+                        const date = new Date(e.target.value);
+                        setEvent({
+                            ...event,
+                            date: date,
+                            name: event?.name || "",
+                            menus: event?.menus || [],
+                            beverages: event?.beverages || []
+                        } as Event);
+                        setIsEdited(true);
+                    }}
                 />
             </Box>
             <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
