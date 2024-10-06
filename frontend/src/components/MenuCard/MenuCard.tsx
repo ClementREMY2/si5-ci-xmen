@@ -7,11 +7,13 @@ import CheckIcon from '@mui/icons-material/Check';
 import { MenuCardProps } from '../../interfaces/MenuCardProps';
 import MenuItemBox from '../MenuItemBox/MenuItemBox';
 
-const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert, drink1, drink2, price, onMenuUpdate, editing, allowEdit, isOnEdition }) => {
+const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowEdit, isOnEdition }) => {
   const [isEditing, setIsEditing] = useState(editing);
-  const [editedMenu, setEditedMenu] = useState({ title, entree, mainCourse, dessert, drink1, drink2, price });
+  const [editedMenu, setEditedMenu] = useState({ ...menu });
+
   const calculateTotalPrice = (): number => {
-    return editedMenu.entree.price + editedMenu.mainCourse.price + editedMenu.dessert.price + editedMenu.drink1.price + editedMenu.drink2.price;
+    const items = Object.values(editedMenu.menu).filter((item) => item.price);
+    return items.reduce((total, item) => total + item.price, 0);
   };
   const [totalPrice, setTotalPrice] = useState(calculateTotalPrice());
 
@@ -29,13 +31,14 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
     setIsEditing(false);
     const updatedMenu = { ...editedMenu
     };
+    console.log('Updated menu:', updatedMenu);
     setTotalPrice(calculateTotalPrice());
     onMenuUpdate(updatedMenu);
   };
 
   const handleChangeTitle = (e: any) => {
     setIsEditing(true);
-    setEditedMenu({ ...editedMenu, title: e });
+    setEditedMenu({ ...editedMenu, fullName: e });
   }
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,29 +52,31 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
   };
 
   const handleChangesInItem = (menuItem: any) => {
-    const mapping: { [key: string]: string } = {
-      'Entrée': 'entree',
-      'Plat': 'mainCourse',
-      'Dessert': 'dessert',
-      'Boisson 1': 'drink1',
-      'Boisson 2': 'drink2',
-    };
-    const updatedMenu = { ...editedMenu, [mapping[menuItem.type]]: menuItem };
+    console.log('Menu item:', menuItem);
+    let category = menuItem.category;
+    if(category === "EntrC)e" || category === "Entree")
+      category = "starter";
+    if(category === "Plat")
+      category = "main";
+    if(category === "Dessert")
+      category = "dessert";
+    const updatedMenu = { ...editedMenu, menu: { ...editedMenu.menu, [category]: menuItem } };
     setEditedMenu(updatedMenu);
   }
+
   return (
     <Card sx={{ margin: 2 }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           {isEditing ? (
             <TextField
-              value={editedMenu.title}
+              value={editedMenu.fullName}
               onChange={(e) => handleChangeTitle(e.target.value)}
               variant="outlined"
               size="small"
             />
           ) : (
-            <Typography variant="h5">{editedMenu.title}</Typography>
+            <Typography variant="h5">{editedMenu.fullName}</Typography>
           )}
           <Box>
             {isEditing ? (
@@ -91,9 +96,9 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, entree, mainCourse, dessert,
           </Box>
         </Box>
         <Grid container spacing={2}>
-          {[entree, mainCourse, dessert, drink1, drink2].map((item, index) => (
+          {Object.entries(menu.menu).map((item, index) => (
             <Grid item xs={6} key={index}>
-              <MenuItemBox menuItem={item} isEditing={isEditing} onChanges={(menuItem) => handleChangesInItem(menuItem)} />
+              <MenuItemBox menuItem={item[1]} isEditing={isEditing} onChanges={(menuItem) => handleChangesInItem(menuItem)} />
             </Grid>
           ))}
           <Grid item xs={12}>

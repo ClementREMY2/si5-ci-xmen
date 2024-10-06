@@ -14,7 +14,7 @@ import {generatePath, useNavigate} from "react-router-dom";
 import {privateRoutes} from "../../utils/Routes.ts";
 
 interface EventItem {
-    id: number;
+    id: string;
     title: string;
     details: string[];
 }
@@ -27,7 +27,8 @@ interface EventsListProps {
 export default function EventsList({todayEvents, nextDaysEvents}: Readonly<EventsListProps>) {
     const navigate = useNavigate();
 
-    const handleSeeDetails = (eventId: number) => {
+    const handleSeeDetails = (eventId: string) => {
+        console.log("See details for event", eventId);
         navigate(generatePath(privateRoutes.event, {id: eventId}));
     };
 
