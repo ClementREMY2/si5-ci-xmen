@@ -5,6 +5,7 @@ import EventsList from "../components/EventsList/EventsList";
 import { getAllEvents, getNextEvents, getTodayEvents } from "../formatter/EventFormatter";
 import { getMenusBackend } from "../formatter/MenuFormatter";
 import { Event, EventItem } from "../interfaces/Event";
+import {getEvents} from "../services/EventService";
 
 export default function EventsPage() {
     const [events, setEvents] = useState<Event[] | undefined>(undefined);
@@ -14,8 +15,7 @@ export default function EventsPage() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const menus = await getMenusBackend();
-                const allEvents = getAllEvents(menus);
+                const allEvents = await getEvents();
                 setEvents(allEvents); 
 
                 setTodayEvents(getTodayEvents(allEvents));
