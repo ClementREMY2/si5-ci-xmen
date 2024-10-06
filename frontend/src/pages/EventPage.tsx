@@ -1,5 +1,6 @@
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import {Box, Button, Checkbox, TextField, Typography} from "@mui/material";
+import {Box, Button, Checkbox, IconButton, TextField, Typography} from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check'; 
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
@@ -23,6 +24,9 @@ export default function EventsPage() {
     const [isEdited, setIsEdited] = useState(false);
     const [isANewMenu, setIsANewMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isBeverageEditing, setIsBeverageEditing] = useState(false);
+    const [beverageName, setBeverageName] = useState("");
+    const [beveragePrice, setBeveragePrice] = useState(0);
 
     const [event, setEvent] = useState<Event>();
 
@@ -99,6 +103,20 @@ export default function EventsPage() {
             setIsEdited(false);
     }
 
+    const handleAddBeverage = () => {
+        setIsBeverageEditing(true);
+    }
+    
+
+    const handleSaveBeverage = () => {
+        const e = event;
+        if (e) {
+            e.beverages.push({fullName: beverageName, shortName: beverageName, price: beveragePrice, category: MenuCategoryEnum.BEVERAGE, id: "0"});
+            setEvent(e);
+        }
+        setIsBeverageEditing(false);
+        setIsEdited(true);
+    }
     const card = (
         <>
             {eventId!=="0" && <Typography variant="h3" sx={{marginRight: 1}}>{event && event.name}</Typography>}
@@ -136,11 +154,34 @@ export default function EventsPage() {
             </Box>
             <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
                 <Typography>Boissons</Typography>
-                <Box>
+                <IconButton onClick={handleAddBeverage}>
+                    <AddCircleOutlineIcon/>
+                </IconButton>
+                <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
                     {event?.beverages.map((beverage, index) => (
-                        <Typography key={index}>{beverage.fullName}</Typography>
+                        <Typography key={index}>{beverage.fullName} - {beverage.price}€</Typography>
                     ))}
                 </Box>
+            {isBeverageEditing && (
+                <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
+                    <TextField
+                        placeholder="Nom de la boisson"
+                        variant="outlined"
+                        size="medium"
+                        onChange={(e) => setBeverageName(e.target.value)}
+                    />
+                    <TextField
+                        placeholder="Prix de la boisson"
+                        variant="outlined"
+                        size="medium"
+                        type="number"
+                        onChange={(e) => setBeveragePrice(parseFloat(e.target.value))}
+                    />
+                    <IconButton onClick={handleSaveBeverage}>
+                        <CheckIcon />
+                    </IconButton>
+                </Box>
+                )}
             </Box>
             <Box display="flex" justifyContent="flex-start" sx={{margin: 2}} gap={2} mt={2}>
                 <Button variant="contained" color="primary" disabled={isEditing} endIcon={<AddCircleOutlineIcon/>}
