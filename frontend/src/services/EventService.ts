@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Event } from "../interfaces/Event";
 import { Buffer } from "buffer";
+const isUsingBff = import.meta.env.VITE_APP_IS_USING_BFF === "true";
 
 interface Menu {
   _id: string;
@@ -12,6 +13,16 @@ interface Menu {
 }
 
 export async function getEvents(): Promise<Event[]> {
+  if (isUsingBff) {
+    const menuItems: Event[] = await axios
+      .get("http://localhost:3003/events-64")
+      .then((response) => response.data)
+      .catch((error) => {
+        throw new Error(`Failed to fetch menus: ${error.message}`);
+      });
+    return menuItems;
+  }
+
   const events = await findAllEvents();
   const uniqueEvents = new Map<string, Event>();
   events.forEach((event) => {
@@ -48,6 +59,15 @@ async function findAllEvents(): Promise<Event[]> {
 }
 
 export async function getEvent(id: string): Promise<Event> {
+  if (isUsingBff) {
+    const event = await axios
+      .get(`http://localhost:3003/events-64/${id}`)
+      .then((response) => response.data)
+      .catch((error) => {
+        throw new Error(`Failed to fetch menu: ${error.message}`);
+      });
+    return event;
+  }
   const event = await axios
     .get(`http://localhost:9500/menu/menus/${id}`)
     .then((response) => response.data)
@@ -74,6 +94,14 @@ function isEvent(obj: any): obj is Event {
 }
 
 export async function saveEvent(event: Event): Promise<void> {
+  if (isUsingBff) {
+    const res = await axios
+      .post("http://localhost:3003/events-64", event)
+      .catch((error) => {
+        throw new Error(`Failed to save event: ${error.message}`);
+      });
+    return res.data;
+  }
   const encodedEvent = Buffer.from(JSON.stringify(event)).toString("base64");
   await axios
     .post("http://localhost:9500/menu/menus", {
