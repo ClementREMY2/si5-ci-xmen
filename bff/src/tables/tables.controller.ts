@@ -13,7 +13,9 @@ export class TablesController {
 
     @Post()
     async updateATable(@Body() table: Table): Promise<Table> {
-        return await this.tablesService.update(table);
+        const t = await this.tablesService.update(table);
+        table.id = t._id;
+        return table;  
     }
     
 }

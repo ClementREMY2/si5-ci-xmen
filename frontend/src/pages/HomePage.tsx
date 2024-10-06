@@ -12,6 +12,7 @@ import { addMenu, getMenus } from "../formatter/MenuFormatter.ts";
 import { MenuBackendNoId, GenericMenuItem } from "../interfaces/Menu.ts";
 import { savePayment } from "../services/OrderService.ts";
 import { usePopup } from "../components/PopupContext"; // Importer le contexte
+import axios from "axios";
 
 
 const events: DictionaryBoolean = eventsMock
@@ -78,6 +79,8 @@ export default function HomePage() {
             correctModifiedTable(newTables[index], modifiedTable);
             newTables[index] = {...modifiedTable};
             setAllTables(newTables);
+            axios.post("http://localhost:3003/tables", modifiedTable);
+
             // TODO: update the table in the backend
             // I use menus.length as an id because I don't have any other way to have a fixed increasing number
             const newMenu: MenuBackendNoId = {

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { GenericMenuItem, MenuBackendNoId } from "../interfaces/Menu";
 import { Table, TableBackend, TableStatusEnum } from "../interfaces/Table";
 import { getTables as getTablesGateway } from "../services/DiningService";
@@ -66,6 +67,9 @@ const updateTableWithInfosInMenus = async (tables: Table[]): Promise<Table[]> =>
 
 // Get all the tables from the backend
 export const getTables = async (): Promise<Table[]> => {
+        const res: Table[] = await axios.get("http://localhost:3003/tables").then((response) => { return response.data });
+        return res;
+
         let tablesBackend: TableBackend[] = await getTablesGateway();
         let tablesFrontend: Table[] = transformTableData(tablesBackend);
         return await updateTableWithInfosInMenus(tablesFrontend);
