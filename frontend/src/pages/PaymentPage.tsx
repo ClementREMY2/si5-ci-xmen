@@ -6,17 +6,17 @@ import ActionCardGeneric from "../components/generics/ActionCardGeneric.tsx";
 import BackNavPageGeneric from "../components/generics/BackNavPageGeneric.tsx";
 import PaymentList from "../components/payment/PaymentList.tsx";
 import {Event} from "../interfaces/Event.ts";
-import {MenuEvent, MenuItem} from "../interfaces/Menu.ts";
+import {GenericMenuItem, MenuBackendNoId, MenuEvent, MenuItem} from "../interfaces/Menu.ts";
 import {Order} from "../interfaces/Order.ts";
 import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
-import {menuNormalMock} from "../mocks/Menu.ts";
-import {eventOrderMock, tableOrderMock} from "../mocks/Order.ts";
 import {tablesMock} from "../mocks/Tables.ts";
 import {checkEventName, checkTableNumber} from "../utils/PageUtils.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 import { getEventOrders, getTableOrders, savePayment } from "../services/OrderService.ts";
 import { getMenuItemById } from "../services/MenuItemsService.ts";
+import { addMenu } from "../services/MenuService.ts";
+import { getMenus } from "../formatter/MenuFormatter.ts";
 
 const findTable = (tableNumber?: string): Table | undefined => {
     if (!checkTableNumber(tableNumber, false)) return undefined;
@@ -33,6 +33,7 @@ const getNbReadyTables = () => tablesMock.filter(table => table.status === Table
 export default function PaymentPage() {
     const navigate = useNavigate();
     const {table: tableNumber, event: eventName} = useParams();
+    const [menus, setMenus] = useState<GenericMenuItem[]>([]);
 
     const table = findTable(tableNumber);
     const event = findEvent(eventName);
@@ -60,6 +61,16 @@ export default function PaymentPage() {
 
         fetchOrder();
     }, [navigate, tableNumber, table, eventName, event]);
+
+    // Loading asynchronously the menus
+    useEffect(() => {
+        const fetchMenus = async () => {
+            const fetchMenus = await getMenus();
+            setMenus(fetchMenus);
+        };
+
+        fetchMenus();
+    }, []);
 
     const [order, setOrder] = useState<Order>({total: 0});
     const [paying, setPaying] = useState<Order>({
@@ -143,6 +154,14 @@ export default function PaymentPage() {
         savePayment(payment);
         if (total === order.total) {
             toast.success("Paiement terminé!");
+            const newMenu: MenuBackendNoId = {
+                fullName: "_|" + table?.table + "|" + table?.nbPeople + "|" + table?.event + "|" + table?.status,
+                shortName: menus.length + "|" + table?.table + "|" + table?.nbPeople + "|" + table?.event + "|" + table?.status,
+                price: 1,
+                category: "DESSERT",
+                image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
+            }
+            addMenu(newMenu);
             navigate(privateRoutes.home);
         }
         const newPaid = {...paid, total};

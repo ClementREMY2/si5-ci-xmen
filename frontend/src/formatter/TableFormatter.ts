@@ -1,4 +1,4 @@
-import { GenericMenuItem } from "../interfaces/Menu";
+import { GenericMenuItem, MenuBackendNoId } from "../interfaces/Menu";
 import { Table, TableBackend, TableStatusEnum } from "../interfaces/Table";
 import { getTables as getTablesGateway } from "../services/DiningService";
 import { getMenus } from "./MenuFormatter";
