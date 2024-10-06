@@ -8,8 +8,8 @@ import {DictionaryBoolean} from "../interfaces/Generics.ts";
 import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {eventsMock} from "../mocks/Event.ts";
 import { getTables } from "../formatter/TableFormatter.ts";
-import { addMenu } from "../formatter/MenuFormatter.ts";
-import { MenuBackendNoId } from "../interfaces/Menu.ts";
+import { addMenu, getMenus } from "../formatter/MenuFormatter.ts";
+import { MenuBackendNoId, GenericMenuItem } from "../interfaces/Menu.ts";
 import { savePayment } from "../services/OrderService.ts";
 
 const events: DictionaryBoolean = eventsMock
@@ -23,6 +23,7 @@ export default function HomePage() {
     const [selectedEvents, setSelectedEvents] = useState<DictionaryBoolean>({...events, "Aucun": true});
     const [allTables, setAllTables] = useState<Table[]>([]);
     const [filteredTables, setFilteredTables] = useState<Table[]>([]);
+    const [menus, setMenus] = useState<GenericMenuItem[]>([]);
 
     // Loading asynchronously the tables
     useEffect(() => {
@@ -33,6 +34,17 @@ export default function HomePage() {
 
         fetchTables();
     }, []);
+
+    // Loading asynchronously the menus
+    useEffect(() => {
+        const fetchMenus = async () => {
+            const fetchMenus = await getMenus();
+            setMenus(fetchMenus);
+        };
+
+        fetchMenus();
+    }, []);
+    
 
     useEffect(() => {
         const filtered = allTables.filter(table => selectedEvents[table.event ?? "Aucun"]);
@@ -59,9 +71,10 @@ export default function HomePage() {
             newTables[index] = {...modifiedTable};
             setAllTables(newTables);
             // TODO: update the table in the backend
+            // I use menus.length as an id because I don't have any other way to have a fixed increasing number
             const newMenu: MenuBackendNoId = {
-                fullName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
-                shortName: modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
+                fullName: "_|" + modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
+                shortName: menus.length + "|" + modifiedTable.table + "|" + modifiedTable.nbPeople + "|" + modifiedTable.event + "|" + modifiedTable.status,
                 price: 1,
                 category: "DESSERT",
                 image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"

@@ -1,4 +1,4 @@
-import { GenericMenuItem } from "../interfaces/Menu";
+import { GenericMenuItem, MenuBackendNoId } from "../interfaces/Menu";
 import { Table, TableBackend, TableStatusEnum } from "../interfaces/Table";
 import { getTables as getTablesGateway } from "../services/DiningService";
 import { getMenus } from "./MenuFormatter";
@@ -40,16 +40,25 @@ const transformTableData = (dto: TableBackend[]): Table[] => {
 
 // Update the tables with the informations stored in the backend (menus)
 const updateTableWithInfosInMenus = async (tables: Table[]): Promise<Table[]> => {
-        const menus: GenericMenuItem[] = await getMenus();
+        let menus: GenericMenuItem[] = await getMenus();
+
+        menus = menus.filter(m => m.fullName.charAt(0) === '_');
 
         for (let table of tables) {
-                for (let menuItem of menus) {
-                        const tablesInfos = menuItem.fullName.split("|");
-                        if (tablesInfos[0] === table.table.toString()) {
-                                table.nbPeople = parseInt(tablesInfos[1]);
-                                table.event = tablesInfos[2];
-                                table.status = tablesInfos[3] as TableStatusEnum;
-                        }       
+                let copyMenus = menus;
+                copyMenus = copyMenus.filter(m => m.fullName.split("|")[1] === table.table.toString());
+                copyMenus.sort((a, b) => {
+                        const shortNameA = a.shortName.split("|");
+                        const shortNameB = b.shortName.split("|");
+                        return parseInt(shortNameB[0]) - parseInt(shortNameA[0]);
+                });
+
+                if (copyMenus[0] != undefined) {
+                        const fullName = copyMenus[0].fullName.split("|");
+
+                        table.nbPeople = parseInt(fullName[2]);
+                        table.event = fullName[3];
+                        table.status = fullName[4] as TableStatusEnum
                 }
         }
         return tables;
@@ -63,6 +72,7 @@ export const getTables = async (): Promise<Table[]> => {
 };
 
 // Check if a table has an order
+/* COULD BE USEFUL LATER
 const doesMyTableHaveAnOrder = async (table: Table): Promise<string> => {
         const tables: TableBackend[] = await getTablesGateway();
         for (const tableBackend of tables) {
@@ -72,3 +82,4 @@ const doesMyTableHaveAnOrder = async (table: Table): Promise<string> => {
         }
         return "";
 }
+        */

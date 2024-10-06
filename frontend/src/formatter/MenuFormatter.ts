@@ -46,25 +46,6 @@ export const findMenuById = async (id: string): Promise<GenericMenuItem> => {
   return await getMenuById(id);
 };
 
-///////////////////////////////////////////////////////////////////
-
-// export function getCategory(menu: MenuBackend): MenuCategoryEnum {
-//         if (menu.fullName.split('|')[0] === 'beverage') {
-//                 return MenuCategoryEnum.BEVERAGE;
-//         } else {
-//                 switch (menu.category) {
-//                         case MenuCategoryEnumBackend.STARTER:
-//                                 return MenuCategoryEnum.STARTER;
-//                         case MenuCategoryEnumBackend.MAIN:
-//                                 return MenuCategoryEnum.MAIN;
-//                         case MenuCategoryEnumBackend.DESSERT:
-//                                 return MenuCategoryEnum.DESSERT;
-//                         default:
-//                                 throw new Error(`Unknown category for menu: ${menu.fullName}`);
-//                 }
-//         }
-// }
-
 /**
  * go through all the menus in the back, get all the menuEvent and its menuItem
  * @param menusBack response from menu/menus

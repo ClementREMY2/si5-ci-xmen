@@ -1,8 +1,6 @@
-
 import axios from 'axios';
 import { Constants } from '../utils/Constants'
 import { TableOrderNBCustomers, TableBackend } from '../interfaces/Table';
-import { OrderBackend } from '../interfaces/Order';
 
 export const getMenu = async () => {
         try {
