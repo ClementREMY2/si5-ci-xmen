@@ -24,6 +24,7 @@ export async function getEvents(): Promise<Event[]> {
   }
 
   const events = await findAllEvents();
+
   const uniqueEvents = new Map<string, Event>();
   events.forEach((event) => {
     uniqueEvents.set(event.name, event);
@@ -74,11 +75,9 @@ export async function getEvent(id: string): Promise<Event> {
     .catch((error) => {
       throw new Error(`Failed to fetch menu: ${error.message}`);
     });
-
   const decoded = Buffer.from(event.fullName, "base64").toString("ascii");
   const decodedObj = JSON.parse(decoded);
   decodedObj.id = event._id;
-  console.log(isEvent(decodedObj));
   if (isEvent(decodedObj)) {
     return decodedObj;
   }

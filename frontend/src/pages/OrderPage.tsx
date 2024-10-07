@@ -12,12 +12,12 @@ import {Table, TableStatusEnum} from "../interfaces/Table.ts";
 import {checkTableNumber} from "../utils/PageUtils.ts";
 import {privateRoutes} from "../utils/Routes.ts";
 import { applyTableColors, getTables } from "../formatter/TableFormatter.ts";
-import { getAllEvents } from "../formatter/EventFormatter.ts";
 // import { getAllMenuItem } from "../formatter/MenuFormatter.ts";
 import { addMenu, getMenusGateway } from "../services/MenuService.ts";
 import { getMenuItems } from "../services/MenuItemsService.ts";
 import { createOrder } from "../services/OrderService.ts";
 import { usePopup } from "../components/PopupContext";
+import { getEvents } from "../services/EventService.ts";
 
 
 export default function OrderPage() {
@@ -26,12 +26,23 @@ export default function OrderPage() {
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [menus, setMenus] = useState<MenuBackend[]>([]);
     const { setPopup } = usePopup();
+    const [table, setTable] = useState<Table>();
+    const [event, setEvent] = useState<Event>();
 
     useEffect(() => {
         const fetchMenus = async () => {
             const menusData = await getMenusGateway();
             setMenus(menusData);
         };
+
+        const fetchTable = async () => {
+            const tableData = await getTables();
+            const t = tableData.find(t => t.table === parseFloat(tableNumber!));
+            
+            setTable(t);
+        }
+
+        fetchTable();
         fetchMenus();
     }, []);
 
@@ -47,13 +58,14 @@ export default function OrderPage() {
 
     useEffect(() => {
         const fetchEvents = async () => {
-            const eventsData: Event[] = [];
-            setEvents(eventsData);
+            const eventsData: Event[] = await getEvents();
+            
+            const e = eventsData.find(e => e.name === table?.event);
+            
+            setEvent(e);
         };
-        if (menus.length > 0) {
-            fetchEvents();
-        }
-    }, [menus]); 
+        fetchEvents();
+    }, [menus, table]); 
     
 
     useEffect(() => {
@@ -98,9 +110,6 @@ export default function OrderPage() {
         return event!;
     };
 
-    const table = getTable(parseFloat(tableNumber!));
-    const event = table?.event ? extractEvent(table.event) : undefined;
-
     const [order, setOrder] = useState<Order>({
         table: table?.table,
         event: event?.name,
@@ -122,6 +131,7 @@ export default function OrderPage() {
     const changeItemQuantity = (id: string, delta: number, isEventMenu: boolean = false) => {
         // Find the item in the menu
         const item = getItem(id, isEventMenu);
+        console.log(item);
         if (!item) {
             console.warn(`Cannot find item with id: ${id}`);
             return;
@@ -146,11 +156,14 @@ export default function OrderPage() {
     };
 
     const confirmOrder = async () => {
+        
         const newOrder = {
             ...order,
+            event: event?.id,
             datetime: new Date()
         };
         newOrder.table = parseFloat(tableNumber!);
+        
         const o: Order = await createOrder(newOrder);
         setOrder(o);
 
@@ -162,14 +175,15 @@ export default function OrderPage() {
             status: TableStatusEnum.ORDER_IN_PROGRESS,
             event: parsedString.event
         };
-
+        if (table) {
         const orderProgress: MenuBackendNoId = {
-            fullName: "_|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_IN_PROGRESS,
-            shortName: menus.length + "|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_IN_PROGRESS,
+            fullName: "_|" + table.table + "|" + table.nbPeople + "|" + table.event + "|" + TableStatusEnum.ORDER_IN_PROGRESS,
+            shortName: menus.length + "|" + table.table + "|" + table.nbPeople + "|" + table.event + "|" + TableStatusEnum.ORDER_IN_PROGRESS,
             price: 1,
             category: "DESSERT",
             image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
         }
+
         addMenu(orderProgress);
 
         navigate(privateRoutes.home);
@@ -178,8 +192,8 @@ export default function OrderPage() {
             localTable.status = TableStatusEnum.ORDER_READY;
 
             const orderDone: MenuBackendNoId = {
-                fullName: "_|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_READY,
-                shortName: menus.length+1 + "|" + localTable.table + "|" + localTable?.nbPeople + "|" + localTable?.event + "|" + TableStatusEnum.ORDER_READY,
+                fullName: "_|" + table?.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.ORDER_READY,
+                shortName: menus.length+1 + "|" + table.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.ORDER_READY,
                 price: 1,
                 category: "DESSERT",
                 image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
@@ -189,6 +203,7 @@ export default function OrderPage() {
 
             setPopup(`La commande effectuée pour la table ${newOrder.table} est prête.`);
         }, 5000);
+        }
     };
 
     const card: React.ReactNode = (
@@ -198,9 +213,9 @@ export default function OrderPage() {
                 leftTitle={table?.event}
                 rightTitle={`${order.total} €`}
                 mainContent={
-                    table?.event
+                    event
                         ? <MenuEventList
-                            event={extractEvent(table.event)}
+                            event={event}
                             order={order}
                             changeItemQuantity={changeItemQuantity}
                         />

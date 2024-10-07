@@ -98,21 +98,51 @@ async function getLastPaymentOfTable(
     .filter((decoded) => decoded !== null)
     .filter(isPayment);
 
-  const lastPayment = fullNamesDecoded.reduce<Payment | null>(
-    (acc, payment) => {
-      if (payment.table == tableNumber) {
-        if (acc === null) {
-          return payment;
-        }
-        if (new Date(payment.date) > new Date(acc.date)) {
-          return payment;
-        }
-      }
-      return acc;
-    },
-    null
+  const paymentsOfTable = fullNamesDecoded.filter(
+    (payment) => payment.table === tableNumber
   );
-  return lastPayment;
+
+  if (paymentsOfTable.length === 0) {
+    return null;
+  }
+
+  return paymentsOfTable[paymentsOfTable.length - 1];
+}
+
+async function getLastPaymentOfEvent(eventId: string): Promise<Payment | null> {
+  const payments: Menu[] = await axios
+    .get("http://localhost:9500/menu/menus")
+    .then((response: { data: any }) => response.data)
+    .catch((error: { message: any }) => {
+      throw new Error(`Failed to fetch payments: ${error.message}`);
+    });
+
+  const fullNamesDecoded = payments
+    .map((payment) => {
+      try {
+        const decoded = Buffer.from(payment.fullName, "base64").toString(
+          "ascii"
+        );
+        const decodedObj = JSON.parse(decoded);
+        decodedObj.id = payment._id;
+        return decodedObj;
+      } catch (e) {
+        return null;
+      }
+    })
+    .filter((decoded) => decoded !== null)
+    .filter(isPayment);
+
+  console.log(fullNamesDecoded);
+  const paymentsOfEvent = fullNamesDecoded.filter(
+    (payment) => payment.event === eventId
+  );
+
+  if (paymentsOfEvent.length === 0) {
+    return null;
+  }
+
+  return paymentsOfEvent[paymentsOfEvent.length - 1];
 }
 
 const getTableOrdersBFF = async (tableNumber: number): Promise<Order> => {
@@ -135,27 +165,43 @@ const getTableOrdersBFF = async (tableNumber: number): Promise<Order> => {
 };
 
 export const getTableOrders = async (tableNumber: number): Promise<Order> => {
+
   if (isUsingBFF) {
     const o = await getTableOrdersBFF(tableNumber);
     return o;
   }
 
-  const lastPaymentOfTable = await getLastPaymentOfTable(tableNumber);
 
   const orders = await findAllOrders();
-  const ordersOfTable: Order[] = orders.filter(
-    (order) =>
-      order.table == tableNumber &&
-      (!lastPaymentOfTable ||
-        (order.datetime &&
-          order.datetime > lastPaymentOfTable.date &&
-          !lastPaymentOfTable.ended))
-  );
+
+  const ordersOfTable = orders.filter((order) => order.table === tableNumber);
+
   const items: OrderItems = {};
   const itemsEvent: OrderItems = {};
-  let total: number = 0;
-  ordersOfTable.forEach((order: Order) => {
-    total += order.total;
+  if (ordersOfTable.length === 0) {
+    return {
+      table: tableNumber,
+      total: 0,
+      items: {},
+      itemsEvent: {},
+      datetime: new Date(),
+    };
+  }
+
+  const lastPayment = await getLastPaymentOfTable(tableNumber);
+  console.log(lastPayment);
+  console.log(ordersOfTable);
+  const recentOrdersOfTable =
+    lastPayment && lastPayment.date
+      ? ordersOfTable.filter(
+          (order) => new Date(order.datetime) > new Date(lastPayment.date)
+        )
+      : ordersOfTable;
+
+  console.log(recentOrdersOfTable);
+
+  recentOrdersOfTable.forEach((order: Order) => {
+    console.log(order);
     if (order.items) {
       Object.entries(order.items).forEach(([itemId, quantity]) => {
         if (items[itemId]) {
@@ -164,19 +210,6 @@ export const getTableOrders = async (tableNumber: number): Promise<Order> => {
           items[itemId] = quantity;
         }
       });
-      if (
-        lastPaymentOfTable &&
-        lastPaymentOfTable.items &&
-        !lastPaymentOfTable.ended
-      ) {
-        Object.entries(lastPaymentOfTable.items).forEach(
-          ([itemId, quantity]) => {
-            if (items[itemId]) {
-              items[itemId] -= quantity;
-            }
-          }
-        );
-      }
     }
     if (order.itemsEvent) {
       Object.entries(order.itemsEvent).forEach(([itemId, quantity]) => {
@@ -187,30 +220,17 @@ export const getTableOrders = async (tableNumber: number): Promise<Order> => {
         }
       });
     }
-    if (
-      lastPaymentOfTable &&
-      lastPaymentOfTable.itemsEvent &&
-      !lastPaymentOfTable.ended
-    ) {
-      Object.entries(lastPaymentOfTable.itemsEvent).forEach(
-        ([itemId, quantity]) => {
-          if (itemsEvent[itemId]) {
-            itemsEvent[itemId] -= quantity;
-          }
-        }
-      );
-    }
   });
 
-  if (ordersOfTable.length === 0) {
-    return { table: tableNumber, total: 0, items: {}, itemsEvent: {} };
-  }
+  console.log(items);
+  console.log(itemsEvent);
 
   const order: Order = {
-    table: ordersOfTable[0].table,
+    table: tableNumber,
+    datetime: new Date(),
+    total: recentOrdersOfTable.reduce((acc, curr) => acc + curr.total, 0),
     items,
     itemsEvent,
-    total,
   };
 
   return order;
@@ -219,7 +239,10 @@ export const getTableOrders = async (tableNumber: number): Promise<Order> => {
 export const getEventOrders = async (eventId: string): Promise<Order> => {
   const orders = await findAllOrders();
 
+  orders.map((order) => {});
+
   const ordersOfEvent = orders.filter((order) => order.event === eventId);
+
   const items: OrderItems = {};
   const itemsEvent: OrderItems = {};
   ordersOfEvent.forEach((order: Order) => {
@@ -243,13 +266,20 @@ export const getEventOrders = async (eventId: string): Promise<Order> => {
     }
   });
 
-  if (ordersOfEvent.length === 0) {
-    return { event: eventId, total: 0, items: {}, itemsEvent: {} };
-  }
+  const lastPayment = await getLastPaymentOfEvent(eventId);
+
+  console.log(lastPayment);
+  const recentOrdersOfEvent =
+    lastPayment && lastPayment.date
+      ? ordersOfEvent.filter(
+          (order) => new Date(order.datetime) > new Date(lastPayment.date)
+        )
+      : ordersOfEvent;
+
   const order: Order = {
     event: eventId,
     datetime: new Date(),
-    total: ordersOfEvent.reduce((acc, curr) => acc + curr.total, 0),
+    total: recentOrdersOfEvent.reduce((acc, curr) => acc + curr.total, 0),
     items,
     itemsEvent,
   };
@@ -269,6 +299,7 @@ export function createOrder(order: Order): Promise<Order> {
 }
 
 export async function savePayment(payment: Payment): Promise<Payment> {
+
   if (isUsingBFF) {
     return axios.post("http://localhost:3003/payments", payment);
   }
@@ -287,6 +318,9 @@ export async function savePayment(payment: Payment): Promise<Payment> {
       }
     });
   }
+
+  payment.date = new Date();
+
   const encodedPayment = encodeObjectToBase64(payment);
   return axios.post("http://localhost:9500/menu/menus", encodedPayment);
 }

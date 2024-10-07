@@ -31,7 +31,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
     setIsEditing(false);
     const updatedMenu = { ...editedMenu
     };
-    console.log('Updated menu:', updatedMenu);
+    
     setTotalPrice(calculateTotalPrice());
     onMenuUpdate(updatedMenu);
   };
@@ -43,8 +43,8 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPrice = Number(e.target.value);
-    console.log('Input value:', e.target.value);
-    console.log('New price:', newPrice);
+    
+    
     setEditedMenu((prevMenu) => ({
       ...prevMenu,
       price: newPrice,
@@ -52,14 +52,10 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu, onMenuUpdate, editing, allowE
   };
 
   const handleChangesInItem = (menuItem: any) => {
-    console.log('Menu item:', menuItem);
+    
     let category = menuItem.category;
     if(category === "EntrC)e" || category === "Entree")
-      category = "starter";
-    if(category === "Plat")
-      category = "main";
-    if(category === "Dessert")
-      category = "dessert";
+      category = "Entree";
     const updatedMenu = { ...editedMenu, menu: { ...editedMenu.menu, [category]: menuItem } };
     setEditedMenu(updatedMenu);
   }

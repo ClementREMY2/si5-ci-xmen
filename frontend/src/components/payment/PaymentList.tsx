@@ -8,6 +8,7 @@ import {eventsMock} from "../../mocks/Event.ts";
 import {menuNormalMock} from "../../mocks/Menu.ts";
 import PaymentListItem from "./PaymentListItem.tsx";
 import { getMenuItems } from "../../services/MenuItemsService.ts";
+import { getEvents } from "../../services/EventService.ts";
 
 interface PaymentListProps {
     order: Order;
@@ -22,8 +23,8 @@ interface PaymentListProps {
 export default function PaymentList({order, paying, changePayingQuantity, addAllToPaying, paid, tip, changeTip}: Readonly<PaymentListProps>) {
     const [payingAll, setPayingAll] = useState<boolean>(false);
     const [menuItems, setMenuItems] = useState<MenuItem[]>();
-    const [menuEvents, setMenuEvents] = useState<MenuEvent[]>();
-
+    const [events, setEvents] = useState<Event[]>();
+    console.log("order", order);
     useEffect(() => {
         const fetchMenuItems = async () => {
             try {
@@ -33,8 +34,17 @@ export default function PaymentList({order, paying, changePayingQuantity, addAll
                 console.error("Error fetching menu items:", error);
             }
         };
-        fetchMenuItems();
 
+        const fetchMenuEvents = async () => {
+            try {
+                const eventsData = await getEvents();
+                setEvents(eventsData);
+            } catch (error) {
+                console.error("Error fetching menu events:", error);
+            }
+        }
+        fetchMenuItems();
+        fetchMenuEvents();
         
         if (order.total - paid.total === paying.total) setPayingAll(true);
         else setPayingAll(false);
@@ -45,9 +55,12 @@ export default function PaymentList({order, paying, changePayingQuantity, addAll
     }
 
     const getItemName = (id: string, isEvent: boolean): string => {
-        const menu = isEvent ? eventsMock.find((event: Event) => event.name === order?.event)?.menus : menuItems;
-        return menu?.find(item => item.id === id)?.fullName || id;
+        const menuEvents = events?.find((event: Event) => event.id === order?.event)?.menus 
+        const beverages = events?.find((event: Event) => event.id === order?.event)?.beverages
+        const menu = isEvent ? menuEvents : menuItems;
+        return menu?.find(item => item.id === id)?.fullName || beverages?.find(item => item.id === id)?.fullName || id;
     }
+
 
     const getIcon = (id: string): React.ReactElement | undefined => {
         const item = menuNormalMock.find(item => item.id === id);
