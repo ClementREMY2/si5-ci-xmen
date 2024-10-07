@@ -22,17 +22,22 @@ export class Orders64Service {
 
   async getBillForTable(tableNumber: number) {
     const lastPaymentOfTable = await getLastPaymentOfTable(tableNumber);
-
     const orders = await findAllOrders();
-
+    console.log('lastPaymentOfTable', lastPaymentOfTable);
     const ordersOfTable: Order[] = orders.filter(
       (order) =>
         order.table == tableNumber &&
-        (!lastPaymentOfTable || order.datetime > lastPaymentOfTable.date),
+        (!lastPaymentOfTable ||
+          (order.datetime &&
+            order.datetime > lastPaymentOfTable.date &&
+            lastPaymentOfTable.ended) ||
+          !lastPaymentOfTable.ended),
     );
     const items: OrderItems = {};
     const itemsEvent: OrderItems = {};
+    let total = 0;
     ordersOfTable.forEach((order: Order) => {
+      order.total += order.total;
       if (order.items) {
         Object.entries(order.items).forEach(([itemId, quantity]) => {
           if (items[itemId]) {
@@ -41,6 +46,19 @@ export class Orders64Service {
             items[itemId] = quantity;
           }
         });
+        if (
+          lastPaymentOfTable &&
+          lastPaymentOfTable.items &&
+          !lastPaymentOfTable.ended
+        ) {
+          Object.entries(lastPaymentOfTable.items).forEach(
+            ([itemId, quantity]) => {
+              if (items[itemId]) {
+                items[itemId] -= quantity;
+              }
+            },
+          );
+        }
       }
       if (order.itemsEvent) {
         Object.entries(order.itemsEvent).forEach(([itemId, quantity]) => {
@@ -50,12 +68,26 @@ export class Orders64Service {
             itemsEvent[itemId] = quantity;
           }
         });
+        if (
+          lastPaymentOfTable &&
+          lastPaymentOfTable.itemsEvent &&
+          !lastPaymentOfTable.ended
+        ) {
+          Object.entries(lastPaymentOfTable.itemsEvent).forEach(
+            ([itemId, quantity]) => {
+              if (itemsEvent[itemId]) {
+                itemsEvent[itemId] -= quantity;
+              }
+            },
+          );
+        }
       }
     });
 
     if (ordersOfTable.length === 0) {
       return { table: tableNumber, total: 0, items: {}, itemsEvent: {} };
     }
+
     const order: Order = {
       table: tableNumber,
       event: ordersOfTable[0]?.event,
@@ -107,7 +139,7 @@ export class Orders64Service {
 
   async findAllOrders(): Promise<Order[]> {
     const orders = await findAllOrders();
-    console.log(orders);
+
     return orders;
   }
 

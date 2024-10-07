@@ -1,8 +1,9 @@
-import { menuNormalMock } from "./../mocks/Menu";
 import axios from "axios";
 import { Payment } from "../interfaces/payment.interface";
 import { Order, OrderItems } from "../interfaces/Order";
 import { Buffer } from "buffer";
+
+const isUsingBFF = import.meta.env.VITE_APP_IS_USING_BFF === "true";
 
 function encodeObjectToBase64(obj: any): any {
   const jsonString = JSON.stringify(obj);
@@ -144,7 +145,33 @@ async function getLastPaymentOfEvent(eventId: string): Promise<Payment | null> {
   return paymentsOfEvent[paymentsOfEvent.length - 1];
 }
 
+const getTableOrdersBFF = async (tableNumber: number): Promise<Order> => {
+  var config = {
+    method: "get",
+    url:
+      "http://localhost:3003/orders-64/bill/table?tableNumber=" + tableNumber,
+    headers: {},
+  };
+
+  const response = axios(config)
+    .then(function (response) {
+      return response.data;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  return response;
+};
+
 export const getTableOrders = async (tableNumber: number): Promise<Order> => {
+
+  if (isUsingBFF) {
+    const o = await getTableOrdersBFF(tableNumber);
+    return o;
+  }
+
+
   const orders = await findAllOrders();
 
   const ordersOfTable = orders.filter((order) => order.table === tableNumber);
@@ -261,6 +288,9 @@ export const getEventOrders = async (eventId: string): Promise<Order> => {
 };
 
 export function createOrder(order: Order): Promise<Order> {
+  if (isUsingBFF) {
+    return axios.post("http://localhost:3003/orders-64", order);
+  }
   if (order.event === undefined) {
     delete order.event;
   }
@@ -269,7 +299,28 @@ export function createOrder(order: Order): Promise<Order> {
 }
 
 export async function savePayment(payment: Payment): Promise<Payment> {
+
+  if (isUsingBFF) {
+    return axios.post("http://localhost:3003/payments", payment);
+  }
+  const lastPayment = await getLastPaymentOfTable(payment.table);
+  if (lastPayment && !lastPayment.ended) {
+    Object.entries(lastPayment.items).forEach(([itemId, quantity]) => {
+      if (payment.items[itemId]) {
+        payment.items[itemId] += quantity;
+      }
+    });
+  }
+  if (lastPayment && !lastPayment.ended) {
+    Object.entries(lastPayment.itemsEvent).forEach(([itemId, quantity]) => {
+      if (payment.itemsEvent[itemId]) {
+        payment.itemsEvent[itemId] += quantity;
+      }
+    });
+  }
+
   payment.date = new Date();
+
   const encodedPayment = encodeObjectToBase64(payment);
   return axios.post("http://localhost:9500/menu/menus", encodedPayment);
 }

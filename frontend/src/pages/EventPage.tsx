@@ -156,7 +156,7 @@ export default function EventsPage() {
                     <AddCircleOutlineIcon/>
                 </IconButton>
                 <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
-                    {event?.beverages.map((beverage, index) => (
+                    {event?.beverages && event.beverages.map((beverage, index) => (
                         <Typography key={index}>{beverage.fullName} - {beverage.price}€</Typography>
                     ))}
                 </Box>
