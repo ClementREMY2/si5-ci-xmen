@@ -1,5 +1,9 @@
+import { OrderItems } from './order.interface';
+
 export interface Payment {
-    table: number;
-    date: Date;
-    payment: boolean;
+  itemsEvent: OrderItems;
+  items: OrderItems;
+  ended: boolean;
+  table: number;
+  date: Date;
 }

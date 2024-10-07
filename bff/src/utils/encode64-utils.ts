@@ -20,18 +20,6 @@ function encodeObjectToBase64(obj: any): any {
 }
 
 function isOrder(obj: any): obj is Order {
-  console.log('obj', obj);
-  console.log('table', typeof obj.table === 'number');
-  console.log('datetime', typeof obj.datetime === 'string');
-  console.log('total', typeof obj.total === 'number');
-  console.log('items', typeof obj.items === 'object', obj.items);
-  console.log('itemsEvent', typeof obj.itemsEvent === 'object', obj.itemsEvent);
-  console.log(
-    typeof obj.table === 'number' &&
-      typeof obj.datetime === 'string' &&
-      typeof obj.total === 'number' &&
-      (typeof obj.items === 'object' || typeof obj.itemsEvent === 'object'),
-  );
   return (
     typeof obj.table === 'number' &&
     typeof obj.datetime === 'string' &&
@@ -51,11 +39,6 @@ async function saveMenu(menu: any): Promise<Menu> {
 }
 
 function isEvent(obj: any): obj is Event {
-  console.log('obj', obj);
-  console.log('name', typeof obj.name === 'string');
-  console.log('date', typeof obj.date === 'string');
-  console.log('menus', typeof obj.menus === 'object', obj.menus);
-
   return (
     typeof obj.name === 'string' &&
     typeof obj.date === 'string' &&
@@ -114,24 +97,60 @@ async function findAllOrders(): Promise<Order[]> {
     .filter((decoded) => decoded !== null);
 
   const ordersTyped = fullNamesDecoded.filter(isOrder);
-  console.log('ordersTyped', ordersTyped);
 
   return ordersTyped;
 }
 
 function isPayment(obj: any): obj is Payment {
   return (
-    typeof obj.table === 'number' &&
+    typeof obj.table === 'string' &&
     typeof obj.date === 'string' &&
-    typeof obj.payment === 'boolean'
+    typeof obj.ended === 'boolean'
   );
 }
 
 async function getLastPaymentOfTable(tableNumber: number): Promise<Payment> {
+  // const payments: Menu[] = await axios
+  //   .get('http://localhost:9500/menu/menus')
+  //   .then((response) => response.data)
+  //   .catch((error) => {
+  //     throw new Error(`Failed to fetch payments: ${error.message}`);
+  //   });
+
+  // const fullNamesDecoded = payments
+  //   .map((payment) => {
+  //     try {
+  //       const decoded = Buffer.from(payment.fullName, 'base64').toString(
+  //         'ascii',
+  //       );
+  //       const decodedObj = JSON.parse(decoded);
+  //       decodedObj.id = payment._id;
+  //       return decodedObj;
+  //     } catch (e) {
+  //       return null;
+  //     }
+  //   })
+  //   .filter((decoded) => decoded !== null)
+  //   .filter(isPayment);
+
+  // const lastPayment = fullNamesDecoded.reduce((acc, payment) => {
+  //   if (payment.table == tableNumber) {
+  //     if (acc === null) {
+  //       return payment;
+  //     }
+  //     if (new Date(payment.date) > new Date(acc.date)) {
+  //       return payment;
+  //     }
+  //   }
+  //   return acc;
+  // }, null);
+
+  // return lastPayment;
+
   const payments: Menu[] = await axios
     .get('http://localhost:9500/menu/menus')
-    .then((response) => response.data)
-    .catch((error) => {
+    .then((response: { data: any }) => response.data)
+    .catch((error: { message: any }) => {
       throw new Error(`Failed to fetch payments: ${error.message}`);
     });
 
@@ -150,20 +169,44 @@ async function getLastPaymentOfTable(tableNumber: number): Promise<Payment> {
     })
     .filter((decoded) => decoded !== null)
     .filter(isPayment);
+  console.log(fullNamesDecoded);
+  const lastEndedPaymentIndex = fullNamesDecoded.findIndex(
+    (payment) => payment.table === tableNumber && payment.ended,
+  );
+  console.log(lastEndedPaymentIndex);
+  if (lastEndedPaymentIndex !== -1) {
+    const lastEndedPayment = fullNamesDecoded[lastEndedPaymentIndex];
+    return {
+      ...lastEndedPayment,
+      items: {},
+      itemsEvent: {},
+    };
+  }
+  const relevantPayments = fullNamesDecoded.slice(lastEndedPaymentIndex + 1);
 
-  const lastPayment = fullNamesDecoded.reduce((acc, payment) => {
-    if (payment.table == tableNumber) {
-      if (acc === null) {
-        return payment;
+  const accumulatedPayment = relevantPayments.reduce<Payment | null>(
+    (acc, payment) => {
+      if (payment.table == tableNumber) {
+        if (acc === null) {
+          return {
+            ...payment,
+            items: { ...payment.items },
+            itemsEvent: { ...payment.itemsEvent },
+          };
+        }
+        Object.entries(payment.items).forEach(([key, value]) => {
+          acc.items[key] = (acc.items[key] || 0) + value;
+        });
+        Object.entries(payment.itemsEvent).forEach(([key, value]) => {
+          acc.itemsEvent[key] = (acc.itemsEvent[key] || 0) + value;
+        });
       }
-      if (new Date(payment.date) > new Date(acc.date)) {
-        return payment;
-      }
-    }
-    return acc;
-  }, null);
+      return acc;
+    },
+    null,
+  );
 
-  return lastPayment;
+  return accumulatedPayment;
 }
 
 function isTable(obj: any): obj is Table {

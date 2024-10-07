@@ -143,10 +143,6 @@ export const getTableOrders = async (tableNumber: number): Promise<Order> => {
   const lastPaymentOfTable = await getLastPaymentOfTable(tableNumber);
 
   const orders = await findAllOrders();
-
-  console.log("lastPaymentOfTable", JSON.stringify(lastPaymentOfTable));
-  console.log("orders", JSON.stringify(orders));
-
   const ordersOfTable: Order[] = orders.filter(
     (order) =>
       order.table == tableNumber &&
@@ -158,7 +154,6 @@ export const getTableOrders = async (tableNumber: number): Promise<Order> => {
   const items: OrderItems = {};
   const itemsEvent: OrderItems = {};
   let total: number = 0;
-  console.log("ordersOfTable", JSON.stringify(ordersOfTable));
   ordersOfTable.forEach((order: Order) => {
     total += order.total;
     if (order.items) {
@@ -211,10 +206,6 @@ export const getTableOrders = async (tableNumber: number): Promise<Order> => {
     return { table: tableNumber, total: 0, items: {}, itemsEvent: {} };
   }
 
-  console.log(
-    "order",
-    JSON.stringify({ table: tableNumber, total, items, itemsEvent })
-  );
   const order: Order = {
     table: ordersOfTable[0].table,
     items,
