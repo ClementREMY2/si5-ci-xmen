@@ -18,17 +18,14 @@ import { getMenuItemById } from "../services/MenuItemsService.ts";
 import { addMenu } from "../services/MenuService.ts";
 import { getMenus } from "../formatter/MenuFormatter.ts";
 import { getTables } from "../formatter/TableFormatter.ts";
+import { getEvents } from "../services/EventService.ts";
 
 const findTable = (tables: Table[], tableNumber?: string): Table | undefined => {
     if (!checkTableNumber(tableNumber, false)) return undefined;
-    console.log(tables);
+    
     return tables.find(table => table.table === parseFloat(tableNumber!));
 };
 
-const findEvent = (eventName?: string): Event | undefined => {
-    if (!checkEventName(eventName, false)) return undefined;
-    return eventsMock.find(event => event.name === eventName);
-};
 
 const getNbReadyTables = () => tablesMock.filter(table => table.status === TableStatusEnum.ORDER_READY).length;
 
@@ -39,6 +36,7 @@ export default function PaymentPage() {
     const [tables, setTables] = useState<Table[]>([]);
     const [table, setTable] = useState<Table | undefined>(undefined);
     const [event, setEvent] = useState<Event | undefined>(undefined);
+    const [events, setEvents] = useState<Event[]>(eventsMock);
 
     
     // Loading asynchronously the menus
@@ -47,6 +45,13 @@ export default function PaymentPage() {
             const fetchMenus = await getMenus();
             setMenus(fetchMenus);
         };
+
+        const fetchEvents = async () => {
+            const fetchEvents = await getEvents();
+            setEvents(fetchEvents);
+        }
+
+        fetchEvents();
 
         fetchMenus();
     }, []);
@@ -66,18 +71,21 @@ export default function PaymentPage() {
     // Loading asynchronously the tables
     useEffect(() => {
         const fetchTables = async () => {
+            const e = events.find(e => e.name === eventName);
+            console.log(e);
+            console.log(findTable(tables, tableNumber));
             setTable(findTable(tables, tableNumber));
-            setEvent(findEvent(eventName));
+            setEvent(e);
         };
 
         fetchTables();
-    }, [tables]);
+    }, [tables, events]);
 
 
     useEffect(() => {
         const fetchOrder = async () => {
          
-            console.log("table alone : " + JSON.stringify(table));
+            
             if (!table && !event) {
                 console.warn("No table found for table number:", tableNumber, "and no event found for name:", eventName,
                     "=> redirecting to home page");
@@ -87,8 +95,8 @@ export default function PaymentPage() {
                 navigate(privateRoutes.home);
             } else if (table && !event) {
                 const order = await getTableOrders(table.table);
-                console.log(JSON.stringify(order));
-                setOrder(await getTableOrders(table.table));
+                console.log(order);
+                setOrder(order);
             } else if (!table && event) {
                 if(event.id)
                     setOrder(await getEventOrders(event.id));
@@ -96,26 +104,32 @@ export default function PaymentPage() {
         };   
         fetchOrder();
 
-    }, [table]);
+    }, [table, event]);
     
-
-    console.log(JSON.stringify(table), JSON.stringify(event));
 
     // useEffect(() => {
         
 
     // }, [navigate, tableNumber, table, eventName, event, tables]);
 
-    const [order, setOrder] = useState<Order>({total: 0});
+    const [order, setOrder] = useState<Order>({total: 0, items: {}, itemsEvent: {}, datetime: new Date()});
+
+
+    useEffect(() => {
+        
+    }   , [order]);
     const [paying, setPaying] = useState<Order>({
         total: 0,
         items: {},
-        itemsEvent: {}
+        itemsEvent: {},
+        datetime: new Date()
     });
     const [paid, setPaid] = useState<Order>({
         total: 0,
         items: {},
-        itemsEvent: {}
+        itemsEvent: {},
+        datetime: new Date()
+
     });
     const [tip, setTip] = useState<number>(0);
 
@@ -173,31 +187,51 @@ export default function PaymentPage() {
     };
 
     const removeAllFromPaying = () => {
-        setPaying({total: 0, items: {}, itemsEvent: {}});
+        setPaying({total: 0, items: {}, itemsEvent: {}, table: 0, datetime: new Date()});
     };
 
-    const handlePayment = () => {
+    const handlePayment = async () => {
         const total = paid.total + paying.total;
         let payment = {
             table: order.table ?? 0,
-            date: new Date(),
+            date: new Date(new Date().getTime() - 2 * 60 * 60 * 1000), // Subtracting 2 hours
             items: paying.items ?? {},
             itemsEvent: paying.itemsEvent ?? {},
-            ended: total === order.total
+            ended: total === order.total,
+            event: event?.id
         };
+
+        console.log(payment);
         savePayment(payment);
-        if (total === order.total) {
-            toast.success("Paiement terminé!");
-            const newMenu: MenuBackendNoId = {
-                fullName: "_|" + order.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.AVAILABLE,
-                shortName: menus.length + "|" + order.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.AVAILABLE,
-                price: 1,
-                category: "DESSERT",
-                image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
-            }
-            addMenu(newMenu);
-            navigate(privateRoutes.home);
+        toast.success("Paiement terminé!");
+        let tables: Table[] = [];
+        if(event){
+            tables = await getTables();
+            console.log(tables);
+            const newMenus: MenuBackendNoId[] = [];
+            tables.forEach(table => {
+                if(table.event === event.name){
+                    newMenus.push({
+                        fullName: "_|" + table.table + "|" + table.nbPeople + "|" + table.event + "|" + TableStatusEnum.AVAILABLE,
+                        shortName: menus.length + "|" + table.table + "|" + table.nbPeople + "|" + table.event + "|" + TableStatusEnum.AVAILABLE,
+                        price: 1,
+                        category: "DESSERT",
+                        image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
+                    });
+                }
+            });
+            newMenus.forEach(menu => addMenu(menu));
         }
+        const newMenu: MenuBackendNoId = {
+            fullName: "_|" + order.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.AVAILABLE,
+            shortName: menus.length + "|" + order.table + "|" + table?.nbPeople + "|" + table?.event + "|" + TableStatusEnum.AVAILABLE,
+            price: 1,
+            category: "DESSERT",
+            image: "https://cdn.pixabay.com/photo/2016/11/12/15/28/restaurant-1819024_960_720.jpg"
+        }
+        addMenu(newMenu);
+        navigate(privateRoutes.home);
+        
         const newPaid = {...paid, total};
 
         // Copy the items from paying to paid
@@ -219,7 +253,7 @@ export default function PaymentPage() {
     const card: React.ReactNode = (
         <Box display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} height={"100%"}>
             <ActionCardGeneric
-                title={order.table ? `Table ${order.table}` : `Événement ${order.event}`}
+                title={order.table ? `Table ${order.table}` : `Événement ${event?.name}`}
                 rightTitle={`${paid.total} € / ${order.total} €`}
                 mainContent={<PaymentList order={order} paying={paying} changePayingQuantity={changePayingQuantity}
                                           addAllToPaying={addAllToPaying} paid={paid} tip={tip} changeTip={setTip}/>}

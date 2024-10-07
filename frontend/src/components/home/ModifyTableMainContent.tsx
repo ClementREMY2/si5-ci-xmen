@@ -1,7 +1,9 @@
 import {Box, MenuItem, TextField} from "@mui/material";
-import {useMemo} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Table, TableStatusEnum} from "../../interfaces/Table.ts";
 import {eventsMock} from "../../mocks/Event.ts";
+import { Event } from "../../interfaces/Event.ts";
+import { getEvents } from "../../services/EventService.ts";
 
 interface ModifyTableMainContentProps {
     table: Table;
@@ -11,8 +13,16 @@ interface ModifyTableMainContentProps {
 const modifyStatusList = [TableStatusEnum.AVAILABLE, TableStatusEnum.RESERVED, TableStatusEnum.OCCUPIED];
 
 export default function ModifyTableMainContent({table, handleChange}: Readonly<ModifyTableMainContentProps>) {
+    const [events, setEvents] = useState<Event[]>([]);
     const readonlyStatus = useMemo(() => !modifyStatusList.find(status => table.status === status), [table.status]);
 
+    useEffect(() => {
+        const fetchEvents = async () => {
+            const fetchedEvents = await getEvents();
+            setEvents(fetchedEvents);
+        }
+        fetchEvents();
+    }, []);
     return (
         <Box width={"70%"} marginX={"auto"}>
             <TextField label={"Nombre"} type={"number"} value={table.nbPeople} variant={"outlined"}
@@ -32,7 +42,7 @@ export default function ModifyTableMainContent({table, handleChange}: Readonly<M
                        onChange={e => handleChange("event", e.target.value === "Aucun" ? undefined : e.target.value)}
                        margin={"normal"} required fullWidth>
                 <MenuItem value={"Aucun"}>Aucun</MenuItem>
-                {eventsMock.map(event => (
+                {events.map(event => (
                     <MenuItem key={event.id} value={event.name}>
                         {event.name}
                     </MenuItem>

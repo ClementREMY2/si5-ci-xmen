@@ -6,4 +6,5 @@ export interface Payment {
   items: OrderItems;
   itemsEvent: OrderItems;
   ended: boolean;
+  event?: string;
 }
