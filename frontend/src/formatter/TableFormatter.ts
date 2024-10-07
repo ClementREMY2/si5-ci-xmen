@@ -77,7 +77,6 @@ export const getTables = async (): Promise<Table[]> => {
   let tablesFrontend: Table[] = transformTableData(tablesBackend);
   return await updateTableWithInfosInMenus(tablesFrontend);
 };
-
 // Check if a table has an order
 /* COULD BE USEFUL LATER
 const doesMyTableHaveAnOrder = async (table: Table): Promise<string> => {
