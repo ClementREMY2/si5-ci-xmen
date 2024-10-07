@@ -6,7 +6,7 @@ export interface Order {
   id?: string;
   table?: number;
   event?: string;
-  datetime?: Date;
+  datetime: Date;
   total: number;
   items?: OrderItems;
   itemsEvent?: OrderItems;

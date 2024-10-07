@@ -9,6 +9,7 @@ import {privateRoutes} from "../utils/Routes.ts";
 import {MenuEvent, MenuCategoryEnum} from "../interfaces/Menu.ts";
 import { getEvent, saveEvent } from "../services/EventService.ts";
 import {Event} from "../interfaces/Event.ts";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function EventsPage() {
     const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function EventsPage() {
 
 
     const handleMenuUpdate = (e: MenuEvent) => {
-        console.log(e);
+        
         const ev = event;
         if (ev) {
             const index = ev.menus.findIndex((menu) => menu.id === e.id);
@@ -55,6 +56,7 @@ export default function EventsPage() {
                 setEvent(ev);
             } else {
                 ev.menus.push(e);
+                
                 setEvent(ev);
             }
         }
@@ -64,7 +66,7 @@ export default function EventsPage() {
     };
 
     const handleSaveModifications = () => {
-        console.log("Sauvegarde des modifications");
+        
         if (event)
             saveEvent(event);
         setIsEdited(false);
@@ -72,13 +74,13 @@ export default function EventsPage() {
     };
 
     const handleCancelModifications = () => {
-        console.log("Annulation des modifications");
+        
         setIsEdited(false);
         setIsEditing(false);
     };
 
     const handleAddMenu = () => {
-        console.log("Ajout d'un menu");
+        
         setIsANewMenu(true);
         setIsEditing(true);
     };
@@ -86,7 +88,7 @@ export default function EventsPage() {
 
     const handleIsOnEdition = (e: boolean) => {
         setIsEditing(e);
-        console.log(e);
+        
     };
 
     const handleTitleChange = (e: string) => {
@@ -111,7 +113,7 @@ export default function EventsPage() {
     const handleSaveBeverage = () => {
         const e = event;
         if (e) {
-            e.beverages.push({fullName: beverageName, shortName: beverageName, price: beveragePrice, category: MenuCategoryEnum.BEVERAGE, id: "0"});
+            e.beverages.push({fullName: beverageName, shortName: beverageName, price: beveragePrice, category: MenuCategoryEnum.BEVERAGE, id: uuidv4()});
             setEvent(e);
         }
         setIsBeverageEditing(false);
@@ -147,10 +149,6 @@ export default function EventsPage() {
                         setIsEdited(true);
                     }}
                 />
-            </Box>
-            <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
-                <Typography>Grouper commandes</Typography>
-                <Checkbox></Checkbox>
             </Box>
             <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{marginLeft: 2}} gap={2} mt={2}>
                 <Typography>Boissons</Typography>
@@ -206,11 +204,12 @@ export default function EventsPage() {
                         shortName: "",
                         price: 0,
                         menu: {
-                            starter: {id: "0" ,category: MenuCategoryEnum.STARTER, fullName: "", shortName:"", price: 0},
-                            main: {id: "0" ,category: MenuCategoryEnum.MAIN, fullName: "", shortName:"", price: 0},
-                            dessert: {id: "0" ,category: MenuCategoryEnum.DESSERT, fullName: "", shortName:"", price: 0},
+                            Entree: {id: "0" ,category: MenuCategoryEnum.STARTER, fullName: "", shortName:"", price: 0},
+                        
+                            Plat: {id: "0",category: MenuCategoryEnum.MAIN, fullName: "", shortName:"", price: 0},
+                            Dessert: {id: "0",category: MenuCategoryEnum.DESSERT, fullName: "", shortName:"", price: 0},
                         },
-                        id: "0"
+                        id: uuidv4()
                     }}
                     onMenuUpdate={(menuUpdated) => handleMenuUpdate(menuUpdated)}
                     editing={true}

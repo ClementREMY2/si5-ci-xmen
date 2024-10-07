@@ -10,6 +10,7 @@ interface MenuEventSubListItemProps {
 }
 
 export default function MenuEventSubListItem({item, quantity, addOne, removeOne}: Readonly<MenuEventSubListItemProps>) {
+    
     return (
         <Box paddingX={2} paddingY={1} sx={{border: "1px solid", borderRadius: 2}}>
             <Stack direction={"row"} alignItems={"center"}>
