@@ -13,5 +13,7 @@ export const privateRoutes = {
     orderTable: "/order/:table",
     payment: "/payment/:table",
     paymentEvent: "/payment/event/:event",
-    event: "/event/:id"
+    event: "/event/:id",
+    multiPage: "/multiPage",
+    sideGroup: "/sideGroup"
 };
