@@ -7,7 +7,8 @@ import MainPage from "../pages/MainPage.tsx";
 import NotFound from "../pages/NotFoundPage.tsx";
 import OrderPage from "../pages/OrderPage.tsx";
 import PaymentPage from "../pages/PaymentPage.tsx";
-import ProfilePage from "../pages/ProfilePage.tsx";
+import GroupTablePage from "../pages/GroupTablePage.tsx";
+import SideGroupPage from "../pages/SideGroupePage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
 import { PopupProvider } from '../components/PopupContext'; // Importer le PopupProvider
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
                 children: [
                     { path: privateRoutes.home, element: <HomePage /> },
                     { path: privateRoutes.events, element: <EventsPage /> },
-                    { path: privateRoutes.profile, element: <ProfilePage /> }
+                    { path: privateRoutes.multiPage, element: <GroupTablePage /> }
                 ]
             },
             { path: privateRoutes.orderTable, element: <OrderPage /> },
