@@ -11,6 +11,7 @@ export class OrdersController {
   getAllOrders() {
     return this.ordersService.getAllOrders();
   }
+
   @Post('createEventOrder/:eventName')
   createEventOrder(
     @Param('eventName') eventName: string,
@@ -22,5 +23,19 @@ export class OrdersController {
   @Post('billOrder/:orderId')
   billOrder(@Param('orderId') orderId: string) {
     return this.ordersService.billOrder(orderId);
+  }
+
+  @Post('sendMenuItem')
+  sendMenuItem(
+    @Body('menuItemId') menuItemId: string,
+    @Body('fromOrderId') fromOrderId: string,
+    @Body('toOrderId') toOrderId: string,
+  ) {
+    return this.ordersService.sendMenuItem(menuItemId, fromOrderId, toOrderId);
+  }
+
+  @Get('table/:tableNumber')
+  getOrdersByTable(@Param('tableNumber') tableNumber: number) {
+    return this.ordersService.getOrdersByTable(tableNumber);
   }
 }
