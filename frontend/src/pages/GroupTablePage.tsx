@@ -28,6 +28,7 @@ const initialMenuItems = [
   { id: 14, name: 'Fanta', price: 3, img: 'https://images.ctfassets.net/f5u4m4d1h98w/4BhEcAzpt3e68Swo28A44g/31bfa2364f1e44e4e5a6d8cb6eb4e156/Fanta_Orange_Flavor_1.5L.jpg', type: 'drinks', quantity: 1 },
   { id: 15, name: 'Red Bull', price: 4, img: 'https://www.ledrinks.com/media/catalog/product/cache/1/image/850x850/9df78eab33525d08d6e5fb8d27136e95/r/e/redbull_canette_25cl.jpg', type: 'drinks', quantity: 1 },
 ];
+
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState(initialMenuItems);
   const [cart, setCart] = useState<{ id: number; name: string; price: number; img: string; type: string; quantity: number }[]>([]);
@@ -81,13 +82,14 @@ export default function MenuPage() {
     afterChange: (currentSlide: number) => {
       setScrollPositions(prev => ({ ...prev, [navValue]: currentSlide }));
     },
-    initialSlide: scrollPositions[navValue] || 0,  // Utilise la position mémorisée pour chaque catégorie
+    initialSlide: scrollPositions[navValue] || 0,
   };
 
   return (
     <div style={{ padding: '20px' }}>
       {filteredItems.length > 0 ? (
-        <Slider {...settings}>
+        // Ajout de la clé pour forcer la réinitialisation du slider
+        <Slider {...settings} key={navValue}>
           {filteredItems.map((item) => (
             <div key={item.id} style={{ padding: '10px' }}>
               <Card style={{ backgroundColor: 'black', padding: '10px', textAlign: 'center', color: 'white' }}>
@@ -97,9 +99,6 @@ export default function MenuPage() {
                   <Typography variant="h6" style={{ color: 'white' }}>{item.name}</Typography>
                   <Typography variant="body2" style={{ color: 'white' }}>{item.price}€</Typography>
                   <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                    <Button variant="outlined" size="small" onClick={() => decrementQuantity(item.id)}>-</Button>
-                    <Typography variant="body2" style={{ padding: '0 10px', color: 'white' }}>{item.quantity}</Typography>
-                    <Button variant="outlined" size="small" onClick={() => incrementQuantity(item.id)}>+</Button>
                   </div>
                   <Button
                     variant="contained"
