@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RemoveFromOrderDto } from './dto/remove-from-order.dto';
+import { table } from 'console';
 
 @Injectable()
 export class OrdersService {
@@ -88,6 +89,21 @@ export class OrdersService {
       return await this.getOrderById(toOrderId);
     } catch (error) {
       throw new Error(`Failed to send menu item: ${error.message}`);
+    }
+  }
+
+  async getOrdersByTable(tableNumber: number) {
+    try {
+      const orders = await axios.get(
+        `http://localhost:9500/dining/tableOrders`,
+      );
+
+      const tableOrders = orders.data.filter(
+        (order) => order.tableNumber == tableNumber && order.billed === null,
+      );
+      return tableOrders;
+    } catch (error) {
+      throw new Error(`Failed to fetch orders: ${error.message}`);
     }
   }
 }

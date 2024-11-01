@@ -33,4 +33,9 @@ export class OrdersController {
   ) {
     return this.ordersService.sendMenuItem(menuItemId, fromOrderId, toOrderId);
   }
+
+  @Get('table/:tableNumber')
+  getOrdersByTable(@Param('tableNumber') tableNumber: number) {
+    return this.ordersService.getOrdersByTable(tableNumber);
+  }
 }
