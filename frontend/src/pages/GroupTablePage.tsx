@@ -5,9 +5,11 @@ import LocalBarIcon from '@mui/icons-material/LocalBar';
 import DessertIcon from '@mui/icons-material/Cake';
 import StarIcon from '@mui/icons-material/Star';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
+
 
 const initialMenuItems = [
   { id: 1, name: 'Salade César', price: 8, img: 'https://www.academiedugout.fr/images/6205/1200-auto/focus.jpg', type: 'starters', quantity: 1 },
@@ -71,6 +73,18 @@ export default function MenuPage() {
     setCart([]);
   };
 
+  const getItemCountByCategory = (category: string) => {
+    return initialMenuItems.filter(item => item.type === category).reduce((sum, item) => sum + item.quantity, 0);
+  };
+
+  const getUnpaidItemsByCategory = (category: string) => {
+    return initialMenuItems.filter(item => item.type === category && item.quantity > 0);
+  }
+
+  const getNumberOfUnpaidItemsByCateoryComparedToInitial = (category: string) => {
+    return getUnpaidItemsByCategory(category).length - getItemCountByCategory(category);
+  }
+
   const settings = {
     dots: true,
     infinite: false,
@@ -88,7 +102,6 @@ export default function MenuPage() {
   return (
     <div style={{ padding: '20px' }}>
       {filteredItems.length > 0 ? (
-        // Ajout de la clé pour forcer la réinitialisation du slider
         <Slider {...settings} key={navValue}>
           {filteredItems.map((item) => (
             <div key={item.id} style={{ padding: '10px' }}>
@@ -99,6 +112,12 @@ export default function MenuPage() {
                   <Typography variant="h6" style={{ color: 'white' }}>{item.name}</Typography>
                   <Typography variant="body2" style={{ color: 'white' }}>{item.price}€</Typography>
                   <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                    <Button
+                      variant="contained"
+                      style={{ marginTop: '10px', color: 'black' }}
+                    >
+                      Send to Table
+                    </Button>
                   </div>
                   <Button
                     variant="contained"
@@ -136,11 +155,11 @@ export default function MenuPage() {
         showLabels
         style={{ marginTop: '20px' }}
       >
-        <BottomNavigationAction label="Starters" icon={<FastfoodIcon />} value="starters" />
-        <BottomNavigationAction label="Mains" icon={<RestaurantIcon />} value="mains" />
-        <BottomNavigationAction label="Desserts" icon={<DessertIcon />} value="desserts" />
-        <BottomNavigationAction label="Drinks" icon={<LocalBarIcon />} value="drinks" />
-        <BottomNavigationAction label="Specials" icon={<StarIcon />} value="specials" />
+        <BottomNavigationAction label={`Starters ${getItemCountByCategory('starters')}`} icon={<FastfoodIcon />} value="starters" />
+        <BottomNavigationAction label={`Mains ${getItemCountByCategory('mains')}`} icon={<RestaurantIcon />} value="mains" />
+        <BottomNavigationAction label={`Desserts ${getItemCountByCategory('desserts')}`} icon={<DessertIcon />} value="desserts" />
+        <BottomNavigationAction label={`Drinks ${getItemCountByCategory('drinks')}`} icon={<LocalBarIcon />} value="drinks" />
+        <BottomNavigationAction label={`Specials ${getItemCountByCategory('specials')}`} icon={<StarIcon />} value="specials" />
       </BottomNavigation>
     </div>
   );
