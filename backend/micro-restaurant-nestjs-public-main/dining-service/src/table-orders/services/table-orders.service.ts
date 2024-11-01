@@ -125,7 +125,8 @@ export class TableOrdersService {
       throw new TableOrderAlreadyBilledException(tableOrder);
     }
 
-    // tableOrder.preparations = tableOrder.preparations.filter((preparation) => preparation._id !== orderItemId);
+    const preparations = tableOrder.preparations.filter((preparation) => preparation !== orderItemId);
+    tableOrder.preparations = preparations;
 
     return this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
   }
