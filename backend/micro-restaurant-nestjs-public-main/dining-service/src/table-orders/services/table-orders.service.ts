@@ -64,7 +64,7 @@ export class TableOrdersService {
       throw new TableOrderAlreadyBilledException(tableOrder);
     }
 
-    const orderingItem: MenuItem = await this.menuProxyService.findByShortName(addMenuItemDto.menuItemShortName);
+    const orderingItem: MenuItem = await this.menuProxyService.findById(addMenuItemDto.menuItemId);
 
     if (orderingItem === null) {
       throw new AddMenuItemDtoNotFoundException(addMenuItemDto);

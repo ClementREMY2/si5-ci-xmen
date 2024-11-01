@@ -37,8 +37,8 @@ export class MenuProxyService {
     return menuItem;
   }
 
-  async findById(menuItemId: string): Promise<OrderingItem> {
+  async findById(menuItemId: string): Promise<MenuItem> {
     const retrieveMenuItemCallResponse: AxiosResponse<MenuItem> = await firstValueFrom(this.httpService.get(`${this._baseUrl}${this._menusPath}/${menuItemId}`));
-    return new OrderingItem(retrieveMenuItemCallResponse.data);
+    return retrieveMenuItemCallResponse.data;
   }
 }
