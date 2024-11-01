@@ -12,6 +12,7 @@ import SideGroupPage from "../pages/SideGroupePage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
 import { PopupProvider } from '../components/PopupContext'; // Importer le PopupProvider
+import ProfilePage from "../pages/ProfilePage.tsx";
 
 
 const getDefaultRedirection = () => privateRoutes.home;
@@ -29,9 +30,12 @@ export const router = createBrowserRouter([
                 children: [
                     { path: privateRoutes.home, element: <HomePage /> },
                     { path: privateRoutes.events, element: <EventsPage /> },
+                    { path: privateRoutes.profile, element: <ProfilePage /> },
                     { path: privateRoutes.multiPage, element: <GroupTablePage /> }
+
                 ]
             },
+            { path: privateRoutes.orderTable, element: <GroupTablePage /> },
             { path: privateRoutes.orderTable, element: <OrderPage /> },
             { path: privateRoutes.payment, element: <PaymentPage /> },
             { path: privateRoutes.paymentEvent, element: <PaymentPage /> },

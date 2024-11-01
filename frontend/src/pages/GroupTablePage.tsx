@@ -92,7 +92,7 @@ export default function MenuPage() {
         <Slider {...settings} key={navValue}>
           {filteredItems.map((item) => (
             <div key={item.id} style={{ padding: '10px' }}>
-              <Card style={{ backgroundColor: 'black', padding: '10px', textAlign: 'center', color: 'white' }}>
+              <Card style={{ backgroundColor: '#f5a623', padding: '10px', textAlign: 'center', color: 'white' }}>
                 <Typography variant="body1">{item.quantity}×</Typography>
                 <CardMedia component="img" height="100" image={item.img} alt={item.name} style={{ objectFit: 'contain' }} />
                 <CardContent>
@@ -126,8 +126,8 @@ export default function MenuPage() {
         </Button>
       </div>
 
-      <Button variant="outlined" style={{ marginTop: '20px' }} onClick={() => navigate('/profile')}>
-        Profile
+      <Button variant="outlined" style={{ marginTop: '20px' }}>
+        Samuel 
       </Button>
 
       <BottomNavigation
