@@ -67,4 +67,27 @@ export class OrdersService {
       throw new Error(`Failed to bill order: ${error.message}`);
     }
   }
+
+  async sendMenuItem(
+    menuItemId: string,
+    fromOrderId: string,
+    toOrderId: string,
+  ) {
+    try {
+      await axios.put(
+        `http://localhost:9500/dining/tableOrders/${fromOrderId}/remove-preparation/${menuItemId}`,
+      );
+
+      await axios.post(
+        `http://localhost:9500/dining/tableOrders/${toOrderId}`,
+        {
+          menuItemId,
+        },
+      );
+
+      return await this.getOrderById(toOrderId);
+    } catch (error) {
+      throw new Error(`Failed to send menu item: ${error.message}`);
+    }
+  }
 }
