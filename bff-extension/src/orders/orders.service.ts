@@ -56,4 +56,15 @@ export class OrdersService {
       throw new Error(`Failed to create event order: ${error.message}`);
     }
   }
+
+  async billOrder(orderId: string) {
+    try {
+      await axios.post(
+        `http://localhost:9500/dining/tableOrders/${orderId}/bill`,
+      );
+      return await this.getOrderById(orderId);
+    } catch (error) {
+      throw new Error(`Failed to bill order: ${error.message}`);
+    }
+  }
 }

@@ -18,4 +18,9 @@ export class OrdersController {
   ) {
     return this.ordersService.createEventOrder(eventName, items);
   }
+
+  @Post('billOrder/:orderId')
+  billOrder(@Param('orderId') orderId: string) {
+    return this.ordersService.billOrder(orderId);
+  }
 }
