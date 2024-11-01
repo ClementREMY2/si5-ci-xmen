@@ -20,6 +20,7 @@ import { KitchenProxyService } from './kitchen-proxy.service';
 import { TableOrderIdNotFoundException } from '../exceptions/table-order-id-not-found.exception';
 import { AddMenuItemDtoNotFoundException } from '../exceptions/add-menu-item-dto-not-found.exception';
 import { TableOrderAlreadyBilledException } from '../exceptions/table-order-already-billed.exception';
+import { MenuItem } from '../schemas/menu-item.schema';
 
 @Injectable()
 export class TableOrdersService {
@@ -45,24 +46,25 @@ export class TableOrdersService {
   }
 
   async startOrdering(startOrderingDto: StartOrderingDto): Promise<TableOrder> {
-    const table: Table = await this.tablesService.takeTable(startOrderingDto.tableNumber);
 
     const tableOrder: TableOrder = new TableOrder();
-    tableOrder.tableNumber = table.number;
+    tableOrder.tableNumber = startOrderingDto.tableNumber;
+    tableOrder.customerName = startOrderingDto.customerName;
+    tableOrder.event = startOrderingDto.event;
     tableOrder.customersCount = startOrderingDto.customersCount;
     tableOrder.opened = new Date();
 
     return await this.tableOrderModel.create(tableOrder);
   }
 
-  async addOrderingLineToTableOrder(tableOrderId: string, addMenuItemDto: AddMenuItemDto): Promise<TableOrder> {
+  async addMenuItemToTableOrder(tableOrderId: string, addMenuItemDto: AddMenuItemDto): Promise<TableOrder> {
     const tableOrder: TableOrder = await this.findOne(tableOrderId);
 
     if (tableOrder.billed !== null) {
       throw new TableOrderAlreadyBilledException(tableOrder);
     }
 
-    const orderingItem: OrderingItem = await this.menuProxyService.findByShortName(addMenuItemDto.menuItemShortName);
+    const orderingItem: MenuItem = await this.menuProxyService.findById(addMenuItemDto.menuItemId);
 
     if (orderingItem === null) {
       throw new AddMenuItemDtoNotFoundException(addMenuItemDto);
@@ -72,30 +74,10 @@ export class TableOrdersService {
       throw new AddMenuItemDtoNotFoundException(addMenuItemDto);
     }
 
-    const alreadyOrderedLinesIndexes = [];
-    tableOrder.lines.forEach((line, index) => {
-      if (!line.sentForPreparation && line.item._id === orderingItem._id) {
-        alreadyOrderedLinesIndexes.push(index);
-      }
-    });
-
-    if (alreadyOrderedLinesIndexes.length > 0) {
-      const orderingLineIndex = alreadyOrderedLinesIndexes[0];
-      tableOrder.lines[orderingLineIndex].howMany += addMenuItemDto.howMany;
-
-      return this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
-    }
-
-    const orderingLine: OrderingLine = new OrderingLine();
-    orderingLine.item = orderingItem;
-    orderingLine.howMany = addMenuItemDto.howMany;
-
-    return this.tableOrderModel.findByIdAndUpdate(
-      tableOrder._id,
-      { $push: { lines: orderingLine } },
-      { returnDocument: 'after' },
-    );
+    tableOrder.preparations.push(orderingItem._id);
+    return this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
   }
+
 
   async manageOrderingLines(tableNumber: number, orderingLines: OrderingLine[]): Promise<OrderingLinesWithPreparations> {
     let orderingLinesToSend: OrderingLine[] = [];
@@ -117,22 +99,6 @@ export class TableOrdersService {
     };
   };
 
-  async sendItemsForPreparation(tableOrderId: string): Promise<PreparationDto[]> {
-    const tableOrder: TableOrder = await this.findOne(tableOrderId);
-
-    if (tableOrder.billed !== null) {
-      throw new TableOrderAlreadyBilledException(tableOrder);
-    }
-
-    const managedLines: OrderingLinesWithPreparations = await this.manageOrderingLines(tableOrder.tableNumber, tableOrder.lines);
-
-    tableOrder.lines = managedLines.orderingLines;
-    tableOrder.preparations = tableOrder.preparations.concat(managedLines.preparations);
-
-    await this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
-
-    return managedLines.preparations;
-  }
 
   async billOrder(tableOrderId: string): Promise<TableOrder> {
     const tableOrder: TableOrder = await this.findOne(tableOrderId);
@@ -146,8 +112,30 @@ export class TableOrdersService {
     // TODO: Send payment for the table order
 
     // TODO: Move next line when billing is managed
-    await this.tablesService.releaseTable(tableOrder.tableNumber);
+    //await this.tablesService.releaseTable(tableOrder.tableNumber);
 
     return this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
   }
+
+
+  async removeOrderItemFromPreparation(tableOrderId: string, orderItemId: string): Promise<TableOrder> {
+    const tableOrder: TableOrder = await this.findOne(tableOrderId);
+
+    if (tableOrder.billed !== null) {
+      throw new TableOrderAlreadyBilledException(tableOrder);
+    }
+
+    const preparations = tableOrder.preparations.filter((preparation) => preparation !== orderItemId);
+    tableOrder.preparations = preparations;
+
+    return this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
+  }
+
+  async addOrderItemToPreparation(tableOrderId: string, orderItemId: string): Promise<TableOrder> {
+    const tableOrder: TableOrder = await this.findOne(tableOrderId);
+
+
+    return this.tableOrderModel.findByIdAndUpdate(tableOrder._id, tableOrder, { returnDocument: 'after' });
+  }
+  
 }

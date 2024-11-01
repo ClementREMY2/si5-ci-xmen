@@ -1,9 +1,12 @@
 import { IsNotEmpty, IsPositive } from 'class-validator';
 
 export class StartOrderingDto {
-  @IsNotEmpty()
-  @IsPositive()
+
   tableNumber: number;
+
+  customerName: string;
+
+  event: string;
 
   @IsNotEmpty()
   @IsPositive()

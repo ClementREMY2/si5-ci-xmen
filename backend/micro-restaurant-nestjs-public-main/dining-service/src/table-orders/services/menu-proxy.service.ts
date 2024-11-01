@@ -30,16 +30,15 @@ export class MenuProxyService {
     }
   }
 
-  async findByShortName(menuItemShortName: string): Promise<OrderingItem> {
+  async findByShortName(menuItemShortName: string): Promise<MenuItem> {
     await this.retrieveFullMenu();
     let menuItem: MenuItem = this._menuItemsByShortName[menuItemShortName] || null;
 
-    let orderingItem: OrderingItem = null;
+    return menuItem;
+  }
 
-    if (menuItem !== null) {
-      orderingItem = new OrderingItem(menuItem);
-    }
-
-    return orderingItem;
+  async findById(menuItemId: string): Promise<MenuItem> {
+    const retrieveMenuItemCallResponse: AxiosResponse<MenuItem> = await firstValueFrom(this.httpService.get(`${this._baseUrl}${this._menusPath}/${menuItemId}`));
+    return retrieveMenuItemCallResponse.data;
   }
 }

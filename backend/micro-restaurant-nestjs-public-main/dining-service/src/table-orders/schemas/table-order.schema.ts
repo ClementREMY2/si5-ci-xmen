@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { OrderingLine } from './ordering-line.schema';
 
 import { PreparationDto } from '../dto/preparation.dto';
+import { MenuItem } from './menu-item.schema';
 
 export type TableOrderDocument = TableOrder & Document;
 
@@ -16,8 +17,16 @@ export class TableOrder {
   _id: string;
 
   @ApiProperty()
-  @Prop({ required: true, min: 0 })
+  @Prop({ required: false})
   tableNumber: number;
+
+  @ApiProperty()
+  @Prop({ required: false })
+  customerName: string;
+
+  @ApiProperty()
+  @Prop({ required: false })
+  event: string;
 
   @ApiProperty()
   @Prop({ required: true, min: 0 })
@@ -29,11 +38,7 @@ export class TableOrder {
 
   @ApiProperty()
   @Prop({ default: [] })
-  lines: OrderingLine[];
-
-  @ApiProperty()
-  @Prop({ default: [] })
-  preparations: PreparationDto[];
+  preparations: string[];
 
   @ApiProperty()
   @Prop({ default: null })
