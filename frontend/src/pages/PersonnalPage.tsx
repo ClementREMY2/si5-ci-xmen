@@ -12,7 +12,7 @@ import RotateLeftIcon from '@mui/icons-material/RotateLeft';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import { get } from 'http';
-import { findMenuById, getMenus, getMenusBackend } from '../formatter/MenuFormatter';
+import { getMenus, getMenusBackend } from '../formatter/MenuFormatter';
 import { GenericMenuItem, MenuBackend } from '../interfaces/Menu';
 
 
@@ -44,19 +44,21 @@ const clients = [
 ];
 
 export default function MenuPage() {
-  const [menuItems, setMenuItems] = useState<(MenuBackend & { quantity: number })[]>([]);
+  const [menuItems, setMenuItems] = useState(initialMenuItems);
   const [cart, setCart] = useState<{ id: number; name: string; price: number; img: string; type: string; quantity: number }[]>([]);
   const [total, setTotal] = useState(0);
-  const [navValue, setNavValue] = useState();
+  const [navValue, setNavValue] = useState('starters');
   const [scrollPositions, setScrollPositions] = useState<{ [key: string]: number }>({
-    BEVERAGE: 0,
-    STARTER: 0,
-    MAIN: 0,
-    DESSERT: 0,
+    starters: 0,
+    mains: 0,
+    desserts: 0,
+    drinks: 0,
+    specials: 0,
   });
   const [showNames, setShowNames] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<{ [key: number]: string }>({});
+
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -130,32 +132,8 @@ export default function MenuPage() {
     //console.log("order by table", totalOrders.find(order => order.tableNumber === tableNumber));
     //console.log("order by table", totalOrders.find(order => order.tableNumber === tableNumber)?._id);
     return totalOrders.find(order => order.tableNumber === tableNumber)?._id;
-  }
-  
 
-  // itérer sur tous les menusItemBack pour récupérer uniquement ceux dont leur id est dans les préparations de l'order
-  const getPreparationsByOrderId = () => {
-    console.log("totalOrders", totalOrders);
-    console.log("menuItemsBack", menuItemsBack);
-    const preparations = totalOrders.find(order => order.tableNumber === 5)?.preparations;
-    console.log("preparations", preparations);
-    const preparationsMenuItems = preparations?.map(preparation => {
-      const menuItem = menuItemsBack.find(menuItem => menuItem._id === preparation);
-      return menuItem;
-    });
-    console.log("preparationsMenuItems", preparationsMenuItems);
-    return preparationsMenuItems;
   }
-
-  // set menu items from getPreparationsByOrderId
-  useEffect(() => {
-    const preparations = getPreparationsByOrderId();
-    console.log("infooooo" , preparations);
-    if (preparations) {
-      setMenuItems(preparations as (MenuBackend & { quantity: number })[]);
-    }
-  }, []);
-    
 
   /////////////////////////////////////////////////////////////////////////////////
 
@@ -167,12 +145,12 @@ export default function MenuPage() {
   const addToCart = (item: { id: number; name: string; price: number; img: string; type: string; quantity: number }) => {
     setCart([...cart, { ...item, quantity: item.quantity }]);
     setTotal(total + item.price * item.quantity);
-    setMenuItems(menuItems.map((menuItem: MenuBackend & { quantity: number }) =>
-      menuItem._id === item.id.toString() ? { ...menuItem, quantity: 0 } : menuItem
+    setMenuItems(menuItems.map(menuItem =>
+      menuItem.id === item.id ? { ...menuItem, quantity: 0 } : menuItem
     ));
   };
 
-  const filteredItems = menuItems.filter((item: MenuBackend & { quantity: number }) => item.category === navValue && item.quantity > 0);
+  const filteredItems = menuItems.filter(item => item.type === navValue && item.quantity > 0);
 
   const handlePayment = () => {
     setTotal(0);
@@ -236,13 +214,13 @@ export default function MenuPage() {
 
       {filteredItems.length > 0 ? (
         <Slider {...settings} key={navValue}>
-          {filteredItems.map((item: MenuBackend & { quantity: number }) => (
-            <div key={item._id} style={{ padding: '10px' }}>
+          {filteredItems.map((item) => (
+            <div key={item.id} style={{ padding: '10px' }}>
               <Card style={{ backgroundColor: '#f5a623', padding: '10px', textAlign: 'center', color: 'white' }}>
                 <Typography variant="body1">{item.quantity}×</Typography>
-                <CardMedia component="img" height="100" image={""} alt={item.fullName} style={{ objectFit: 'contain' }} />
+                <CardMedia component="img" height="100" image={item.img} alt={item.name} style={{ objectFit: 'contain' }} />
                 <CardContent>
-                  <Typography variant="h6" style={{ color: 'white' }}>{item.fullName}</Typography>
+                  <Typography variant="h6" style={{ color: 'white' }}>{item.name}</Typography>
                   <Typography variant="body2" style={{ color: 'white' }}>{item.price}€</Typography>
                   <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
                     <Button
@@ -272,7 +250,7 @@ export default function MenuPage() {
                               const fromOrderId = getOrderIdByClient(client.name);
                               const toOrderId = getOrderForTable(5);
                               if (fromOrderId && toOrderId) {
-                                handleSendMenuItem(fromOrderId, "67260377865ddc8ab26116d8", "6725ff721a077e2fee104c28");
+                                handleSendMenuItem(fromOrderId, toOrderId, item.id.toString());
                               } else {
                                 console.error('Order ID not found');
                               }
@@ -297,9 +275,9 @@ export default function MenuPage() {
                     variant="contained"
                     color="primary"
                     style={{ marginTop: '10px' }}
-                    onClick={() => getPreparationsByOrderId()}
+                    onClick={() => addToCart(item)}
                   >
-                    {item && `Add ${item.price * (item.quantity || 1)}€`}
+                    Add {item.price * item.quantity}€
                   </Button>
                 </CardContent>
               </Card>
