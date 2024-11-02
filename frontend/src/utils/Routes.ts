@@ -13,6 +13,8 @@ export const privateRoutes = {
     orderTable: "/order/:table",
     payment: "/payment/:table",
     paymentEvent: "/payment/event/:event",
+    paymentPoc: "/payment/poc/:orderId",
+    
     event: "/event/:id",
     table: "/table/:tableNumber/:customerName",
 };

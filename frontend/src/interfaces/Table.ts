@@ -14,6 +14,13 @@ export interface Table {
     status: TableStatusEnum;
 }
 
+
+export interface TableMainTablePage {
+    tableNumber: number;
+    customerNames: string[];
+    totalPrices: number[];
+}
+
 export interface TableBackend {
     _id: string,
     number: number,

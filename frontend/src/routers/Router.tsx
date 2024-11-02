@@ -35,6 +35,7 @@ export const router = createBrowserRouter([
             { path: privateRoutes.orderTable, element: <OrderPage /> },
             { path: privateRoutes.payment, element: <PaymentPage /> },
             { path: privateRoutes.paymentEvent, element: <PaymentPage /> },
+            {path: privateRoutes.paymentPoc, element: <PaymentPage />},
             { path: privateRoutes.event, element: <EventPage /> },
             {path: privateRoutes.table, element: <TablePage />},
             { path: publicRoutes.notFound, element: <NotFound /> }
