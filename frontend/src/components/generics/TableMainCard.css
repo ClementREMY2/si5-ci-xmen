@@ -1,0 +1,20 @@
+.card-container {
+    perspective: 1000px;
+    height: 90vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  .main-card {
+    width: 80vw; 
+    height: 80vh;
+    transition: transform 0.6s !important; 
+    transform-origin: center;
+  }
+  
+  .main-card.flipped {
+    transform: rotateZ(180deg) !important; 
+  }
+  
