@@ -42,10 +42,10 @@ export interface MenuBackendNoId {
 }
 
 export enum MenuCategoryEnumBackend {
-  BEVERAGE,
-  STARTER,
-  MAIN,
-  DESSERT,
+  BEVERAGE = "BEVERAGE",
+  STARTER = "STARTER",
+  MAIN = "MAIN",
+  DESSERT = "DESSERT"
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

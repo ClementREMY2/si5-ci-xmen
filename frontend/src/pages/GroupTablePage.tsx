@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, CardContent, CardMedia, Typography, BottomNavigation, BottomNavigationAction } from '@mui/material';
+import { Button, Card, CardContent, CardMedia, Typography, BottomNavigation, BottomNavigationAction, Menu, Box } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import DessertIcon from '@mui/icons-material/Cake';
@@ -13,28 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import { get } from 'http';
 import { findMenuById, getMenus, getMenusBackend } from '../formatter/MenuFormatter';
-import { GenericMenuItem, MenuBackend } from '../interfaces/Menu';
-
-
-const initialMenuItems = [
-  { id: 1, name: 'Salade César', price: 8, img: '', type: 'starters', quantity: 1 },
-  { id: 2, name: 'Soupe à l’oignon', price: 7, img: '', type: 'starters', quantity: 1 },
-  { id: 3, name: 'Pâtes bolo', price: 12, img: '', type: 'mains', quantity: 1 },
-  { id: 4, name: 'Pâtes carbo', price: 12, img: '', type: 'mains', quantity: 1 },
-  { id: 5, name: 'Escalope de veau', price: 14, img: '', type: 'mains', quantity: 1 },
-  { id: 6, name: 'Coca-Cola', price: 3, img: 'https://laquintessence-traiteur.fr/cdn/shop/files/COCA_1000x.jpg?v=1699890087', type: 'drinks', quantity: 1 },
-  { id: 7, name: 'Eau Minérale', price: 2, img: 'https://www.evian.com/fileadmin/user_upload/fr/hero-bottle-fr_new.png', type: 'drinks', quantity: 1 },
-  { id: 8, name: 'Tiramisu', price: 6, img: '', type: 'desserts', quantity: 1 },
-  { id: 9, name: 'Crème Brûlée', price: 6, img: '', type: 'desserts', quantity: 1 },
-  { id: 10, name: 'Plat du Jour', price: 16, img: '', type: 'specials', quantity: 1 },
-
-  // Nouvelles boissons
-  { id: 11, name: 'Ice Tea', price: 3, img: '', type: 'drinks', quantity: 1 },
-  { id: 12, name: 'Orangina', price: 3, img: '', type: 'drinks', quantity: 1 },
-  { id: 13, name: 'Sprite', price: 3, img: '', type: 'drinks', quantity: 1 },
-  { id: 14, name: 'Fanta', price: 3, img: '', type: 'drinks', quantity: 1 },
-  { id: 15, name: 'Red Bull', price: 4, img: '', type: 'drinks', quantity: 1 },
-];
+import { GenericMenuItem, MenuBackend, MenuCategoryEnumBackend } from '../interfaces/Menu';
+import ActionCardGeneric from '../components/generics/ActionCardGeneric';
+import { Order } from '../interfaces/Order';
+import PaymentList from '../components/payment/PaymentList';
 
 const clients = [
   { name: 'Alice' },
@@ -43,9 +25,11 @@ const clients = [
   { name: 'David' }
 ];
 
+const tablenumber: number = 5;
+
 export default function MenuPage() {
-  const [menuItems, setMenuItems] = useState<(MenuBackend & { quantity: number })[]>([]);
-  const [cart, setCart] = useState<{ id: number; name: string; price: number; img: string; type: string; quantity: number }[]>([]);
+  const [menuItems, setMenuItems] = useState<(MenuBackend)[]>([]);
+  const [cart, setCart] = useState<(MenuBackend)[]>([]);
   const [total, setTotal] = useState(0);
   const [navValue, setNavValue] = useState();
   const [scrollPositions, setScrollPositions] = useState<{ [key: string]: number }>({
@@ -59,18 +43,6 @@ export default function MenuPage() {
   const [selectedPerson, setSelectedPerson] = useState<{ [key: number]: string }>({});
 
   /////////////////////////////////////////////////////////////////////////////
-
-  // use effect to get menu items from the backend instead of the hardcoded ones
-  // using getMenus from menuFormatter into genericMenuItem
-  const [menuItemsBack, setMenuItemsBack] = useState<MenuBackend[]>([]);
-  useEffect(() => {
-    const fetchMenus = async () => {
-      const menus = await getMenusBackend();
-      setMenuItemsBack(menus);
-    };
-    fetchMenus();
-  }, []);
-
 
   const [selectedMenuItem, setSelectedMenuItem] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -93,6 +65,19 @@ export default function MenuPage() {
     };
     fetchOrders();
   }, []);
+
+  // use effect to get menu items from the backend instead of the hardcoded ones
+  // using getMenus from menuFormatter into genericMenuItem
+  const [menuItemsBack, setMenuItemsBack] = useState<MenuBackend[]>([]);
+  useEffect(() => {
+
+    const fetchMenus = async () => {
+      const menus = await getMenusBackend();
+      //console.log("menus backend", menus);
+      setMenuItemsBack(menus);
+    };
+    fetchMenus();
+  }, [totalOrders]);
 
   const handleOpenMenu = () => {
     setIsMenuOpen(prev => !prev);
@@ -118,11 +103,27 @@ export default function MenuPage() {
     }
   };
 
+  const handleGroupBill = async (orderId: string) => {
+    // localhost:3005/orders/billOrder/:orderId
+    const response = await fetch(`http://localhost:3005/orders/billOrder/${orderId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      console.log('Group bill sent successfully');
+    } else {
+      console.error('Failed to send group bill');
+    }
+  };
+
   // lis le json de retour et vérifie par rapport au champ customerName
   const getOrderIdByClient = (clientName: string) => {
     //console.log("clientName", clientName);
     //console.log("order by name", totalOrders.find(order => order.customerName === clientName));
-    return totalOrders.find(order => order.customerName === clientName)?._id;
+    return totalOrders.find(order => order.customerName === clientName && order.tableNumber === tablenumber)?._id;
   }
 
   const getOrderForTable = (tableNumber: number) => {
@@ -132,38 +133,49 @@ export default function MenuPage() {
     return totalOrders.find(order => order.tableNumber === tableNumber)?._id;
   }
   
-
   // itérer sur tous les menusItemBack pour récupérer uniquement ceux dont leur id est dans les préparations de l'order
   const getPreparationsByOrderId = () => {
-    console.log("totalOrders", totalOrders);
-    console.log("menuItemsBack", menuItemsBack);
-    const preparations = totalOrders.find(order => order.tableNumber === 5)?.preparations;
-    console.log("preparations", preparations);
+    const preparations = totalOrders.find(order => order.tableNumber === 5 && order._id === "67260377865ddc8ab26116d8")?.preparations;
+    // TODO CHANGE id
+    //  console.log("info", totalOrders.find(order => order.tableNumber === 5 && order._id === "67260377865ddc8ab26116d8")?.preparations);
     const preparationsMenuItems = preparations?.map(preparation => {
-      const menuItem = menuItemsBack.find(menuItem => menuItem._id === preparation);
+      const menuItem = menuItemsBack.find(menuItem => menuItem._id == preparation);
       return menuItem;
     });
-    console.log("preparationsMenuItems", preparationsMenuItems);
     return preparationsMenuItems;
   }
 
-  // set menu items from getPreparationsByOrderId
   useEffect(() => {
+    if (!totalOrders.length) return;
+
     const preparations = getPreparationsByOrderId();
-    console.log("infooooo" , preparations);
+
     if (preparations) {
-      setMenuItems(preparations as (MenuBackend & { quantity: number })[]);
+      console.log("preparations", preparations);
+      setMenuItems(preparations as (MenuBackend)[]);
     }
-  }, []);
+  }, [totalOrders]);
     
 
   /////////////////////////////////////////////////////////////////////////////////
 
-
-
-
   const navigate = useNavigate();
 
+  const getItemCountByCategory = (category: MenuCategoryEnumBackend) => {
+    //console.log("menuItems", menuItems);
+    //console.log("fnejfenojzf" + menuItems.filter(item => item.category === category).reduce((sum, item) => sum, 0));
+    return menuItems.filter(item => item.category === category).length;
+  };
+
+  const addToCart = (item: MenuBackend) => {
+    // remove item from menuItems
+    setMenuItems(menuItems.filter(menuItem => menuItem._id !== item._id));
+    setCart([...cart, item]);
+    setTotal(total + item.price);
+    // faire cette requete : localhost:3005/orders/billOrder/:orderId
+  }
+
+  /*
   const addToCart = (item: { id: number; name: string; price: number; img: string; type: string; quantity: number }) => {
     setCart([...cart, { ...item, quantity: item.quantity }]);
     setTotal(total + item.price * item.quantity);
@@ -171,16 +183,19 @@ export default function MenuPage() {
       menuItem._id === item.id.toString() ? { ...menuItem, quantity: 0 } : menuItem
     ));
   };
-
-  const filteredItems = menuItems.filter((item: MenuBackend & { quantity: number }) => item.category === navValue && item.quantity > 0);
+  */
 
   const handlePayment = () => {
     setTotal(0);
     setCart([]);
-  };
-
-  const getItemCountByCategory = (category: string) => {
-    return initialMenuItems.filter(item => item.type === category).reduce((sum, item) => sum + item.quantity, 0);
+    let count: number = 0;
+    for (const enumContent in MenuCategoryEnumBackend) {
+      count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
+    }
+     if (count === 0) {
+      console.log("count", count);
+      handleGroupBill("67260377865ddc8ab26116d8");
+     }
   };
 
   const settings = {
@@ -192,15 +207,57 @@ export default function MenuPage() {
     swipeToSlide: true,
     adaptiveHeight: true,
     afterChange: (currentSlide: number) => {
-      setScrollPositions(prev => ({ ...prev, [navValue]: currentSlide }));
+      if (navValue) {
+        setScrollPositions(prev => ({ ...prev, [navValue]: currentSlide }));
+      }
     },
-    initialSlide: scrollPositions[navValue] || 0,
+    initialSlide: navValue ? scrollPositions[navValue] || 0 : 0,
   };
 
   // Handle page rotation
   const toggleRotation = () => {
     setIsRotated(!isRotated);
   };
+
+  /*
+  const [order, setOrder] = useState<Order>({total: 0, items: {}, itemsEvent: {}, datetime: new Date()});
+  const [tip, setTip] = useState<number>(0);
+
+  useEffect(() => {
+        
+  }   , [order]);
+  const [paying, setPaying] = useState<Order>({
+      total: 0,
+      items: {},
+      itemsEvent: {},
+      datetime: new Date()
+  });
+  const [paid, setPaid] = useState<Order>({
+      total: 0,
+      items: {},
+      itemsEvent: {},
+      datetime: new Date()
+
+  });
+
+  const card: React.ReactNode = (
+    <Box display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} height={"100%"}>
+        <ActionCardGeneric
+            title={'Table ' + tablenumber}
+            rightTitle={`right title €`}
+            mainContent={<PaymentList order={order} paying={paying} changePayingQuantity={changePayingQuantity}
+                                      addAllToPaying={addAllToPaying} paid={paid} tip={0} changeTip={setTip}/>}
+            buttons={
+                <Button onClick={handlePayment} variant={"contained"} sx={{width: "200px"}}>
+                    Payer {paying.total + (isNaN(tip) ? 0 : tip)} €
+                </Button>
+            }
+            minWidth={"95%"}
+            minHeight={"95%"}
+        />
+    </Box>
+);
+*/
 
   return (
     <div style={{ padding: '20px', transform: isRotated ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.5s' }}>
@@ -233,13 +290,12 @@ export default function MenuPage() {
           <Typography variant="body2">{clients.map(client => client.name).join(', ')}</Typography>
         </div>
       )}
-
-      {filteredItems.length > 0 ? (
+      {menuItems.length > 0 ? (
         <Slider {...settings} key={navValue}>
-          {filteredItems.map((item: MenuBackend & { quantity: number }) => (
+          {menuItems.map((item: MenuBackend) => (
             <div key={item._id} style={{ padding: '10px' }}>
               <Card style={{ backgroundColor: '#f5a623', padding: '10px', textAlign: 'center', color: 'white' }}>
-                <Typography variant="body1">{item.quantity}×</Typography>
+                <Typography variant="body1">{}×</Typography>
                 <CardMedia component="img" height="100" image={""} alt={item.fullName} style={{ objectFit: 'contain' }} />
                 <CardContent>
                   <Typography variant="h6" style={{ color: 'white' }}>{item.fullName}</Typography>
@@ -268,11 +324,12 @@ export default function MenuPage() {
                           <li
                             key={client.name}
                             onClick={() => {
-                              console.log('XXX',client.name);
-                              const fromOrderId = getOrderIdByClient(client.name);
-                              const toOrderId = getOrderForTable(5);
+                              const fromOrderId = getOrderForTable(5);
+                              console.log("fromOrderId", fromOrderId);
+                              const toOrderId = getOrderIdByClient(client.name);
+                              console.log("toOrderId", toOrderId);
                               if (fromOrderId && toOrderId) {
-                                handleSendMenuItem(fromOrderId, "67260377865ddc8ab26116d8", "6725ff721a077e2fee104c28");
+                                handleSendMenuItem(fromOrderId, toOrderId, item._id);
                               } else {
                                 console.error('Order ID not found');
                               }
@@ -297,9 +354,9 @@ export default function MenuPage() {
                     variant="contained"
                     color="primary"
                     style={{ marginTop: '10px' }}
-                    onClick={() => getPreparationsByOrderId()}
+                    onClick={() => addToCart(item)}
                   >
-                    {item && `Add ${item.price * (item.quantity || 1)}€`}
+                    {item && `Add ${item.price}€`}
                   </Button>
                 </CardContent>
               </Card>
@@ -325,11 +382,10 @@ export default function MenuPage() {
         showLabels
         style={{ marginTop: '20px' }}
       >
-        <BottomNavigationAction label={`Starters ${getItemCountByCategory('starters')}`} icon={<FastfoodIcon />} value="starters" />
-        <BottomNavigationAction label={`Mains ${getItemCountByCategory('mains')}`} icon={<RestaurantIcon />} value="mains" />
-        <BottomNavigationAction label={`Desserts ${getItemCountByCategory('desserts')}`} icon={<DessertIcon />} value="desserts" />
-        <BottomNavigationAction label={`Drinks ${getItemCountByCategory('drinks')}`} icon={<LocalBarIcon />} value="drinks" />
-        <BottomNavigationAction label={`Specials ${getItemCountByCategory('specials')}`} icon={<StarIcon />} value="specials" />
+        <BottomNavigationAction label={`Starters ${getItemCountByCategory(MenuCategoryEnumBackend.STARTER)}`} icon={<FastfoodIcon />} value="STARTER" />
+        <BottomNavigationAction label={`Mains ${getItemCountByCategory(MenuCategoryEnumBackend.MAIN)}`} icon={<RestaurantIcon />} value="MAIN" />
+        <BottomNavigationAction label={`Desserts ${getItemCountByCategory(MenuCategoryEnumBackend.DESSERT)}`} icon={<DessertIcon />} value="DESSERT" />
+        <BottomNavigationAction label={`Drinks ${getItemCountByCategory(MenuCategoryEnumBackend.DESSERT)}`} icon={<LocalBarIcon />} value="BEVERAGE" />
       </BottomNavigation>
     </div>
   );
