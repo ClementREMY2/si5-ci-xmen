@@ -161,7 +161,16 @@ export default function MenuPage() {
     };
     const preparations = getPreparationsByOrderId();
 
+    if (preparations) {
+      setMenuItems(preparations as (MenuBackend)[]);
+    }
+  }, [totalOrders, tablenumber, menuItemsBack]);
 
+
+  useEffect(() => {
+    console.log(!totalOrders.some(order => order.tableNumber === tablenumber && order.customerName === undefined))
+    const orders = totalOrders.filter(order => order.tableNumber === tablenumber );
+    orders.map(order => console.log(order.customerName));
     if (!totalOrders.some(order => order.tableNumber === tablenumber && order.customerName === undefined)) {
       const createOrder = async () => {
         const response = await fetch('http://localhost:9500/dining/tableOrders', {
@@ -184,13 +193,11 @@ export default function MenuPage() {
         }
       };
 
-      createOrder();
+      if(totalOrders.length > 0) {
+        createOrder();
+      }
     }
-
-    if (preparations) {
-      setMenuItems(preparations as (MenuBackend)[]);
-    }
-  }, [totalOrders, tablenumber, menuItemsBack]);
+  }, [totalOrders, tablenumber]);
 
     
 
@@ -223,20 +230,26 @@ export default function MenuPage() {
   */
 
   const handlePayment = () => {
-    setTotal(0);
-    setCart([]);
-    let count: number = 0;
-    for (const enumContent in MenuCategoryEnumBackend) {
-      count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
+    // setTotal(0);
+    // setCart([]);
+    // let count: number = 0;
+    // for (const enumContent in MenuCategoryEnumBackend) {
+    //   count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
+    // }
+    //  if (count === 0) {
+    //   const orderId = getOrderForTable(tablenumber);
+    //   if (orderId) {
+    //     handleGroupBill(orderId);
+    //   } else {
+    //     console.error('Order ID not found');
+    //   }
+    //  }
+    const orderId = getOrderForTable(tablenumber);
+    if (orderId) {
+      navigate(`/payment/${orderId}`);
+    } else {
+      console.error('Order ID not found');
     }
-     if (count === 0) {
-      const orderId = getOrderForTable(tablenumber);
-      if (orderId) {
-        handleGroupBill(orderId);
-      } else {
-        console.error('Order ID not found');
-      }
-     }
   };
 
   const settings = {
@@ -415,7 +428,7 @@ export default function MenuPage() {
           right: 0, }}>
         <Typography variant="h5">Total: {total}€</Typography>
         <Button variant="contained" color="primary" onClick={handlePayment}>
-          Pay {total}€
+          Passer au paiement pour un total de {total}€
         </Button>
       </div>
       <BottomNavigation
