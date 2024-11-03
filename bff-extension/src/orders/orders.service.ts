@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RemoveFromOrderDto } from './dto/remove-from-order.dto';
-import { table } from 'console';
 
 @Injectable()
 export class OrdersService {
@@ -29,6 +28,7 @@ export class OrdersService {
 
   async createEventOrder(eventName: string, items: RemoveFromOrderDto[]) {
     try {
+      console.log(items)
       const eventOrder = await axios.post(
         `http://localhost:9500/dining/tableOrders`,
         {
@@ -40,7 +40,7 @@ export class OrdersService {
       for (const item of items) {
         for (const menuItem of item.menuItems) {
           await axios.put(
-            `http://localhost:9500/dining/tableOrders/${item.OrderId}/remove-preparation/${menuItem}`,
+            `http://localhost:9500/dining/tableOrders/${item.orderId}/remove-preparation/${menuItem}`,
           );
 
           await axios.post(
