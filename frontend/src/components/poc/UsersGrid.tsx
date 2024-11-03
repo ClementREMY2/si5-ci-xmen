@@ -15,6 +15,7 @@ interface Order {
   interface MenuItem {
     _id: string;
     fullName: string;
+    shortName: string;
     price: number;
     }
 
@@ -51,7 +52,7 @@ export default function UsersGrid({orders, menuItems, width = "100%", onClickIte
         <Grid2 container spacing={3} overflow={"auto"} sx={{ width }}>
         {orders.map((order) => (
           <Grid2 key={order._id} size={4}>
-            <Accordion>
+            <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls={`panel-${order._id}-content`}
@@ -68,8 +69,8 @@ export default function UsersGrid({orders, menuItems, width = "100%", onClickIte
                         const key = order._id + preparation + index;
                         return (
                             <ListItemButton key={key} >
-                                <ListItemText primary={`${menuItem ? menuItem.fullName : preparation} - ${menuItem ? menuItem.price : 0} €`} />
-                                <Button onClick={() => handleClick(order._id, preparation, true)}>Send</Button>
+                                <ListItemText primary={`${menuItem ? menuItem.shortName : preparation} - ${menuItem ? menuItem.price : 0} €`} />
+                                <Button onClick={() => handleClick(order._id, preparation, true)}>+</Button>
                             </ListItemButton>
                         );
                     })}

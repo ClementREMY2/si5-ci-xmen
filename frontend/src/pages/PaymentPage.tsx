@@ -1,5 +1,12 @@
+import icon from "@mui/icons-material/icon";
+import { ListItem, ListItemIcon, Typography, Divider, Stack, List, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import QuantityButtonsGeneric from "../components/generics/QuantityButtonsGeneric";
+import { LocalBar, Tapas, Restaurant, Cookie } from "@mui/icons-material";
+import { menuNormalMock } from "../mocks/Menu";
+import { Table } from "react-bootstrap";
+import TableMainCard from "../components/generics/TableMainCard";
 
 interface Order {
     _id: string;
@@ -12,12 +19,24 @@ interface Order {
     billed?: string | null;
 }
 
+interface MenuItem {
+    _id: string;
+    fullName: string;
+    shortName: string;
+    price: number;
+    category: string;
+}
+
 
 export default function PaymentPage() {
 
     const [order, setOrder] = useState<Order>();
+    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+    const [isBilled, setIsBilled] = useState<boolean>(false);
 
-    const {orderId} = useParams();
+    const {orderId} = useParams(); 
+
+
 
     useEffect(() => {
     const getOrder = async () => {
@@ -29,19 +48,112 @@ export default function PaymentPage() {
     getOrder();
     }, [orderId]);
 
+    const getMenuItem = (preparation: string) => {
+        const menuItem = menuItems.find(item => item._id === preparation);
+        return menuItem 
+    }
+
+    const getTypeOrder = () => {
+        if(order?.tableNumber) return "table";
+        if(order?.event) return "event";
+    }
+
+    const getPaymentMessage = (orderType: string) => {
+        if(orderType === "table") return "Payement terminé, merci.";
+        if(orderType === "event") return "Evénement payé, retour au payement de la table.";
+    }
+
+
+    const handlePayment = () => {
+        const billOrder = async () => {
+            if (!orderId) return;
+            const response = await fetch(`http://localhost:3005/orders/billOrder/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId }),
+            });
+            if (response.ok) {
+                console.log("Order billed successfully");
+                setIsBilled(true);
+            } else {
+                console.error("Failed to bill order");
+            }
+        };
+
+        billOrder();
+    }
+
+    const getIcon = (menuItem: MenuItem): React.ReactElement | undefined => {
+        switch (menuItem?.category) {
+            case "BEVERAGE": return <LocalBar color={"primary"}/>;
+            case "STARTER": return <Tapas color={"primary"}/>;
+            case "MAIN": return <Restaurant color={"primary"}/>;
+            case "DESSERT": return <Cookie color={"primary"}/>;
+            default: return undefined;
+        }
+    }
+
+    useEffect(() => {
+        const fetchMenuItems = async () => {
+            const response = await fetch("http://localhost:9500/menu/menus");
+            const data = await response.json();
+            setMenuItems(data);
+        }
+        setIsBilled(order?.billed !== null);
+        fetchMenuItems();
+    }, [order])
+
+
     return (
         <div>
-            PaymentPage
-            <h1>Order: {order?._id}</h1>
-            <h2>Table: {order?.tableNumber}</h2>
-            <h2>Event Name: {order?.event}</h2>
-            <h2>Customer: {order?.customerName}</h2>
-            <h2>Customers Count: {order?.customersCount}</h2>
-            <h2>Opened: {order?.opened}</h2>
-            <h2>Preparations: {order?.preparations}</h2>
-            <h2>Billed: {order?.billed}</h2>
-
-
+            <TableMainCard>
+            {!isBilled && (
+                <>
+                    <Typography variant={"h5"}>{`Payement de l'événement ${order?.event}`}</Typography>
+                    <List sx={{height: "100%", overflowY: "auto"}}>
+                    {order?.preparations.map((preparation, index) => {
+                        const menuItem = getMenuItem(preparation);
+                        return (
+                                <>
+                                <ListItem key={index}>
+                                    <Stack direction={"row"} alignItems={"center"} spacing={2} width={"100%"}>
+                                        <ListItemIcon>{getIcon(menuItem!)}</ListItemIcon>
+                                        <Typography flex={3.5}>{menuItem?.shortName}</Typography>
+                                        <Typography flex={1}>{menuItem?.price} €</Typography>
+                                    </Stack>
+                                </ListItem>
+                                <Divider component={"li"}/>
+                                </>
+                            );
+                        })}
+                    </List>
+                    <Stack direction={"row"} justifyContent={"space-between"} padding={2}>
+                        <Typography variant={"h6"}>Total</Typography>
+                        <Typography variant={"h6"}>{order?.preparations.reduce((total, preparation) => {
+                            const menuItem = getMenuItem(preparation);
+                            return total + (menuItem?.price || 0);
+                        }, 0)} €</Typography>
+                    </Stack>
+                    <Stack direction={"row"} justifyContent={"center"} padding={2}>
+                        <Button variant="contained" color="primary" onClick={handlePayment}>
+                            Payer
+                        </Button>
+                    </Stack>
+                </>
+            )}
+            {isBilled && (
+                <Stack direction={"row"} justifyContent={"center"} padding={2}>
+                    <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} height={"100%"} spacing={2}>
+                        <Typography variant={"h5"}>{getPaymentMessage(getTypeOrder()!)}</Typography>
+                        <Button variant="contained" color="secondary" onClick={() => console.log("Retour à la table")}>
+                            Retour à la table
+                        </Button>
+                    </Stack>
+                </Stack>
+            )}
+            </TableMainCard>
         </div>
     );
 }

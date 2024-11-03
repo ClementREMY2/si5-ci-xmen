@@ -1,4 +1,4 @@
-import { Button, ListItemButton, ListItemText } from "@mui/material";
+import { Button, Divider, ListItemButton, ListItemText } from "@mui/material";
 
 interface SelectedMenuItem {
     orderId: string;
@@ -107,15 +107,16 @@ export default function MenuItemsList({orders, menuItems, selectedMenuItems, onC
                 <h3>Table {tableNumber}</h3>
                 <ul>
                 {items.map((item, index) => (
-                    <li key={index}>
+                    <li key={index} style={{ listStyleType: 'none' }}>
                     {getMenuItem(item.menuItemId)} - {getItemPrice(item.menuItemId)} €
                     <Button onClick={() => handleClick(item.orderId, item.menuItemId)}>Remove</Button>
+                    <Divider component={"li"}/>
                     </li>
                 ))}
                 </ul>
             </div>
             ))}
-            <Button onClick={handlePayement}>Payer</Button>
+            <Button variant="contained" color="primary" onClick={handlePayement} disabled={!selectedMenuItems || selectedMenuItems.length === 0}>Payer</Button>
         </div>
     );
 }
