@@ -38,7 +38,8 @@ export default function MenuPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [totalOrders, setTotalOrders] = useState<{ tableNumber: number; customerName?: string; customersCount?: number; 
     opened: string; preparations: any[]; billed: string | null; _id: string }[]>([]);
-  useEffect(() => {
+  
+    useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await fetch("http://localhost:3005/orders");
@@ -156,6 +157,32 @@ export default function MenuPage() {
     if (!totalOrders.length) return;
 
     const preparations = getPreparationsByOrderId();
+
+
+    if (!totalOrders.some(order => order.tableNumber === tablenumber && order.customerName === undefined)) {
+      const createOrder = async () => {
+        const response = await fetch('http://localhost:9500/dining/tableOrders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tableNumber: tablenumber,
+            customersCount: 2
+          }),
+        });
+
+        if (response.ok) {
+          const newOrder = await response.json();
+          setTotalOrders(prevOrders => [...prevOrders, newOrder]);
+          console.log('New order created:', newOrder);
+        } else {
+          console.error('Failed to create new order');
+        }
+      };
+
+      createOrder();
+    }
 
     if (preparations) {
       setMenuItems(preparations as (MenuBackend)[]);
