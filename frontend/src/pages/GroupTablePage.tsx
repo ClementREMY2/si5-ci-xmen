@@ -13,8 +13,6 @@ import {  MenuBackend, MenuCategoryEnumBackend } from '../interfaces/Menu';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const clients: string[] = [];
-
 let canGetNames = true;
 
 export default function MenuPage() {
@@ -32,6 +30,7 @@ export default function MenuPage() {
   });
   const [showNames, setShowNames] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
+  const [clients, setClients] = useState<string[]>([]);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -57,17 +56,21 @@ export default function MenuPage() {
     fetchOrders();
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!canGetNames) return;
-    const getAllCustomersNameByTableNumber = (tableNumber: number | null) => {
-      if (canGetNames && tableNumber !== null) {
-        clients.push(...totalOrders.filter(order => order.tableNumber === tableNumber && order.customerName !== undefined)
+    const getAllCustomersNameByTableNumber = () => {
+      const c: string[] = [];
+      if (canGetNames && tablenumber !== null) {
+        c.push(...totalOrders.filter(order => order.tableNumber === tablenumber && order.customerName !== undefined)
           .map(order => order.customerName as string));
         canGetNames = false;
       }
+      setClients(c);
     };
 
-    getAllCustomersNameByTableNumber(tablenumber);
+    if (totalOrders.length > 0) {
+      getAllCustomersNameByTableNumber();
+    }
 
   }, [totalOrders, tablenumber]);
 
@@ -141,21 +144,21 @@ export default function MenuPage() {
   }
 
 
-  // itérer sur tous les menusItemBack pour récupérer uniquement ceux dont leur id est dans les préparations de l'order
-  const getPreparationsByOrderId = () => {
-    const preparations = totalOrders.find(order => order.tableNumber === tablenumber && order.customerName === undefined)?.preparations;
-    // TODO CHANGE id
-    //  console.log("info", totalOrders.find(order => order.tableNumber === 5 && order._id === "67260377865ddc8ab26116d8")?.preparations);
-    const preparationsMenuItems = preparations?.map(preparation => {
-      const menuItem = menuItemsBack.find(menuItem => menuItem._id == preparation);
-      return menuItem;
-    });
-    return preparationsMenuItems;
-  }
+  
 
   useEffect(() => {
     if (!totalOrders.length) return;
-
+    // itérer sur tous les menusItemBack pour récupérer uniquement ceux dont leur id est dans les préparations de l'order
+    const getPreparationsByOrderId = () => {
+      const preparations = totalOrders.find(order => order.tableNumber === tablenumber && order.customerName === undefined)?.preparations;
+      // TODO CHANGE id
+      //  console.log("info", totalOrders.find(order => order.tableNumber === 5 && order._id === "67260377865ddc8ab26116d8")?.preparations);
+      const preparationsMenuItems = preparations?.map(preparation => {
+        const menuItem = menuItemsBack.find(menuItem => menuItem._id == preparation);
+        return menuItem;
+      });
+      return preparationsMenuItems;
+    };
     const preparations = getPreparationsByOrderId();
 
 
@@ -187,7 +190,7 @@ export default function MenuPage() {
     if (preparations) {
       setMenuItems(preparations as (MenuBackend)[]);
     }
-  }, [totalOrders]);
+  }, [totalOrders, tablenumber, menuItemsBack]);
 
     
 
@@ -358,31 +361,32 @@ export default function MenuPage() {
                         boxShadow: '0 2px 5px rgba(0,0,0,0.2)', // Ombre pour un effet de profondeur
                         zIndex: 1000 // Assurez-vous que la liste soit au-dessus des autres éléments
                       }}>
-                        {clients.map(client => (
+                        {clients && clients.map(client => (
                           <li
-                            key={client}
-                            onClick={() => {
-                              const fromOrderId = getOrderForTable(tablenumber);
-                              console.log("fromOrderId", fromOrderId);
-                              const toOrderId = getOrderIdByClient(client);
-                              console.log("toOrderId", toOrderId);
-                              console.log("item._id", item._id);
-                              if (fromOrderId && toOrderId) {
-                                handleSendMenuItem(fromOrderId, toOrderId, item._id);
-                              } else {
-                                console.error('Order ID not found');
-                              }
-                            }}
-                            style={{
-                              cursor: 'pointer',
-                              padding: '5px',
-                              margin: '2px 0',
-                              transition: 'background-color 0.3s', 
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e0e0e0'}
-                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                          key={client}
+                          onClick={() => {
+                          const fromOrderId = getOrderForTable(tablenumber);
+                          console.log("fromOrderId", fromOrderId);
+                          const toOrderId = getOrderIdByClient(client);
+                          console.log("toOrderId", toOrderId);
+                          console.log("item._id", item._id);
+                          if (fromOrderId && toOrderId) {
+                          handleSendMenuItem(fromOrderId, toOrderId, item._id);
+                          } else {
+                          console.error('Order ID not found');
+                          }
+                          }}
+                          style={{
+                          cursor: 'pointer',
+                          padding: '5px',
+                          margin: '2px 0',
+                          transition: 'background-color 0.3s', 
+                          color: 'black'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e0e0e0'}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                           >
-                            {client}
+                          {client}
                           </li>
                         ))}
                       </ul>
