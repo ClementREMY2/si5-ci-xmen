@@ -169,8 +169,6 @@ export default function MenuPage() {
 
   useEffect(() => {
     console.log(!totalOrders.some(order => order.tableNumber === tablenumber && order.customerName === undefined))
-    const orders = totalOrders.filter(order => order.tableNumber === tablenumber );
-    orders.map(order => console.log(order.customerName));
     if (!totalOrders.some(order => order.tableNumber === tablenumber && order.customerName === undefined)) {
       const createOrder = async () => {
         const response = await fetch('http://localhost:9500/dining/tableOrders', {

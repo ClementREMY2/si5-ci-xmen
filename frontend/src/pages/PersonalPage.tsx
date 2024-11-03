@@ -175,20 +175,26 @@ export default function PersonalPage() {
   */
 
   const handlePayment = () => {
-    setTotal(0);
-    setCart([]);
-    let count: number = 0;
-    for (const enumContent in MenuCategoryEnumBackend) {
-      count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
+    // setTotal(0);
+    // setCart([]);
+    // let count: number = 0;
+    // for (const enumContent in MenuCategoryEnumBackend) {
+    //   count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
+    // }
+    //  if (count === 0) {
+    //   const selfOrderId = getSelfOrderId();
+    //   if (selfOrderId) {
+    //     handleSelfBill(selfOrderId);
+    //   } else {
+    //     console.error('Self order ID not found');
+    //   }
+    //  }
+    const orderId = getOrderIdByClient(client);
+    if (orderId) {
+      navigate(`/payment/${orderId}`);
+    } else {
+      console.error('Order ID not found');
     }
-     if (count === 0) {
-      const selfOrderId = getSelfOrderId();
-      if (selfOrderId) {
-        handleSelfBill(selfOrderId);
-      } else {
-        console.error('Self order ID not found');
-      }
-     }
   };
 
   const settings = {
@@ -326,7 +332,7 @@ export default function PersonalPage() {
           right: 0, }}>
         <Typography variant="h5">Total: {total}€</Typography>
         <Button variant="contained" color="primary" onClick={handlePayment}>
-          Pay {total}€
+          Passer au payement pour un total de {total}€
         </Button>
       </div>
 
