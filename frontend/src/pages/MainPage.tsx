@@ -20,6 +20,7 @@ export default function MainPage() {
                     <BottomNavigationAction label={"Home"} value={privateRoutes.home} icon={<Home/>}/>
                     <BottomNavigationAction label={"Events"} value={privateRoutes.events} icon={<Today/>}/>
                     <BottomNavigationAction label={"Profile"} value={privateRoutes.profile} icon={<AccountCircle/>}/>
+                    <BottomNavigationAction label={"POC"} value={privateRoutes.multiPage} icon={<AccountCircle/>}/>
                 </BottomNavigation>
             </AppBar>
         </Box>

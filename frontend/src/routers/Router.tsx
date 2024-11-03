@@ -7,10 +7,13 @@ import MainPage from "../pages/MainPage.tsx";
 import NotFound from "../pages/NotFoundPage.tsx";
 import OrderPage from "../pages/OrderPage.tsx";
 import PaymentPage from "../pages/PaymentPage.tsx";
-import ProfilePage from "../pages/ProfilePage.tsx";
+import GroupTablePage from "../pages/GroupTablePage.tsx";
+import SideGroupPage from "../pages/SideGroupePage.tsx";
 import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
 import { PopupProvider } from '../components/PopupContext'; // Importer le PopupProvider
+import ProfilePage from "../pages/ProfilePage.tsx";
+import PersonalPage from "../pages/PersonalPage.tsx";
 import TablePage from "../pages/TablePage.tsx";
 
 
@@ -32,13 +35,16 @@ export const router = createBrowserRouter([
                     { path: privateRoutes.profile, element: <ProfilePage /> }
                 ]
             },
+            { path: privateRoutes.orderTable, element: <GroupTablePage /> },
             { path: privateRoutes.orderTable, element: <OrderPage /> },
             { path: privateRoutes.payment, element: <PaymentPage /> },
             { path: privateRoutes.paymentEvent, element: <PaymentPage /> },
             {path: privateRoutes.paymentPoc, element: <PaymentPage />},
             { path: privateRoutes.event, element: <EventPage /> },
-            {path: privateRoutes.table, element: <TablePage />},
-            { path: publicRoutes.notFound, element: <NotFound /> }
+            { path: privateRoutes.personalPage, element: <PersonalPage /> },
+            { path: publicRoutes.notFound, element: <NotFound /> },
+            { path: privateRoutes.multiPage, element: <GroupTablePage /> },
+            { path: privateRoutes.table, element: <TablePage />},
         ]
     },
     { path: publicRoutes.all, element: getRedirection(publicRoutes.notFound) } // Go to 404 page if no route matches, this should always be the last route

@@ -42,7 +42,7 @@ export const addMenu = async (newMenuItem: MenuBackendNoId) => {
   return await addMenuBackend(newMenuItem);
 };
 
-export const findMenuById = async (id: string): Promise<GenericMenuItem> => {
+export const findMenuById = async (id: string): Promise<MenuBackend> => {
   return await getMenuById(id);
 };
 
