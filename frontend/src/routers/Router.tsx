@@ -13,6 +13,7 @@ import {privateRoutes, publicRoutes} from "../utils/Routes.ts";
 import RouterContent from "./RouterContent.tsx";
 import { PopupProvider } from '../components/PopupContext'; // Importer le PopupProvider
 import ProfilePage from "../pages/ProfilePage.tsx";
+import PersonalPage from "../pages/PersonalPage.tsx";
 
 
 const getDefaultRedirection = () => privateRoutes.home;
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
             { path: privateRoutes.payment, element: <PaymentPage /> },
             { path: privateRoutes.paymentEvent, element: <PaymentPage /> },
             { path: privateRoutes.event, element: <EventPage /> },
+            { path: privateRoutes.personalPage, element: <PersonalPage /> },
             { path: publicRoutes.notFound, element: <NotFound /> }
         ]
     },

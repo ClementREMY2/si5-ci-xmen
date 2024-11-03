@@ -12,14 +12,14 @@ import { getMenusBackend } from '../formatter/MenuFormatter';
 import {  MenuBackend, MenuCategoryEnumBackend } from '../interfaces/Menu';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { table } from 'console';
 
-const clients: string[] = [];
+export default function PersonalPage() {
+  const { tableNumber, customerName } = useParams<Record<string, string | undefined>>();
 
-let canGetNames = true;
-
-export default function MenuPage() {
-  const { tableNumber } = useParams<Record<string, string | undefined>>();
   const tablenumber = tableNumber ? parseInt(tableNumber, 10) : null;
+  const client = customerName ? customerName : "";
+  
   const [menuItems, setMenuItems] = useState<(MenuBackend)[]>([]);
   const [cart, setCart] = useState<(MenuBackend)[]>([]);
   const [total, setTotal] = useState(0);
@@ -35,7 +35,6 @@ export default function MenuPage() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [totalOrders, setTotalOrders] = useState<{ tableNumber: number; customerName?: string; customersCount?: number; 
     opened: string; preparations: any[]; billed: string | null; _id: string }[]>([]);
   useEffect(() => {
@@ -56,22 +55,6 @@ export default function MenuPage() {
     fetchOrders();
   }, []);
 
-   useEffect(() => {
-    if (!canGetNames) return;
-    const getAllCustomersNameByTableNumber = (tableNumber: number | null) => {
-      if (canGetNames && tableNumber !== null) {
-        clients.push(...totalOrders.filter(order => order.tableNumber === tableNumber && order.customerName !== undefined)
-          .map(order => order.customerName as string));
-        canGetNames = false;
-      }
-    };
-
-    getAllCustomersNameByTableNumber(tablenumber);
-
-  }, [totalOrders, tablenumber]);
-
-
-
   // use effect to get menu items from the backend instead of the hardcoded ones
   // using getMenus from menuFormatter into genericMenuItem
   const [menuItemsBack, setMenuItemsBack] = useState<MenuBackend[]>([]);
@@ -84,10 +67,6 @@ export default function MenuPage() {
     };
     fetchMenus();
   }, [totalOrders]);
-
-  const handleOpenMenu = () => {
-    setIsMenuOpen(prev => !prev);
-  };
 
   const handleSendMenuItem = async (fromOrderId: string, toOrderId: string, menuItemId: string) => {
     const response = await fetch('http://localhost:3005/orders/sendMenuItem', {
@@ -109,7 +88,7 @@ export default function MenuPage() {
     }
   };
 
-  const handleGroupBill = async (orderId: string) => {
+  const handleSelfBill = async (orderId: string) => {
     // localhost:3005/orders/billOrder/:orderId
     const response = await fetch(`http://localhost:3005/orders/billOrder/${orderId}`, {
       method: 'POST',
@@ -119,11 +98,15 @@ export default function MenuPage() {
     });
 
     if (response.ok) {
-      console.log('Group bill sent successfully');
+      console.log('Personal bill sent successfully');
     } else {
-      console.error('Failed to send group bill');
+      console.error('Failed to send personal bill');
     }
   };
+
+  const getSelfOrderId = () => {
+    return totalOrders.find(order => order.tableNumber === tablenumber && order.customerName === client)?._id;
+  }
 
   // lis le json de retour et vérifie par rapport au champ customerName
   const getOrderIdByClient = (clientName: string) => {
@@ -132,17 +115,16 @@ export default function MenuPage() {
     return totalOrders.find(order => order.customerName === clientName && order.tableNumber === tablenumber)?._id;
   }
 
-  const getOrderForTable = (tableNumber: number | null) => {
+  const getOrderForTable = (tableNumber: number) => {
     //console.log("tableNumber", tableNumber);
     //console.log("order by table", totalOrders.find(order => order.tableNumber === tableNumber));
     //console.log("order by table", totalOrders.find(order => order.tableNumber === tableNumber)?._id);
     return totalOrders.find(order => order.tableNumber === tableNumber && order.customerName === undefined)?._id;
   }
-
-
+  
   // itérer sur tous les menusItemBack pour récupérer uniquement ceux dont leur id est dans les préparations de l'order
   const getPreparationsByOrderId = () => {
-    const preparations = totalOrders.find(order => order.tableNumber === tablenumber && order.customerName === undefined)?.preparations;
+    const preparations = totalOrders.find(order => order.tableNumber === tablenumber && order.customerName === client)?.preparations;
     // TODO CHANGE id
     //  console.log("info", totalOrders.find(order => order.tableNumber === 5 && order._id === "67260377865ddc8ab26116d8")?.preparations);
     const preparationsMenuItems = preparations?.map(preparation => {
@@ -200,11 +182,11 @@ export default function MenuPage() {
       count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
     }
      if (count === 0) {
-      const orderId = getOrderForTable(tablenumber);
-      if (orderId) {
-        handleGroupBill(orderId);
+      const selfOrderId = getSelfOrderId();
+      if (selfOrderId) {
+        handleSelfBill(selfOrderId);
       } else {
-        console.error('Order ID not found');
+        console.error('Self order ID not found');
       }
      }
   };
@@ -218,9 +200,11 @@ export default function MenuPage() {
     swipeToSlide: true,
     adaptiveHeight: true,
     afterChange: (currentSlide: number) => {
-      setScrollPositions(prev => ({ ...prev, [navValue]: currentSlide }));
+      if (navValue) {
+        setScrollPositions(prev => ({ ...prev, [navValue]: currentSlide }));
+      }
     },
-    initialSlide: scrollPositions[navValue] || 0,  // Utilise la position mémorisée pour chaque catégorie
+    initialSlide: navValue ? scrollPositions[navValue] || 0 : 0,
   };
 
   // Handle page rotation
@@ -280,11 +264,8 @@ export default function MenuPage() {
         <Button
           variant="outlined"
           startIcon={<GroupIcon />}
-          onMouseEnter={() => setShowNames(true)}
-          onMouseLeave={() => setShowNames(false)}
-          onClick={() => setShowNames(!showNames)}
         >
-          Show Name
+          {client}
         </Button>
 
         {/* Button to rotate the page */}
@@ -296,9 +277,9 @@ export default function MenuPage() {
           Rotate Page
         </Button>
       </div>
-      {showNames && (
+      {(
         <div style={{ textAlign: 'center', marginBottom: '10px', color: 'gray' }}>
-          <Typography variant="body2">{clients.map(client => client).join(', ')}</Typography>
+          <Typography variant="body2">{client}</Typography>
         </div>
       )}
       {filteredMenuItems.length > 0 ? (
@@ -315,52 +296,26 @@ export default function MenuPage() {
                     <Button
                       variant="contained"
                       style={{ marginTop: '10px', color: 'black' }}
-                      onClick={handleOpenMenu} // Fonction pour ouvrir le menu
+                      onClick={() => {
+                        const fromOrderId = getOrderIdByClient(client);
+                        console.log("fromOrderId", fromOrderId);
+
+                        const toOrderId = tablenumber !== null ? getOrderForTable(tablenumber) : null;
+                        console.log("toOrderId", toOrderId);
+
+                        console.log("item._id", item._id);  
+
+                        if (fromOrderId && toOrderId) {
+                          handleSendMenuItem(fromOrderId, toOrderId, item._id);
+                        } else {
+                          console.error('Order ID not found');
+                        }
+                      }} // Fonction pour ouvrir le menu
                     >
-                      Send to person
+                      Send to table
                     </Button>
-                    <div style={{ position: 'relative' }}>
-                      <ul style={{
-                        display: isMenuOpen ? 'block' : 'none',
-                        position: 'absolute',
-                        backgroundColor: '#f9f9f9', // Couleur de fond pour la visibilité
-                        listStyle: 'none',
-                        padding: '10px',
-                        border: '1px solid gray',
-                        marginTop: '5px',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)', // Ombre pour un effet de profondeur
-                        zIndex: 1000 // Assurez-vous que la liste soit au-dessus des autres éléments
-                      }}>
-                        {clients.map(client => (
-                          <li
-                            key={client}
-                            onClick={() => {
-                              const fromOrderId = getOrderForTable(tablenumber);
-                              console.log("fromOrderId", fromOrderId);
-                              const toOrderId = getOrderIdByClient(client);
-                              console.log("toOrderId", toOrderId);
-                              console.log("item._id", item._id);
-                              if (fromOrderId && toOrderId) {
-                                handleSendMenuItem(fromOrderId, toOrderId, item._id);
-                              } else {
-                                console.error('Order ID not found');
-                              }
-                            }}
-                            style={{
-                              cursor: 'pointer',
-                              padding: '5px',
-                              margin: '2px 0',
-                              transition: 'background-color 0.3s', 
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e0e0e0'}
-                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                          >
-                            {client}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
+
                   <Button
                     variant="contained"
                     color="primary"
@@ -386,6 +341,7 @@ export default function MenuPage() {
           Pay {total}€
         </Button>
       </div>
+
       <BottomNavigation
         value={navValue}
         onChange={(event, newValue) => setNavValue(newValue)}
