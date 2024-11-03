@@ -31,9 +31,7 @@ export const router = createBrowserRouter([
                 children: [
                     { path: privateRoutes.home, element: <HomePage /> },
                     { path: privateRoutes.events, element: <EventsPage /> },
-                    { path: privateRoutes.profile, element: <ProfilePage /> },
-                    { path: privateRoutes.multiPage, element: <GroupTablePage /> }
-
+                    { path: privateRoutes.profile, element: <ProfilePage /> }
                 ]
             },
             { path: privateRoutes.orderTable, element: <GroupTablePage /> },
@@ -42,7 +40,9 @@ export const router = createBrowserRouter([
             { path: privateRoutes.paymentEvent, element: <PaymentPage /> },
             { path: privateRoutes.event, element: <EventPage /> },
             { path: privateRoutes.personalPage, element: <PersonalPage /> },
-            { path: publicRoutes.notFound, element: <NotFound /> }
+            { path: publicRoutes.notFound, element: <NotFound /> },
+            { path: privateRoutes.multiPage, element: <GroupTablePage /> }
+
         ]
     },
     { path: publicRoutes.all, element: getRedirection(publicRoutes.notFound) } // Go to 404 page if no route matches, this should always be the last route
