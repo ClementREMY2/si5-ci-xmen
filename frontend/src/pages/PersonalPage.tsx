@@ -207,10 +207,6 @@ export default function PersonalPage() {
     initialSlide: navValue ? scrollPositions[navValue] || 0 : 0,
   };
 
-  // Handle page rotation
-  const toggleRotation = () => {
-    setIsRotated(!isRotated);
-  };
 
   /*
   const [order, setOrder] = useState<Order>({total: 0, items: {}, itemsEvent: {}, datetime: new Date()});
@@ -255,7 +251,7 @@ export default function PersonalPage() {
   let filteredMenuItems = menuItems.filter(menuItem => menuItem.category === navValue);
 
   return (
-    <div style={{ padding: '20px', transform: isRotated ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.5s' }}>
+    <div style={{ padding: '20px', transform: isRotated ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.5s', height: "100vh" }}>
 
       {/* Container for centered buttons */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
@@ -266,15 +262,6 @@ export default function PersonalPage() {
           startIcon={<GroupIcon />}
         >
           {client}
-        </Button>
-
-        {/* Button to rotate the page */}
-        <Button
-          variant="outlined"
-          startIcon={<RotateLeftIcon />}
-          onClick={toggleRotation}
-        >
-          Rotate Page
         </Button>
       </div>
       {(
@@ -288,7 +275,7 @@ export default function PersonalPage() {
             <div key={item._id} style={{ padding: '10px' }}>
               <Card style={{ backgroundColor: '#f5a623', padding: '10px', textAlign: 'center', color: 'white' }}>
                 <Typography variant="body1">{}×</Typography>
-                <CardMedia component="img" height="100" image={""} alt={item.fullName} style={{ objectFit: 'contain' }} />
+                <CardMedia component="img" height="100" image={item.image} alt={item.fullName} style={{ objectFit: 'contain' }} />
                 <CardContent>
                   <Typography variant="h6" style={{ color: 'white' }}>{item.fullName}</Typography>
                   <Typography variant="body2" style={{ color: 'white' }}>{item.price}€</Typography>
@@ -335,7 +322,8 @@ export default function PersonalPage() {
         </Typography>
       )}
 
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+      <div style={{ marginTop: '20px', textAlign: 'center', position: 'fixed', bottom:"10vh", left: 0,
+          right: 0, }}>
         <Typography variant="h5">Total: {total}€</Typography>
         <Button variant="contained" color="primary" onClick={handlePayment}>
           Pay {total}€
@@ -346,7 +334,13 @@ export default function PersonalPage() {
         value={navValue}
         onChange={(event, newValue) => setNavValue(newValue)}
         showLabels
-        style={{ marginTop: '20px' }}
+        style={{ marginTop: '20px',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+         }}
       >
         <BottomNavigationAction label={`Starters ${getItemCountByCategory(MenuCategoryEnumBackend.STARTER)}`} icon={<FastfoodIcon />} value="STARTER" />
         <BottomNavigationAction label={`Mains ${getItemCountByCategory(MenuCategoryEnumBackend.MAIN)}`} icon={<RestaurantIcon />} value="MAIN" />
