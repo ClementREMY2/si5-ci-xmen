@@ -3,7 +3,7 @@ import TableMainCard from '../components/generics/TableMainCard';
 import TableGrid from '../components/poc/TableGrid';
 import UsersGrid from '../components/poc/UsersGrid';
 import MenuItemsList from '../components/poc/MenuItemsList';
-import { Button } from 'react-bootstrap';
+import Button from '@mui/material/Button';
 
 interface Order {
     _id: string;
@@ -153,19 +153,29 @@ const TablePage: React.FC = () => {
     return (
         <div>
             <TableMainCard>
-                {selectedTableOrders === null ? (
-                    <>
-                        <h1>Tables</h1>
-                        <TableGrid tables={tables} onSelection={handleSelection} />
-                    </>
-                ) : (
-                    <div>
-                        <Button onClick={() => setSelectedTableOrders(null)}>Back</Button>
-                        <h2>Selected Table Orders</h2>
-                        <UsersGrid orders={selectedTableOrders} menuItems={menuItems} onClickItems={handleSelectItem} />
+                <div style={{ display: 'flex' }}>
+                    <div style={{ flex: 2, border: '1px solid #666', borderRadius: '10px', padding: '10px' }}>
+                        {selectedTableOrders === null ? (
+                            <>
+                                <h1>Liste des tables de l'évenement</h1>
+                                <TableGrid tables={tables} onSelection={handleSelection} />
+                            </>
+                        ) : (
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <h2>Selected Table Orders</h2>
+                                    <Button variant="contained" color="secondary" onClick={() => setSelectedTableOrders(null)}>Retour à la liste des tables</Button>
+                                </div>
+                                <UsersGrid orders={selectedTableOrders} menuItems={menuItems} onClickItems={handleSelectItem} />
+                            </div>
+                        )}
                     </div>
-                )}
-                <MenuItemsList orders={orders} menuItems={menuItems} selectedMenuItems={selectedMenuItems} onClickItems={(orderId, itemId) => handleSelectItem(orderId, itemId, false)} />
+                    <div style={{ width: '20px' }}></div>
+                    <div style={{ flex: 1, border: '1px solid #666', borderRadius: '10px', padding: '10px' }}>
+                        <h2>Liste d'éléments à payer par l'entreprise: </h2>
+                        <MenuItemsList orders={orders} menuItems={menuItems} selectedMenuItems={selectedMenuItems} onClickItems={(orderId, itemId) => handleSelectItem(orderId, itemId, false)} />
+                    </div>
+                </div>
             </TableMainCard>
         </div>
     );

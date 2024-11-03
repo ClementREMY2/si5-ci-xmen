@@ -30,7 +30,7 @@ const tableColor = (status: TableStatusEnum): string => {
 
 export default function TableCard({table, onClick}: Readonly<TableProps>) {
     return (
-        <Card sx={{backgroundColor: "red", color: "black"}}>
+        <Card sx={{backgroundColor: "orange", color: "black"}}>
             <CardActionArea onClick={() => onClick(table.tableNumber)}>
                 <CardHeader title={`Table ${table.tableNumber}`} titleTypographyProps={{variant: "h4", align: "center"}}/>
                 <Divider color={"black"} sx={{backgroundColor: "black"}}/>
