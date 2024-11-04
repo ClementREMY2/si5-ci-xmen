@@ -254,7 +254,15 @@ export default function PersonalPage() {
 );
 */
 
-  let filteredMenuItems = menuItems.filter(menuItem => menuItem.category === navValue);
+  const [filteredMenuItems, setFilteredMenuItems] = useState<(MenuBackend)[]>([]);
+  useEffect(() => {
+    const fetchFilteredMenus = async () => {
+      if (menuItems.length > 0) {
+        setFilteredMenuItems(menuItems.filter(menuItem => menuItem.category === navValue));
+      }
+    };
+    fetchFilteredMenus();
+  }, [menuItems]);
 
   return (
     <div style={{ padding: '20px', transform: isRotated ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.5s', height: "100vh" }}>
@@ -300,6 +308,7 @@ export default function PersonalPage() {
 
                         if (fromOrderId && toOrderId) {
                           handleSendMenuItem(fromOrderId, toOrderId, item._id);
+                          setFilteredMenuItems(filteredMenuItems.filter(menuItem => menuItem._id !== item._id));
                         } else {
                           console.error('Order ID not found');
                         }
