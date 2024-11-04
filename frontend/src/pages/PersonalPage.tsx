@@ -32,6 +32,8 @@ export default function PersonalPage() {
   });
   const [showNames, setShowNames] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
+  const [shouldUpdateMenuItems, setShouldUpdateMenuItems] = useState<boolean>(true);
+
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -59,6 +61,7 @@ export default function PersonalPage() {
   // using getMenus from menuFormatter into genericMenuItem
   const [menuItemsBack, setMenuItemsBack] = useState<MenuBackend[]>([]);
   useEffect(() => {
+    if (!shouldUpdateMenuItems) return;
 
     const fetchMenus = async () => {
       const menus = await getMenusBackend();
@@ -98,6 +101,8 @@ export default function PersonalPage() {
     });
 
     if (response.ok) {
+      setMenuItems([]);
+      setShouldUpdateMenuItems(false);
       console.log('Personal bill sent successfully');
     } else {
       console.error('Failed to send personal bill');
@@ -175,26 +180,26 @@ export default function PersonalPage() {
   */
 
   const handlePayment = () => {
-    // setTotal(0);
-    // setCart([]);
-    // let count: number = 0;
-    // for (const enumContent in MenuCategoryEnumBackend) {
-    //   count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
-    // }
-    //  if (count === 0) {
-    //   const selfOrderId = getSelfOrderId();
-    //   if (selfOrderId) {
-    //     handleSelfBill(selfOrderId);
-    //   } else {
-    //     console.error('Self order ID not found');
-    //   }
-    //  }
-    const orderId = getOrderIdByClient(client);
-    if (orderId) {
-      navigate(`/payment/${orderId}`);
-    } else {
-      console.error('Order ID not found');
+    setTotal(0);
+    setCart([]);
+    let count: number = 0;
+    for (const enumContent in MenuCategoryEnumBackend) {
+      count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
     }
+     if (count === 0) {
+      const selfOrderId = getSelfOrderId();
+      if (selfOrderId) {
+        handleSelfBill(selfOrderId);
+      } else {
+        console.error('Self order ID not found');
+      }
+     }
+    // const orderId = getOrderIdByClient(client);
+    // if (orderId) {
+    //   navigate(`/payment/${orderId}`);
+    // } else {
+    //   console.error('Order ID not found');
+    // }
   };
 
   const settings = {
@@ -293,7 +298,7 @@ export default function PersonalPage() {
                 <CardContent>
                   <Typography variant="h6" style={{ color: 'white' }}>{item.fullName}</Typography>
                   <Typography variant="body2" style={{ color: 'white' }}>{item.price}€</Typography>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                  <div style={{ display: 'flex  ', justifyContent: 'center', marginTop: '10px' }}>
                     <Button
                       variant="contained"
                       style={{ marginTop: '10px', color: 'black' }}
@@ -316,6 +321,7 @@ export default function PersonalPage() {
                     >
                       Send to table
                     </Button>
+                    
                   </div>
 
                   <Button

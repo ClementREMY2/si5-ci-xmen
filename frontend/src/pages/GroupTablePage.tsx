@@ -228,26 +228,28 @@ export default function MenuPage() {
   */
 
   const handlePayment = () => {
-    // setTotal(0);
-    // setCart([]);
-    // let count: number = 0;
-    // for (const enumContent in MenuCategoryEnumBackend) {
-    //   count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
-    // }
-    //  if (count === 0) {
-    //   const orderId = getOrderForTable(tablenumber);
-    //   if (orderId) {
-    //     handleGroupBill(orderId);
-    //   } else {
-    //     console.error('Order ID not found');
-    //   }
-    //  }
+    setTotal(0);
+    setCart([]);
+    let count: number = 0;
+    for (const enumContent in MenuCategoryEnumBackend) {
+      count += getItemCountByCategory(MenuCategoryEnumBackend[enumContent as keyof typeof MenuCategoryEnumBackend]);
+    }
+     if (count === 0) {
+      const orderId = getOrderForTable(tablenumber);
+      if (orderId) {
+        handleGroupBill(orderId);
+      } else {
+        console.error('Order ID not found');
+      }
+     }
+     /*
     const orderId = getOrderForTable(tablenumber);
     if (orderId) {
       navigate(`/payment/${orderId}`);
     } else {
       console.error('Order ID not found');
     }
+      */
   };
 
   const settings = {
